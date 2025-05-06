@@ -1,0 +1,27 @@
+<div class="vf-page-overlay"></div>
+
+
+<video *ngIf="trailerSrc"
+       class="bg-fullscreen-video"
+       
+
+       [src]="trailerSrc" 
+       autoplay muted loop playsinline></video>
+
+<img *ngIf="!trailerSrc && bgSrc"  
+  class="bg-fullscreen"
+   [src]="bgSrc"
+  alt=""
+  aria-hidden="true"
+/>
+<app-header></app-header>
+
+<main class="content" [class.content--lg]="largePadding"
+[class.content--left]="isVideoGrid">
+  <router-outlet></router-outlet>
+</main>
+
+<app-footer [ngClass]="{ 'footer--video': isVideoGrid }"></app-footer>
+
+
+

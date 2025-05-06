@@ -1,0 +1,73 @@
+<div class="player-wrap">
+  <div #player class="player">
+    <video
+      #vid
+      [src]="video.src"
+      autoplay
+      [muted]="muted"
+      (ended)="goNext()"
+
+      (loadedmetadata)="initTime(vid)"
+       (timeupdate)="updateTime(vid)"
+    ></video>
+
+
+    <!-- watch.component.html – Ausschnitt -->
+<div class="progress">
+    <!-- Range = Scrubber -->
+    <input type="range"
+           min="0" [max]="duration"
+           [value]="current"
+           (input)="seek($event, vid)">
+  
+    <!-- Laufzeit   -->
+    <span class="time">
+      {{ toMMSS(current) }} / {{ toMMSS(duration) }}
+    </span>
+  </div>
+  
+
+    <button class="btn-back" (click)="goPrev()">
+      <img src="assets/img/back.png" />
+    </button>
+
+    <button class="btn-next" (click)="goNext()">
+      <img src="assets/img/blue-pfeil.png" />
+    </button>
+
+    <div class="controls">
+      <button  (click)="togglePlay(vid)">
+        <img
+          [src]="playing ? 'assets/img/pause.png' : 'assets/img/play_arrow.png'"
+        />
+      </button>
+      <button  (click)="rotLeft(vid)">
+        <img src="assets/img/replay_10.png" />
+      </button>
+      <button (click)="rotRight(vid)">
+        <img src="assets/img/forward_10.png" />
+      </button>
+      <button (click)="toggleMute(vid)">
+        <img
+          [src]="
+            muted ? 'assets/img/mute.png' : 'assets/img/volume_up.png'
+          "
+        />
+      </button>
+      
+
+
+<span class="vid-title">{{ video.title }}</span>
+
+      <button class="btn-speed" (click)="toggleSpeed(vid)">
+        <img src="assets/img/speed.png" alt="Speed" />
+      </button>
+
+      <button class="btn-full" (click)="goFull(player)">
+        <img src="assets/img/fullscreen.png" />
+      </button>
+    </div>
+
+  
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<header class="header-box">
+  <img class="logo-desktop"
+  *ngIf="!isVideoPage"
+  src="assets/img/Logo.png"
+  alt="Videoflix-Logo"
+  (click)="goBack()"
+  tabindex="0"
+  role="button">
+
+<img class="logo-mobile"
+  src="assets/img/blue-pfeil.png"
+  alt="Videoflix-Icon"
+  (click)="goBack()"
+  tabindex="0"
+  role="button">
+
+  <img *ngIf="isVideoPage"
+       class="logo-back"
+       src="assets/img/blue-pfeil.png"
+       alt="Zurück"
+       role="button"
+       tabindex="0"
+       (click)="goBack()">
+
+
+    
+        <button *ngIf="!onLoginPage && !isVideoPage"
+                class="btn-login"
+                (click)="openLogin()">
+          {{ 'button.login' | translate }}
+        </button>
+    
+        
+        <button *ngIf="isVideoPage"
+                class="btn-login"
+                (click)="logout()">
+          <img src="assets/img/logout.png" alt="" />
+          {{ 'button.logut' | translate }}
+        </button>
+ 
+
+
+</header>

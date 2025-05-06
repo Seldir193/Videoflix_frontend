@@ -1,0 +1,31 @@
+@use "styles" as *;
+
+.footer-box {
+  @include dFlex(center, null, 48px);
+  padding: 10px;
+  background: transparent;
+  backdrop-filter: blur(2px);
+
+  a {
+    font-weight: 500;
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 125ms;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}
+
+:host-context(.footer--video) .footer-box {
+    justify-content: flex-end;
+    padding: 10px 96px;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.9) 50%
+    );
+  }
+
+  

@@ -1,0 +1,60 @@
+@use "styles" as *;
+
+.capture-row {
+  @include dFlex(center, center, 10px);
+
+  input[type="email"] {
+    padding: 14px 24px;
+    font-size: 1rem;
+    border: 1px solid $white;
+    border-radius: var(--radius-lg);
+    background: #1c1a20cc;
+    color: $white;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    max-width: 360px;
+    width: 100%;
+
+    &::placeholder {
+      color: $white;
+      opacity: 0.8;
+    }
+    &::-webkit-input-placeholder {
+      color: $white;
+      opacity: 0.8;
+    } /* Safari/Chrome */
+    &::-moz-placeholder {
+      color: $white;
+      opacity: 0.8;
+    } /* Firefox */
+    &:-ms-input-placeholder {
+      color: $white;
+      opacity: 0.8;
+    } /* Edge (legacy) */
+  }
+
+  .btn-login,
+  img {
+    @include dFlex(center, center, 4px);
+  }
+}
+
+.button-container {
+  max-width: 144px;
+  width: 100%;
+  background-color: $color-primary;
+  border-radius: var(--radius-lg);
+  flex: 0 0 auto;
+}
+
+.error {
+  margin-top: 0.5rem;
+  color: #e50914;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 1278px) {
+  .capture-row {
+    flex-direction: column;
+  }
+}

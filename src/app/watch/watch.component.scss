@@ -1,0 +1,230 @@
+
+@use "styles" as *;
+
+
+
+
+
+
+
+/* watch.component.scss */
+
+.player-wrap { position:fixed; inset:0; background:#000; display:flex; }
+
+.player {
+  margin:auto;
+  position:relative;          /* Bezugssystem für controls */
+  max-width:100vw;
+  max-height:100vh;
+}
+
+video {
+  width:100%;
+  height:auto;
+  display:block;
+  max-height:100vh;
+  transition:transform .3s;
+}
+
+/* Back / Next wie bisher */
+//.btn-back {  position:absolute; left:16px;  top:5%;  transform:translateY(-50%); }
+.btn-next {  position:absolute; right:16px; top:16px; }
+
+
+.btn-back {
+    position: absolute;
+    left: 16px;
+    top: 16px;        /* statt 5 % */
+    transform: none;  /* kein Verschieben mehr */
+  }
+
+/* Steuerleiste unten rechts */
+.controls {
+  position:absolute;
+  right:16px;
+  bottom:0;
+  display:flex;
+  gap:8px;
+  left:16px;
+  cursor: pointer;
+}
+
+
+
+  .controls img[src*="mute"],
+  .controls img[src*="pause"] {
+    filter: invert(1) brightness(2);   /* Schwarz → Weiß, etwas heller */
+  }
+
+
+
+.controls .btn-speed { margin-left: auto; }
+
+/* Fullscreen daneben, also KEIN Auto-Margin mehr */
+.controls .btn-full  { margin-left: 0; }
+
+
+
+
+
+button {
+  border:none;
+  background:rgba(0,0,0,.5);
+  color:#fff;
+  padding:8px 10px;
+  cursor:pointer;
+}
+
+
+
+
+.vid-title {
+    flex: 1 1 auto;     /* füllt Restbreite zwischen Links- & Rechts-Gruppe */
+    text-align: center;
+    color: $white;
+    font-weight: 700;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+
+
+/* watch.component.scss – neuer Block */
+
+.progress {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 60px;                /* sitzt über den Icon-Buttons */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  
+    input[type=range] {
+      flex: 1 1 auto;
+      accent-color: #2e3edf;     /* Slider-Farbe */
+      cursor: pointer;
+    }
+  
+    .time {
+      font-family: monospace;
+      color: #fff;
+      font-size: .9rem;
+      flex: 0 0 auto;
+    }
+  }
+  
+
+
+  @media (max-width: 1278px){
+
+    .controls {
+      position: static;         /* nimmt keinen Einfluss mehr */
+    }
+  
+    /* 2. Alle Buttons absolut platzieren ----------------------- */
+    .controls button {
+      position: absolute;
+    }
+  
+    /* Links: Replay 10 */
+    .controls button:nth-child(2) {   /* rotLeft */
+      left: 16px;
+      top : 50%;
+      transform: translateY(-50%);
+    }
+  
+    /* Mitte: Play/Pause  (first button) */
+    .controls button:nth-child(1) {   /* togglePlay */
+      left: 50%;
+      top : 50%;
+      transform: translate(-50%, -50%);
+    }
+  
+    /* Rechts: Forward 10 */
+    .controls button:nth-child(3) {   /* rotRight */
+      right: 16px;
+      top  : 50%;
+      transform: translateY(-50%);
+    }
+  
+    /* Unten mittig: Speed */
+    .btn-speed {
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+    }
+  
+    /* 3. Ausblenden, was du auf Mobile nicht brauchst ---------- */
+    .btn-full,
+    .controls button:nth-child(4),   /* Mute-Icon */
+    .vid-title {
+      display: none;
+    }
+
+
+
+
+    button {
+     
+  
+        img{
+          width:32px;
+        }
+    }
+  
+    .progress{
+      bottom:unset;
+   }
+
+
+
+
+
+
+    .btn-back{
+      top:0;
+      left:unset;
+      right:0;
+
+      img{
+        width:32px;
+      }
+  }
+
+  .btn-next{
+    top:0;
+    left:0;
+    right:unset;
+
+      img{
+        width:32px;
+      }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

@@ -1,0 +1,39 @@
+
+{
+    "hero": {
+      "headline": "Filme, Serien und mehr",
+      "cta":      "Gib deine E-Mail ein, um dein Abo zu starten oder fortzusetzen.",
+      "ctb": "Sieh, wann immer du willst, wo immer du willst",
+      "heroSpan": "In einem Hochsicherheitsgefängnis schmiedet ein zu Unrecht verurteilter Mann einen akribischen Plan, auszubrechen und seine Unschuld zu beweisen. Dabei muss er ein Netz aus Allianzen und Verrat durchqueren, um seine Freiheit zurückzuerlangen und die Wahrheit ans Licht zu bringen."
+    },
+    "button": {
+      "signup": "Registrieren",
+      "login":  "Anmelden",
+      "logut":  "Abmelden",
+     "start":  "Anmelden",
+     "forgot": "Passwort vergessen",
+     "sign":  "Jetzt Registrieren",
+     "email": "E-Mail senden",
+     "reset-password": "Passwort zurücksetzen"
+    },
+    "error": {
+    "emailInvalid": "E-Mail Adresse falsch",
+    "passwordShort": "Passwort kurz",
+    "passwordMismatch": "Password passen nicht"
+  },
+    "text": {
+      "header": "Wir senden Ihnen eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts.",
+     "header-reset": "Erstellen Sie ein neues Passwort für Ihr <span class=\"app-name\">Videoflix</span> Konto.",
+      "daten": "Datenschutz",
+     "imprint": "Impressum"
+    },
+   
+    
+      "heading": {
+        "forgotPassword": "Passwort<br>vergessen",
+        "resetPassword":  "Passwort zurücksetzen" 
+      }
+    
+    
+}
+  

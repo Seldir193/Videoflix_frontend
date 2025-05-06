@@ -1,0 +1,55 @@
+
+
+
+
+
+
+
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="title">{{ heroTitle }}</h1>
+      <p  class="tagline">{{ 'hero.heroSpan' | translate }}</p>
+  
+
+    <div class="button-box">
+      
+      <button  class="btn-login" (click)="playFirst()">
+        <img src="assets/img/play.png" alt="" /> Play
+      </button>
+   </div>
+
+    </div>
+  
+    <!-- ▼  Erste Kategorie als Overlay auf dem Video  ▼ -->
+    <div class="overlay-row" *ngIf="categories[0] as firstCat">
+      <h2 class="cat-title">{{ firstCat }}</h2>
+  
+      <div class="row">
+        <figure class="thumb"
+                *ngFor="let v of videos[firstCat]"
+                (click)="playVideo(v)">
+          <img [src]="v.thumb" [alt]="v.title" width="213" height="120" />
+          <figcaption>{{ v.title }}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories">
+    <ng-container *ngFor="let cat of categories.slice(1)">
+      <div class="cat-block">
+        <h2 class="cat-title">{{ cat }}</h2>
+  
+        <div class="row">
+          <figure class="thumb"
+                  *ngFor="let v of videos[cat]"
+                  (click)="playVideo(v)">
+            <img [src]="v.thumb" [alt]="v.title" width="213" height="120" />
+            <figcaption>{{ v.title }}</figcaption>
+          </figure>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+  

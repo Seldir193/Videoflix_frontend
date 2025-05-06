@@ -1,0 +1,17 @@
+<form [formGroup]="emailForm" (ngSubmit)="submit()" class="capture-row">
+  <input
+    type="email"
+    formControlName="email"
+    placeholder="Email Adresse"
+    [class.invalid]="
+      emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)
+    "
+  />
+
+  <div class="button-container">
+    <button type="button" class="btn-login" (click)="gotoSignup()">
+      {{ "button.signup" | translate }}
+      <img src="assets/img/pfeil-right.png" />
+    </button>
+  </div>
+</form>

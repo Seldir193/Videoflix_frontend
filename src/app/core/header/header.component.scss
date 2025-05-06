@@ -1,0 +1,46 @@
+@use 'styles' as *; 
+
+.header-box {
+  @include dFlex(space-between, center);
+  padding: 10px 96px;             
+  background: transparent; 
+  height:108px;
+  backdrop-filter: blur(2px);  
+
+  img{
+  cursor: pointer;
+  }
+}
+
+.button-container{
+  max-width:102px;
+  width:100%;
+  background-color: $color-primary;
+  border-radius: var(--radius-lg);
+  flex:0 0 auto;
+}
+
+.logo-desktop { display: none; }
+.logo-mobile  { display: inline-block; }
+
+
+.btn-login {
+  display: flex;
+  align-items: center;
+  gap: 4px; 
+}
+
+
+@media (max-width: 1278px){
+  .header-box{
+    padding:10px 16px;
+  }
+  .logo-back { display: none;}
+}
+
+@media (min-width: 1278px) {
+  .logo-desktop { display: inline-block; }
+  .logo-mobile  { display: none; }
+  
+
+}
