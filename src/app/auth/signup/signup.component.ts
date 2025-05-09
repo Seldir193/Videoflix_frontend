@@ -9,11 +9,14 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { AuthService } from '../../core/auth.service';   // Pfad ggf. anpassen
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslateModule, CommonModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, MatSnackBarModule],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
@@ -22,47 +25,78 @@ export class SignupComponent implements OnInit {
   showPassword = false;
   showRepeat = false;
 
+  private password_match = (
+    group: AbstractControl,
+  ): ValidationErrors | null => {
+    const { password, re_password } = group.value;
+    return password === re_password ? null : { mismatch: true };
+  };
+ 
   form = this.fb.nonNullable.group(
+    
     {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      repeat: ['', Validators.required],
+      re_password: ['', Validators.required],
+     
     },
-    { validators: this.samePwd }
+    { validators: this.password_match },
+   
   );
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private snack: MatSnackBar,
+    private router: Router,
+  ) {}
 
-  samePwd(group: AbstractControl): ValidationErrors | null {
-    const pw = group.get('password')?.value;
-    const rep = group.get('repeat')?.value;
-    return pw === rep ? null : { mismatch: true };
-  }
 
-  ngOnInit() {
+  /* ---------- Lifecycle ---------- */
+  ngOnInit(): void {
     this.form.valueChanges.subscribe(() => (this.submitted = false));
   }
 
-  submit() {
+  /* ---------- Form Helpers ---------- */
+  get email() { return this.form.controls.email; }
+  get password() { return this.form.controls.password; }
+  get re_password() { return this.form.controls.re_password; }
+
+  toggle_show_pwd(which: 'pwd' | 'rep'): void {
+    which === 'pwd' ? (this.showPassword = !this.showPassword)
+                    : (this.showRepeat = !this.showRepeat);
+  }
+
+
+
+  submit(): void {
     this.submitted = true;
     if (this.form.invalid) return;
-    this.router.navigate(['/dashboard']);
+  
+    const dto = this.form.getRawValue();   // ← statt this.form.value
+    this.auth.register(dto).subscribe({
+      next: () => {
+        this.snack.open(
+          'Registrierung erfolgreich – bitte E-Mail bestätigen.',
+          undefined,
+          { duration: 4000 },
+        );
+        //this.router.navigate(['/login']);
+        this.router.navigate(['/auth/login']);
+      },
+      error: () =>
+        this.snack.open(
+          'Bitte überprüfe deine Eingaben und versuche es erneut.',
+          undefined,
+          { duration: 4000 },
+        ),
+    });
   }
 
-  get email() {
-    return this.form.controls.email;
-  }
-  get password() {
-    return this.form.controls.password;
-  }
-  get repeat() {
-    return this.form.controls.repeat;
-  }
 
-  toggleShowPassword(): void {
-    this.showPassword = !this.showPassword;
-  }
-  toggleShowRepeat(): void {
-    this.showRepeat = !this.showRepeat;
-  }
+
+
 }
+
+
+

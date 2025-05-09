@@ -1,15 +1,14 @@
-
-
-
-
-
-
-
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+// src/app/watch/watch.component.ts
+import { Component, DestroyRef, signal ,inject} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule, Location } from '@angular/common';
-import { Subscription }           from 'rxjs';
-import { VideoService, Video }    from '../shared/video-service';
+import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { VideoService,Video } from '../shared/video-service';
+
+
+
+
 
 @Component({
   selector: 'app-watch',
@@ -18,67 +17,118 @@ import { VideoService, Video }    from '../shared/video-service';
   templateUrl: './watch.component.html',
   styleUrls : ['./watch.component.scss']
 })
-export class WatchComponent implements OnInit, OnDestroy {
+export class WatchComponent {
 
-  private route  = inject(ActivatedRoute);
+  /* --- State --- */
+  video     = signal<Video & { safeUrl: SafeResourceUrl } | null>(null);
+  nextVideo = signal<Video | null>(null);
+  prevVideo = signal<Video | null>(null);
+
+  playing = signal(true);
+  muted   = signal(false);
+  rotate  = signal(0);
+
+  current  = signal(0);   // Sekunden
+  duration = signal(0);
+
+  speedOpt = [1, 1.5, 2];
+  speedIdx = signal(0);
+
+  /* --- DI --- */
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private loc    = inject(Location);
-  private vids   = inject(VideoService);
+  private vs  = inject(VideoService);
+  private sani = inject(DomSanitizer);
+  private destroyRef = inject(DestroyRef);
 
-  video!: Video;
-  next!:  Video|null;
-  prev!:  Video|null;
-  playing = true;
-  muted   = false;
-  rotate  = 0;
-
-  private sub!: Subscription;
-
-  ngOnInit() {
-    this.sub = this.route.paramMap.subscribe(p => this.load(p.get('id')!));
-  }
-  ngOnDestroy() { this.sub.unsubscribe(); }
-
-  load(id:string){
-    this.video   = this.vids.getVideo(id);
-    this.next    = this.vids.getNext(id);
-    this.prev    = this.vids.getPrev(id);
-    this.playing = true;
-    this.rotate  = 0;
+  constructor() {
+    // Bei Routenwechsel Daten neu holen
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(pm => this.load(+pm.get('id')!));
   }
 
-  /* Controls */
-  togglePlay(v:HTMLVideoElement){ this.playing ? v.pause() : v.play(); this.playing=!this.playing; }
-  toggleMute(v:HTMLVideoElement){ v.muted=!v.muted; this.muted=v.muted; }
- // goFull(v:HTMLVideoElement){ v.requestFullscreen(); }
-  rotLeft(v:HTMLVideoElement){ this.rotate-=90; v.style.transform=`rotate(${this.rotate}deg)`; }
-  rotRight(v:HTMLVideoElement){ this.rotate+=90; v.style.transform=`rotate(${this.rotate}deg)`; }
-
-  goNext(){ this.next ? this.router.navigate(['/watch', this.next.id]) : null; }
- // goPrev(){ this.prev ? this.router.navigate(['/watch', this.prev.id]) : this.loc.back(); }
+  /* ---------- Daten laden ---------- */
 
 
-/* watch.component.ts – nur diese Methode ändern */
-
-goPrev() {
-  if (this.prev) {                               // noch ein vorheriges Video?
-    this.router.navigate(['/watch', this.prev.id]);
-  } else {                                       // erster Trailer erreicht
-    this.router.navigate(['/dashboard/videos']); // oder '/dashboard'
+  private load(id: number) {
+    this.vs.detail(id).subscribe(v => {
+      this.video.set({
+        ...v,
+        safeUrl: this.sani.bypassSecurityTrustResourceUrl(this.buildSrc(v))
+      });
+      this.prepareNav(id);
+      this.playing.set(true);
+      this.rotate.set(0);
+    });
   }
-}
 
-
-
-  goFull(player: HTMLElement) {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      player.requestFullscreen();
+  private buildSrc(v: Video): string {
+    // 1) lokale Datei?
+    if (v.video_file) {
+      return 'http://127.0.0.1:8000' + v.video_file;   // Basis-URL anpassen!
     }
+    // 2) Fallback auf externes Streaming-URL
+    return v.url!;
   }
   
 
+  /** Vor/Zurück-Info aus kompletter Liste ermitteln */
+  private prepareNav(id: number) {
+    this.vs.list().subscribe(videos => {
+      const idx = videos.findIndex(v => v.id === id);
+      this.prevVideo.set(idx > 0 ? videos[idx - 1] : null);
+      this.nextVideo.set(idx < videos.length - 1 ? videos[idx + 1] : null);
+    });
+  }
+
+  /* ---------- Player-Callbacks ---------- */
+  initTime(v: HTMLVideoElement)   { this.duration.set(Math.floor(v.duration)); }
+  updateTime(v: HTMLVideoElement) { this.current.set(Math.floor(v.currentTime)); }
+
+  seek(e: Event, v: HTMLVideoElement) {
+    const t = +(e.target as HTMLInputElement).value;
+    v.currentTime = t;
+    this.current.set(t);
+  }
+
+  togglePlay(v: HTMLVideoElement) {
+    this.playing() ? v.pause() : v.play();
+    this.playing.update(p => !p);
+  }
+  toggleMute(v: HTMLVideoElement) {
+    const m = !v.muted;
+    v.muted = m;
+    this.muted.set(m);
+  }
+  rotLeft (v: HTMLVideoElement) { this.addRot(v, -90); }
+  rotRight(v: HTMLVideoElement) { this.addRot(v,  90); }
+  private addRot(v: HTMLVideoElement, deg: number) {
+    this.rotate.update(r => r + deg);
+    v.style.transform = `rotate(${this.rotate()}deg)`;
+  }
+
+  toggleSpeed(v: HTMLVideoElement) {
+    this.speedIdx.update(i => (i + 1) % this.speedOpt.length);
+    v.playbackRate = this.speedOpt[this.speedIdx()];
+  }
+
+  goFull(el: HTMLElement) {
+    document.fullscreenElement ? document.exitFullscreen()
+                               : el.requestFullscreen();
+  }
+
+  /* ---------- Navigation ---------- */
+  goNext() { const n = this.nextVideo(); n && this.router.navigate(['/watch', n.id]); }
+  goPrev() { const p = this.prevVideo(); p ? this.router.navigate(['/watch', p.id])
+                                          : this.router.navigate(['/dashboard/videos']); }
+
+  /* ---------- MM:SS-Formatter ---------- */
+  toMMSS(total: number) {
+    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const s = Math.floor(total % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
 
 
 
@@ -86,39 +136,10 @@ goPrev() {
 
 
 
-/* watch.component.ts – Ergänzungen */
-current  = 0;   // Sekunden
-duration = 0;
 
-initTime(v: HTMLVideoElement) {          // (loadedmetadata)
-  this.duration = Math.floor(v.duration);
-}
 
-updateTime(v: HTMLVideoElement) {        // (timeupdate)
-  this.current = Math.floor(v.currentTime);
-}
 
-seek(evt: Event, v: HTMLVideoElement) {  // (input)
-  const val = +(evt.target as HTMLInputElement).value;
-  v.currentTime = val;
-  this.current  = val;
-}
 
-/* Hilfsfunktion */
-toMMSS(total: number): string {
-  const m = Math.floor(total / 60).toString().padStart(2, '0');
-  const s = Math.floor(total % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
-
-speed = 1;   // 1 ×, 1.5 ×, 2 ×
-
-toggleSpeed(v: HTMLVideoElement) {
-  this.speed = this.speed === 1   ? 1.5
-            : this.speed === 1.5 ? 2
-            : 1;
-  v.playbackRate = this.speed;
-}
 
 
 }

@@ -1,73 +1,78 @@
-<div>
-  <form [formGroup]="form" (ngSubmit)="submit()" class="login-box" novalidate>
-    <h1 class="title">{{ "button.login" | translate }}</h1>
+<form
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  class="login-box"
+  novalidate
+>
+  <h1 class="title">{{ 'button.login' | translate }}</h1>
 
-    <div class="field-block">
-      <div class="input-group" [class.invalid]="email.invalid && email.touched">
-        <img class="icon" src="assets/img/mail.png" alt="" aria-hidden="true" />
-        <input type="email" placeholder="E-Mail" formControlName="email" />
-      </div>
-      <p class="error" *ngIf="email.errors?.['email'] && email.touched">
-        <img src="assets/img/warning.png" alt="" aria-hidden="true" />
-        {{ "error.emailInvalid" | translate }}
-      </p>
+  <!-- ───── E-MAIL ───── -->
+  <div class="field-block">
+    <div class="input-group" [class.invalid]="email.invalid && email.touched">
+      <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
+      <input type="email" placeholder="E-Mail" formControlName="email" />
     </div>
 
-    <div class="field-block">
-      <div
-        class="input-group"
-        [class.invalid]="password.invalid && (password.touched || submitted)"
+    <p class="error" *ngIf="email.errors?.['email'] && email.touched">
+      <img src="assets/img/warning.png" aria-hidden="true" />
+      {{ 'error.emailInvalid' | translate }}
+    </p>
+  </div>
+
+  <!-- ───── PASSWORT ───── -->
+  <div class="field-block">
+    <div
+      class="input-group"
+      [class.invalid]="password.invalid && (password.touched || submitted)"
+    >
+      <img class="icon" src="assets/img/password.png" aria-hidden="true" />
+      <input
+        [type]="show_password ? 'text' : 'password'"
+        placeholder="Passwort (min. 8 Zeichen)"
+        formControlName="password"
+      />
+
+      <button
+        type="button"
+        class="eye"
+        (click)="toggle_show_password()"
+        aria-label="Passwort anzeigen"
       >
         <img
-          class="icon"
-          src="assets/img/password.png"
-          alt=""
+          [src]="
+            show_password
+              ? 'assets/img/visibility_off.png'
+              : 'assets/img/visibility.png'
+          "
           aria-hidden="true"
         />
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          placeholder="Passwort (min. 8 Zeichen)"
-          formControlName="password"
-        />
-
-        <button type="button" class="eye" (click)="toggleShowPassword()">
-          <img
-            [src]="
-              showPassword
-                ? 'assets/img/visibility_off.png'
-                : 'assets/img/visibility.png'
-            "
-            alt=""
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-
-      <p
-        class="error"
-        *ngIf="password.errors?.['minlength'] && (password.touched || submitted)"
-      >
-        <img src="assets/img/warning.png" alt="" aria-hidden="true" />
-        {{ "error.passwordShort" | translate }}
-      </p>
-    </div>
-
-    <div class="under-button">
-      <button type="submit" class="btn-login" [disabled]="form.invalid">
-        {{ "button.login" | translate }}
       </button>
-
-      <a class="text-link forgot" routerLink="/auth/forgot">
-        {{ "button.forgot" | translate }}
-      </a>
-
-      <p class="signup-hint">
-        New to Videoflix?
-
-        <a class="text-link sign-now" routerLink="/auth/signup">
-          {{ "button.sign" | translate }}
-        </a>
-      </p>
     </div>
-  </form>
-</div>
+
+    <p
+      class="error"
+      *ngIf="password.errors?.['minlength'] && (password.touched || submitted)"
+    >
+      <img src="assets/img/warning.png" aria-hidden="true" />
+      {{ 'error.passwordShort' | translate }}
+    </p>
+  </div>
+
+  <!-- ───── AKTIONEN ───── -->
+  <div class="under-button">
+    <button type="submit" class="btn-login" [disabled]="form.invalid">
+      {{ 'button.login' | translate }}
+    </button>
+
+    <a class="text-link forgot" routerLink="/auth/forgot">
+      {{ 'button.forgot' | translate }}
+    </a>
+
+    <p class="signup-hint">
+      {{ 'label.noAccount' | translate }}
+      <a class="text-link sign-now" routerLink="/auth/signup">
+        {{ 'button.sign' | translate }}
+      </a>
+    </p>
+  </div>
+</form>

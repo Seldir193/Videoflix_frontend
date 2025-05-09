@@ -1,99 +1,143 @@
-<div>
-  <form [formGroup]="form" (ngSubmit)="submit()" class="signup-box" novalidate>
-    <h1 class="title">{{ "button.signup" | translate }}</h1>
 
-    <div class="field-block">
-      <div class="input-group" [class.invalid]="email.invalid && email.touched">
-        <img class="icon" src="assets/img/mail.png" alt="" aria-hidden="true" />
-        <input type="email" placeholder="E-Mail" formControlName="email" />
-      </div>
-      <p class="error" *ngIf="email.errors?.['email'] && email.touched">
-        <img src="assets/img/warning.png" alt="" aria-hidden="true" />
-        {{ "error.emailInvalid" | translate }}
-      </p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<form
+  class="signup-box"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate
+>
+  <h1 class="title">{{ 'button.signup' | translate }}</h1>
+
+  <!-- ───── E-MAIL ───── -->
+  <div class="field-block">
+    <div class="input-group" [class.invalid]="email.invalid && email.touched">
+      <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
+      <input type="email" placeholder="E-Mail" formControlName="email" />
     </div>
+    <p class="error" *ngIf="email.errors?.['email'] && email.touched">
+      <img src="assets/img/warning.png" aria-hidden="true" />
+      {{ 'error.emailInvalid' | translate }}
+    </p>
+  </div>
 
-    <div class="field-block">
-      <div
-        class="input-group"
-        [class.invalid]="password.invalid && (password.touched || submitted)"
+  <!-- ───── PASSWORT ───── -->
+  <div class="field-block">
+    <div
+      class="input-group"
+      [class.invalid]="password.invalid && (password.touched || submitted)"
+    >
+      <img class="icon" src="assets/img/password.png" aria-hidden="true" />
+      <input
+        [type]="showPassword ? 'text' : 'password'"
+        placeholder="Passwort (min. 8 Zeichen)"
+        formControlName="password"
+      />
+
+      <button
+        type="button"
+        class="eye"
+        (click)="toggle_show_pwd('pwd')"
+        aria-label="Passwort anzeigen"
       >
         <img
-          class="icon"
-          src="assets/img/password.png"
-          alt=""
+          [src]="
+            showPassword
+              ? 'assets/img/visibility_off.png'
+              : 'assets/img/visibility.png'
+          "
           aria-hidden="true"
         />
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          placeholder="Passwort (min. 8 Zeichen)"
-          formControlName="password"
-        />
-
-        <button type="button" class="eye" (click)="toggleShowPassword()">
-          <img
-            [src]="
-              showPassword
-                ? 'assets/img/visibility_off.png'
-                : 'assets/img/visibility.png'
-            "
-            alt=""
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-
-      <p
-        class="error"
-        *ngIf="password.errors?.['minlength'] && (password.touched || submitted)"
-      >
-        <img src="assets/img/warning.png" alt="" aria-hidden="true" />
-        {{ "error.passwordShort" | translate }}
-      </p>
+      </button>
     </div>
 
-    <div class="field-block">
-      <div
-        class="input-group"
-        [class.invalid]="(repeat.invalid && (repeat.touched || submitted))
-                         || form.errors?.['mismatch']"
+    <p
+      class="error"
+      *ngIf="
+        password.errors?.['minlength']  && (password.touched || submitted)
+      "
+    >
+      <img src="assets/img/warning.png" aria-hidden="true" />
+      {{ 'error.passwordShort' | translate }}
+    </p>
+  </div>
+
+  <!-- ───── PASSWORT WIEDERHOLEN ───── -->
+  <div class="field-block">
+    <div
+      class="input-group"
+      [class.invalid]="
+        (re_password.invalid && (re_password.touched || submitted)) ||
+        form.errors?.['mismatch']
+      "
+    >
+      <img class="icon" src="assets/img/password.png" aria-hidden="true" />
+      <input
+        [type]="showRepeat ? 'text' : 'password'"
+        placeholder="Passwort wiederholen"
+        formControlName="re_password"
+      />
+
+      <button
+        type="button"
+        class="eye"
+        (click)="toggle_show_pwd('rep')"
+        aria-label="Passwort anzeigen"
       >
         <img
-          class="icon"
-          src="assets/img/password.png"
-          alt=""
+          [src]="
+            showRepeat
+              ? 'assets/img/visibility_off.png'
+              : 'assets/img/visibility.png'
+          "
           aria-hidden="true"
         />
-        <input
-          [type]="showRepeat ? 'text' : 'password'"
-          placeholder="Passwort wiederholen"
-          formControlName="repeat"
-        />
-
-        <button type="button" class="eye" (click)="toggleShowRepeat()">
-          <img
-            [src]="
-              showRepeat
-                ? 'assets/img/visibility_off.png'
-                : 'assets/img/visibility.png'
-            "
-            alt=""
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-
-      <p
-        class="error"
-        *ngIf="form.errors?.['mismatch'] && (repeat.touched || submitted)"
-      >
-        <img src="assets/img/warning.png" alt="" aria-hidden="true" />
-        {{ "error.passwordMismatch" | translate }}
-      </p>
+      </button>
     </div>
 
-    <button type="submit" class="btn-login" [disabled]="form.invalid">
-      {{ "button.start" | translate }}
-    </button>
-  </form>
-</div>
+    <p
+      class="error"
+      *ngIf="form.errors?.['mismatch'] && (re_password.touched || submitted)"
+    >
+      <img src="assets/img/warning.png" aria-hidden="true" />
+      {{ 'error.passwordMismatch' | translate }}
+    </p>
+  </div>
+
+  <!-- ───── SUBMIT ───── -->
+  <button type="submit" class="btn-login" [disabled]="form.invalid">
+    {{ 'button.start' | translate }}
+  </button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,9 +1,18 @@
+
+
+
+
+
+
+
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -16,14 +25,15 @@ export class HeaderComponent {
   onLoginPage = false;
   isVideoPage = false;  
 
-  constructor(private location: Location, private router: Router) {
+  constructor(private location: Location, private router: Router,  private auth: AuthService, ) {
     this.router.events
-      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe((e) => {
-        this.onLoginPage = e.urlAfterRedirects.startsWith('/auth/login');
-        this.isVideoPage = e.urlAfterRedirects.startsWith('/dashboard/videos');
-      });
-  }
+    .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+    .subscribe((e) => {
+      this.onLoginPage = e.urlAfterRedirects.startsWith('/auth/login');
+      this.isVideoPage = e.urlAfterRedirects.startsWith('/dashboard/videos');
+    });
+}
+
 
   goBack(): void {
     this.location.back();
@@ -34,6 +44,7 @@ export class HeaderComponent {
   }
 
   logout(): void {
+    this.auth.logout();   
     this.router.navigate(['/auth/login']);
   }
 }

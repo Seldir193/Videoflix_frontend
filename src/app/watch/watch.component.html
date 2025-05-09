@@ -1,10 +1,11 @@
 <div class="player-wrap">
-  <div #player class="player">
+  <div #player class="player" *ngIf="video() as data">
     <video
       #vid
-      [src]="video.src"
+     
+      [src]="data.safeUrl"
       autoplay
-      [muted]="muted"
+      [muted]="muted()"
       (ended)="goNext()"
 
       (loadedmetadata)="initTime(vid)"
@@ -16,13 +17,13 @@
 <div class="progress">
     <!-- Range = Scrubber -->
     <input type="range"
-           min="0" [max]="duration"
-           [value]="current"
+           min="0" [max]="duration()"
+           [value]="current()"
            (input)="seek($event, vid)">
   
     <!-- Laufzeit   -->
     <span class="time">
-      {{ toMMSS(current) }} / {{ toMMSS(duration) }}
+      {{ toMMSS(current()) }} / {{ toMMSS(duration()) }}
     </span>
   </div>
   
@@ -38,7 +39,7 @@
     <div class="controls">
       <button  (click)="togglePlay(vid)">
         <img
-          [src]="playing ? 'assets/img/pause.png' : 'assets/img/play_arrow.png'"
+          [src]="playing() ? 'assets/img/pause.png' : 'assets/img/play_arrow.png'"
         />
       </button>
       <button  (click)="rotLeft(vid)">
@@ -50,14 +51,14 @@
       <button (click)="toggleMute(vid)">
         <img
           [src]="
-            muted ? 'assets/img/mute.png' : 'assets/img/volume_up.png'
+            muted() ? 'assets/img/mute.png' : 'assets/img/volume_up.png'
           "
         />
       </button>
       
 
 
-<span class="vid-title">{{ video.title }}</span>
+<span class="vid-title">{{ vid.title }}</span>
 
       <button class="btn-speed" (click)="toggleSpeed(vid)">
         <img src="assets/img/speed.png" alt="Speed" />
