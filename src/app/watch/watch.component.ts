@@ -41,7 +41,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   /* ==================================================== */
   ngAfterViewInit(): void {
     /* ► preload nur Metadaten (Poster & Duration) */
-    this.playerEl.nativeElement.preload = 'metadata';
+    this.playerEl.nativeElement.preload = 'auto';
     this.initPlyr();
 
     this.route.paramMap.subscribe(pm => {
