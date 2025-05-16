@@ -5,51 +5,100 @@
 
 
 
-
-  <section class="hero">
-    <div class="hero-content">
-      <h1 class="title">{{ heroTitle }}</h1>
-      <p  class="tagline">{{ 'hero.heroSpan' | translate }}</p>
-  
+<!-- HERO-BEREICH ------------------------------------------------- -->
+<section class="hero" *ngIf="hero() as h; else loading">
+  <div class="hero-content">
+    <h1 class="title">{{ h.title }}</h1>
+    <p class="tagline">{{ 'hero.heroSpan' | translate }}</p>
 
     <div class="button-box">
-      
-      <button  class="btn-login" (click)="playFirst()">
+      <!-- spielt den Hero-Clip sofort ab -->
+      <button class="btn-login" (click)="playVideo(h)">
         <img src="assets/img/play.png" alt="" /> Play
       </button>
-   </div>
-
     </div>
+  </div>
+
   
-    <!-- ▼  Erste Kategorie als Overlay auf dem Video  ▼ -->
-    <div class="overlay-row" *ngIf="categories[0] as firstCat">
-      <h2 class="cat-title">{{ firstCat }}</h2>
-  
+
+
+
+<!-- Video-Preview (autoplay optional) -->
+<video
+class="hero-video"
+
+*ngIf="h.video_file"
+[autoplay]="autoplay()"
+muted
+loop
+></video>
+
+
+
+
+
+</section>
+
+
+
+
+<ng-template #loading>
+  <!-- Wird sehr kurz angezeigt, bis die API antwortet -->
+  <p class="text-center text-gray-400">Loading …</p>
+</ng-template>
+
+
+
+
+
+
+<!-- =========== VIDEOS NACH KATEGORIEN =========== -->
+<section class="categories" *ngIf="groups() as g">
+  <ng-container *ngFor="let cat of catOrder">
+    <div class="cat-block" *ngIf="$any(g)[cat]?.length">
+      <h2 class="cat-title">{{ cat }}</h2>
+
       <div class="row">
         <figure class="thumb"
-                *ngFor="let v of videos[firstCat]"
+                *ngFor="let v of $any(g)[cat]"
                 (click)="playVideo(v)">
-          <img [src]="v.thumb" [alt]="v.title" width="213" height="120" />
+
+          <!-- ① Video-Preview, falls Datei vorhanden -->
+          <video *ngIf="v.video_file"
+                 class="thumb-media"
+                 [src]="v.video_file | safeUrl"
+                 muted playsinline preload="metadata"
+                 width="213" height="120"></video>
+
+          <!-- ② Fallback auf Bild -->
+          <img *ngIf="!v.video_file"
+               class="thumb-img"
+               [src]="v.thumb || 'assets/thumbs/default.jpg'"
+               [alt]="v.title"
+               width="213" height="120" />
+
           <figcaption>{{ v.title }}</figcaption>
         </figure>
       </div>
     </div>
-  </section>
+  </ng-container>
+</section>
 
-  <section class="categories">
-    <ng-container *ngFor="let cat of categories.slice(1)">
-      <div class="cat-block">
-        <h2 class="cat-title">{{ cat }}</h2>
-  
-        <div class="row">
-          <figure class="thumb"
-                  *ngFor="let v of videos[cat]"
-                  (click)="playVideo(v)">
-            <img [src]="v.thumb" [alt]="v.title" width="213" height="120" />
-            <figcaption>{{ v.title }}</figcaption>
-          </figure>
-        </div>
-      </div>
-    </ng-container>
-  </section>
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

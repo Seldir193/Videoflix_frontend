@@ -1,0 +1,64 @@
+@use "styles" as *;
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 96px 96px;
+  box-sizing: border-box;
+}
+
+.movie-info {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+  overflow-y: auto;
+
+  .info-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+
+  .content,
+  .source,
+  .license,
+  .director,
+  .release,
+  .meta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    h2 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 32px;
+    }
+
+    p {
+      font-size: 16px;
+      font-weight: 400;
+      margin: 0;
+    }
+  }
+
+  .license,
+  ng-container {
+    a {
+      color: #2e3edf;
+      text-decoration: none;
+      font-size: 16px;
+    }
+  }
+  .source {
+    a {
+      color: #2e3edf;
+      text-decoration: none;
+      font-size: 16px;
+    }
+  }
+}

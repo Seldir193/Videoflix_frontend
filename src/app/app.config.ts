@@ -27,6 +27,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { JwtInterceptor } from './core/jwt.interceptor';
 
+
+
 /* ---------- i18n ---------- */
 export function httpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');

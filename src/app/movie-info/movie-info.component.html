@@ -1,0 +1,44 @@
+<section *ngIf="video as v" class="movie-info">
+  <app-header class="info-header"></app-header>
+
+  <div class="box">
+    <div class="content">
+      <h2>{{ v.title }}</h2>
+      <p>{{ v.description }}</p>
+    </div>
+
+    <div class="meta-block">
+      <h2>{{ "label.genre" | translate }}</h2>
+      <p>{{ v.genre || "—" }}</p>
+    </div>
+
+    <div class="release">
+      <h2>{{ "label.release" | translate }}</h2>
+      <p>{{ v.release | date : "yyyy-MM-dd" }}</p>
+    </div>
+    <div class="director">
+      <h2>{{ "label.director" | translate }}</h2>
+      <p>{{ v.director || "—" }}</p>
+    </div>
+
+    <div class="license">
+      <h2>{{ "label.license" | translate }}</h2>
+      <p>
+        {{ v.license_type || "—" }}
+      </p>
+
+      <ng-container *ngIf="v.license_url">
+        <a [href]="v.license_url" target="_blank">Link</a>
+      </ng-container>
+    </div>
+
+    <div class="source">
+      <h2>{{ "label.source" | translate }}</h2>
+      <p>
+        <a *ngIf="v.source_url; else none" [href]="v.source_url" target="_blank"
+          >Link</a
+        >
+        <ng-template #none>—</ng-template>
+      </p>
+    </div>
+  </div>

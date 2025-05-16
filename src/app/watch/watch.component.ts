@@ -1,145 +1,186 @@
+
 // src/app/watch/watch.component.ts
-import { Component, DestroyRef, signal ,inject} from '@angular/core';
+import {
+  Component, AfterViewInit, OnDestroy,
+  ViewChild, ElementRef, inject, signal, SecurityContext,
+} from '@angular/core';
+import { CommonModule }   from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { VideoService,Video } from '../shared/video-service';
+import { DomSanitizer }   from '@angular/platform-browser';
+import Plyr               from 'plyr';
 
-
-
-
+import { VideoService, Video, PlyrSource } from '../shared/video-service';
 
 @Component({
-  selector: 'app-watch',
-  standalone: true,
-  imports: [CommonModule],
+  standalone : true,
+  selector   : 'app-watch',
   templateUrl: './watch.component.html',
-  styleUrls : ['./watch.component.scss']
+  styleUrls  : ['./watch.component.scss'],
+  imports    : [CommonModule],
 })
-export class WatchComponent {
+export class WatchComponent implements AfterViewInit, OnDestroy {
 
-  /* --- State --- */
-  video     = signal<Video & { safeUrl: SafeResourceUrl } | null>(null);
-  nextVideo = signal<Video | null>(null);
-  prevVideo = signal<Video | null>(null);
+  /* ---------------- Template Ref ----------------------- */
+  @ViewChild('plyr', { static: true })
+  private playerEl!: ElementRef<HTMLVideoElement>;
 
-  playing = signal(true);
-  muted   = signal(false);
-  rotate  = signal(0);
+  /* ---------------- Player & State -------------------- */
+  private plyr!: Plyr;
+  private currentId   = 0;
+  private saveThrottle = 0;
+  private resumePos    = 0;
 
-  current  = signal(0);   // Sekunden
-  duration = signal(0);
+  video = signal<Video | null>(null);
 
-  speedOpt = [1, 1.5, 2];
-  speedIdx = signal(0);
+  /* ---------------- DI -------------------------------- */
+  private route     = inject(ActivatedRoute);
+  private router    = inject(Router);
+  private vs        = inject(VideoService);
+  private sanitizer = inject(DomSanitizer);
 
-  /* --- DI --- */
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private vs  = inject(VideoService);
-  private sani = inject(DomSanitizer);
-  private destroyRef = inject(DestroyRef);
+  /* ==================================================== */
+  ngAfterViewInit(): void {
+    /* ► preload nur Metadaten (Poster & Duration) */
+    this.playerEl.nativeElement.preload = 'metadata';
+    this.initPlyr();
 
-  constructor() {
-    // Bei Routenwechsel Daten neu holen
-    this.route.paramMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(pm => this.load(+pm.get('id')!));
+    this.route.paramMap.subscribe(pm => {
+      const id = Number(pm.get('id'));
+      if (!isNaN(id)) this.load(id);
+    });
   }
 
-  /* ---------- Daten laden ---------- */
+  ngOnDestroy(): void {
+    this.plyr?.destroy();
+  }
 
+  /* ---------------- Plyr ------------------------------ */
+  private initPlyr(): void {
+    this.plyr = new Plyr(this.playerEl.nativeElement, {
+      controls: [
+        'play', 'progress', 'current-time', 'duration',
+        'mute', 'volume', 'settings', 'pip', 'fullscreen',
+      ],
+      settings: ['quality', 'speed'],
+      speed   : { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+      autoplay: false,
+    });
 
-  private load(id: number) {
-    this.vs.detail(id).subscribe(v => {
-      this.video.set({
-        ...v,
-        safeUrl: this.sani.bypassSecurityTrustResourceUrl(this.buildSrc(v))
+    this.plyr.on('qualitychange', (e: any) => {
+      const q = e.detail.plyr?.quality;
+      if (typeof q === 'number' && q > 0) {
+        this.toast(`Qualität: ${q}p`);
+      }
+    });
+  }
+
+  /* ---------------- Video laden ----------------------- */
+  private load(id: number): void {
+    this.currentId = id;
+    this.resumePos = 0;
+
+    /* Position + Dauer aus Backend holen */
+    this.vs.getProgress(id).subscribe(p => this.resumePos = p?.position ?? 0);
+
+    this.vs.detail(id).subscribe(clip => {
+      this.video.set(clip);
+
+      /* Events resetten */
+      (this.plyr as any).off('timeupdate');
+      (this.plyr as any).off('pause');
+      (this.plyr as any).off('ended');
+
+      /* ---------- Quellen zusammenbauen ---------- */
+      if (clip.sources?.length) {
+        const variants: PlyrSource[] = clip.sources
+          .sort((a, b) => b.size - a.size)
+          .map(v => ({
+            ...v,
+            src: this.sanitizer.sanitize(
+              SecurityContext.RESOURCE_URL,
+              this.sanitizer.bypassSecurityTrustResourceUrl(v.src),
+            )!,
+          }));
+
+        const defaultSize = variants.find(v => v.size === 720)?.size
+                         ?? variants[0].size;
+
+        (this.plyr as any).quality = {
+          default : defaultSize,
+          options : variants.map(v => v.size),
+          forced  : true,
+        };
+
+        this.plyr.source = { type: 'video', sources: variants } as any;
+      } else if (clip.video_file_url) {
+        const realUrl = this.sanitizer.sanitize(
+          SecurityContext.RESOURCE_URL,
+          this.sanitizer.bypassSecurityTrustResourceUrl(clip.video_file_url),
+        )!;
+
+        this.plyr.source = {
+          type   : 'video',
+          sources: [{ src: realUrl, type: 'video/mp4', size: 0 }],
+        } as any;
+      }
+
+      /* ---------- Autoplay sobald genug gepuffert ---- */
+      this.plyr.once('canplay', () => {
+        if (
+          this.resumePos > 30 &&
+          this.resumePos < this.plyr.duration - 5 &&
+          confirm('An letzter Stelle fortsetzen?')
+        ) {
+          this.plyr.currentTime = this.resumePos;
+        }
+        this.plyr.play()?.catch(() => {});   // ignoriert Autoplay-Block
       });
-      this.prepareNav(id);
-      this.playing.set(true);
-      this.rotate.set(0);
+
+      /* ---------- Fortschritt sichern --------------- */
+      const save = () => {
+        const now = Date.now();
+        if (now - this.saveThrottle < 5000) return;
+        this.saveThrottle = now;
+
+        const pos = this.plyr.currentTime;
+        const dur = this.plyr.duration;
+        if (dur > 60 && pos > 0 && pos < dur - 5)
+          this.vs.saveProgress(this.currentId, pos, dur);
+      };
+      this.plyr.on('timeupdate', save);
+      this.plyr.on('pause',      save);
+      this.plyr.on('ended',      () => this.vs.saveProgress(id, 0, 0));
     });
   }
 
-  private buildSrc(v: Video): string {
-    // 1) lokale Datei?
-    if (v.video_file) {
-      return 'http://127.0.0.1:8000' + v.video_file;   // Basis-URL anpassen!
-    }
-    // 2) Fallback auf externes Streaming-URL
-    return v.url!;
+  /* ---------------- Navigation ------------------------ */
+  goPrev() { this.router.navigate(['/dashboard/videos'], { replaceUrl: true }); }
+  goNext() { const id = this.video()?.id; if (id) this.router.navigate(['/movie', id]); }
+
+  /* ---------------- Mini-Toast ------------------------ */
+  private toast(msg: string): void {
+    const el = document.createElement('div');
+    el.textContent = msg;
+    el.style.cssText =
+      'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);' +
+      'background:#14c8ff;color:#000;padding:6px 12px;border-radius:4px;' +
+      'font-size:14px;z-index:9999;opacity:0;transition:opacity .3s';
+    document.body.appendChild(el);
+    requestAnimationFrame(() => (el.style.opacity = '1'));
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 2000);
   }
-  
-
-  /** Vor/Zurück-Info aus kompletter Liste ermitteln */
-  private prepareNav(id: number) {
-    this.vs.list().subscribe(videos => {
-      const idx = videos.findIndex(v => v.id === id);
-      this.prevVideo.set(idx > 0 ? videos[idx - 1] : null);
-      this.nextVideo.set(idx < videos.length - 1 ? videos[idx + 1] : null);
-    });
-  }
-
-  /* ---------- Player-Callbacks ---------- */
-  initTime(v: HTMLVideoElement)   { this.duration.set(Math.floor(v.duration)); }
-  updateTime(v: HTMLVideoElement) { this.current.set(Math.floor(v.currentTime)); }
-
-  seek(e: Event, v: HTMLVideoElement) {
-    const t = +(e.target as HTMLInputElement).value;
-    v.currentTime = t;
-    this.current.set(t);
-  }
-
-  togglePlay(v: HTMLVideoElement) {
-    this.playing() ? v.pause() : v.play();
-    this.playing.update(p => !p);
-  }
-  toggleMute(v: HTMLVideoElement) {
-    const m = !v.muted;
-    v.muted = m;
-    this.muted.set(m);
-  }
-  rotLeft (v: HTMLVideoElement) { this.addRot(v, -90); }
-  rotRight(v: HTMLVideoElement) { this.addRot(v,  90); }
-  private addRot(v: HTMLVideoElement, deg: number) {
-    this.rotate.update(r => r + deg);
-    v.style.transform = `rotate(${this.rotate()}deg)`;
-  }
-
-  toggleSpeed(v: HTMLVideoElement) {
-    this.speedIdx.update(i => (i + 1) % this.speedOpt.length);
-    v.playbackRate = this.speedOpt[this.speedIdx()];
-  }
-
-  goFull(el: HTMLElement) {
-    document.fullscreenElement ? document.exitFullscreen()
-                               : el.requestFullscreen();
-  }
-
-  /* ---------- Navigation ---------- */
-  goNext() { const n = this.nextVideo(); n && this.router.navigate(['/watch', n.id]); }
-  goPrev() { const p = this.prevVideo(); p ? this.router.navigate(['/watch', p.id])
-                                          : this.router.navigate(['/dashboard/videos']); }
-
-  /* ---------- MM:SS-Formatter ---------- */
-  toMMSS(total: number) {
-    const m = Math.floor(total / 60).toString().padStart(2, '0');
-    const s = Math.floor(total % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

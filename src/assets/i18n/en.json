@@ -21,6 +21,7 @@
     "passwordMismatch": "Passwords must match"
   },
 
+
   "text":{
     "header": "We will send you an email with instructions to resed your password.",
     "header-reset": "Create a new password for your <span class=\"app-name\">Videoflix</span> account.",
@@ -33,7 +34,18 @@
     "heading": {
       "forgotPassword": "Forgot your<br>password",
       "resetPassword":  "Reset password"
-    }
+    },
+
+   "label": {
+    "noAccount": "No account yet?",
+    "genre": "Genre",
+    "release": "Release",
+    "director": "Director",
+    "license": "License",
+    "source": "Source"
+  }
+
+ 
   
   
 }

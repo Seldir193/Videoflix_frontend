@@ -1,6 +1,15 @@
+
+
+
+
+
+
+
+
+
 <header class="header-box">
   <img class="logo-desktop"
-  *ngIf="!isVideoPage"
+   *ngIf="!isVideoPage "
   src="assets/img/Logo.png"
   alt="Videoflix-Logo"
   (click)="goBack()"
@@ -22,9 +31,16 @@
        tabindex="0"
        (click)="goBack()">
 
+       <img *ngIf="isMovieInfo"
+       class="logo-back"
+       src="assets/img/back.png"
+       alt="Zurück"
+       tabindex="0" role="button"
+       (click)="goBackToGrid()" />
+
 
     
-        <button *ngIf="!onLoginPage && !isVideoPage"
+        <button *ngIf="!onLoginPage && !isVideoPage && !isMovieInfo"
                 class="btn-login"
                 (click)="openLogin()">
           {{ 'button.login' | translate }}

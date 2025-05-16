@@ -1,87 +1,151 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { RouterModule } from '@angular/router';
 
-interface Video {
-  id: string;
-  title: string;
-  thumb: string;
-  src: string;
-}
+
+
+
+
+
+
+
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule }  from '@angular/common';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { VideoService, Video } from '../../shared/video-service';
+import { SafeUrlPipe }        from '../../shared/safe-url.pipe';
+
+/* --------------------------------------------------------------
+ * Kategorien in fester Reihenfolge
+ *  – ergänze oder ändere die Strings nach Bedarf
+ * -------------------------------------------------------------- */
+export const CAT_ORDER = [
+  'New on Videoflix',
+  'Documentary',
+  'Drama',
+  'Romance',
+] as const;
+
+type Cat = (typeof CAT_ORDER)[number];
 
 @Component({
-  selector: 'app-video-grid',
-  standalone: true,
-  imports: [CommonModule, TranslateModule, RouterModule],
+  selector   : 'app-video-grid',
+  standalone : true,
+  imports    : [CommonModule, RouterModule, TranslateModule, SafeUrlPipe],
   templateUrl: './video-grid.component.html',
-  styleUrls: ['./video-grid.component.scss'],
+  styleUrls  : ['./video-grid.component.scss'],
 })
 export class VideoGridComponent implements OnInit {
-  videos: Record<string, Video[]> = {
-    'New on Videoflix': [
-      {
-        id: 'breakout',
-        title: 'Breakout',
-        thumb: 'assets/thumbs/pic.JPG',
-        src: 'assets/trailer/video.MOV',
-      },
-      {
-        id: 'night',
-        title: 'Night Shift',
-        thumb: 'assets/thumbs/nightshift.jpg',
-        src: 'assets/trailer/video1.MOV',
-      },
-    ],
-    Documentary: [
-      {
-        id: 'ocean',
-        title: 'Planet Ocean',
-        thumb: 'assets/thumbs/ocean.jpg',
-        src: 'assets/trailer/ocean.mp4',
-      },
-    ],
-    Drama: [
-      {
-        id: 'edge',
-        title: 'Edge of Hope',
-        thumb: 'assets/thumbs/edge.jpg',
-        src: 'assets/trailer/edge.mp4',
-      },
-    ],
-    Romance: [
-      {
-        id: 'love',
-        title: 'Love & Letters',
-        thumb: 'assets/thumbs/love.jpg',
-        src: 'assets/trailer/love.mp4',
-      },
-    ],
-  };
 
-  categories = Object.keys(this.videos);
-  heroSrc = this.videos[this.categories[0]][0].src;
-  heroTitle = this.videos[this.categories[0]][0].title;
-  autoplay = false;
+  /* -------------------- State (Signals) -------------------- */
+  /** Videos gruppiert nach vorgegebenen Kategorien            */
+  groups = signal<Record<Cat, Video[]>>({
+    'New on Videoflix': [],
+    Documentary: [],
+    Drama: [],
+    Romance: [],
+  });
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  /** Hero-Clip – wird nur benutzt, wenn dein Template
+   *   weiterhin einen Hero-Bereich rendert                   */
+  hero = signal<Video | null>(null);
 
+  /** Autoplay-Flag aus ?autoplay=true in der URL              */
+  autoplay = signal(false);
+
+  /** Reihenfolge für <ngFor> im Template                      */
+  readonly catOrder = CAT_ORDER;
+
+  /* ----------------------- DI ----------------------------- */
+  private vs  = inject(VideoService);
+  private rt  = inject(Router);
+  private ar  = inject(ActivatedRoute);
+  private san = inject(DomSanitizer);   // nur falls du SafeUrlPipe nutzt
+
+  /* -------------------- Lifecycle ------------------------- */
   ngOnInit(): void {
-    this.autoplay =
-      this.route.snapshot.queryParamMap.get('autoplay') === 'true';
+
+    /* 1) Autoplay-Query lesen */
+    this.autoplay.set(this.ar.snapshot.queryParamMap.get('autoplay') === 'true');
+
+    /* 2) Videos vom Backend holen */
+    this.vs.list().subscribe(list => {
+
+      /* --- nach Kategorie einsortieren -------------------- */
+      const g: Record<Cat, Video[]> = {
+        'New on Videoflix': [],
+        Documentary: [],
+        Drama: [],
+        Romance: [],
+      };
+
+      for (const v of list) {
+        const cat = (v as any).category as Cat ?? 'New on Videoflix';
+        (g[cat] ?? g['New on Videoflix']).push(v);
+      }
+      this.groups.set(g);
+
+     
+
+
+
+      /* --- Hero-Clip = erstes Video der 1. Kategorie ------- */
+      const firstHero = CAT_ORDER.map(c => g[c][0]).find(Boolean) ?? null;
+      this.hero.set(firstHero);
+
+
+
+/* --- Hero-Clip = Video mit höchster ID (neueste) -------------- */
+const newestHero =
+  list.reduce<Video | null>((best, v) => (best === null || v.id > best.id) ? v : best, null);
+
+this.hero.set(newestHero);
+
+
+
+
+    });
+
+
+   
+
+
   }
 
-  playFirst() {
-    const first = this.videos[this.categories[0]][0];
-    this.goToPlayer(first.id);
-  }
-
+  /* ------------------ Navigation -------------------------- */
   playVideo(v: Video) {
-    this.goToPlayer(v.id);
+    this.rt.navigate(['/watch', v.id]);
   }
 
-  private goToPlayer(id: string) {
-    this.router.navigate(['/watch', id]);
+
+
+
+
+/* ------------------ Navigation -------------------------- */
+//playVideo(v: Video): void {
+  /* URL objektiv erzeugen, damit Router-Konfiguration greift */
+  //const url = this.rt.serializeUrl(
+    //this.rt.createUrlTree(['/watch', v.id])
+  //);
+
+  /* Neuer Tab – 'noopener' verhindert Zugriff aufs Ursprungsfenster */
+ // window.open(url, '_blank', 'noopener');
+//}
+
+
+
+
+  /** Falls dein Template einen Play-Knopf im Hero hat */
+  playHero() {
+    const h = this.hero();
+    if (h) { this.playVideo(h); }
   }
+
+
+
+
+
+
+
+
 }

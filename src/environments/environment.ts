@@ -10,5 +10,5 @@ export const environment = {
   authUrl:  'http://127.0.0.1:8000/api/auth',
 
   // für Bilder, Thumbnails … gerne MIT Slash
-  staticUrl: 'http://127.0.0.1:8000/',
+  staticUrl: 'http://127.0.0.1:8000/', 
 };

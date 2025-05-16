@@ -1,74 +1,45 @@
+
+
+
+
 <div class="player-wrap">
-  <div #player class="player" *ngIf="video() as data">
-    <video
-      #vid
-     
-      [src]="data.safeUrl"
-      autoplay
-      [muted]="muted()"
-      (ended)="goNext()"
-
-      (loadedmetadata)="initTime(vid)"
-       (timeupdate)="updateTime(vid)"
-    ></video>
-
-
-    <!-- watch.component.html – Ausschnitt -->
-<div class="progress">
-    <!-- Range = Scrubber -->
-    <input type="range"
-           min="0" [max]="duration()"
-           [value]="current()"
-           (input)="seek($event, vid)">
-  
-    <!-- Laufzeit   -->
-    <span class="time">
-      {{ toMMSS(current()) }} / {{ toMMSS(duration()) }}
-    </span>
-  </div>
-  
-
-    <button class="btn-back" (click)="goPrev()">
-      <img src="assets/img/back.png" />
+  <!-- Top-Bar --------------------------------------------------->
+  <div class="top-bar">
+    <button
+      class="btn-nav"
+      type="button"
+      (click)="goPrev()"
+      aria-label="Zurück"
+    >
+      <img src="assets/img/back.png" alt="Zurück" />
     </button>
 
-    <button class="btn-next" (click)="goNext()">
-      <img src="assets/img/blue-pfeil.png" />
+    <h2 class="vid-title" *ngIf="video() as clip">{{ clip.title }}</h2>
+
+    <button
+      class="btn-right"
+      type="button"
+      (click)="goNext()"
+      aria-label="Weiter"
+    >
+      <img src="assets/img/blue-pfeil.png" alt="Weiter" />
     </button>
-
-    <div class="controls">
-      <button  (click)="togglePlay(vid)">
-        <img
-          [src]="playing() ? 'assets/img/pause.png' : 'assets/img/play_arrow.png'"
-        />
-      </button>
-      <button  (click)="rotLeft(vid)">
-        <img src="assets/img/replay_10.png" />
-      </button>
-      <button (click)="rotRight(vid)">
-        <img src="assets/img/forward_10.png" />
-      </button>
-      <button (click)="toggleMute(vid)">
-        <img
-          [src]="
-            muted() ? 'assets/img/mute.png' : 'assets/img/volume_up.png'
-          "
-        />
-      </button>
-      
-
-
-<span class="vid-title">{{ vid.title }}</span>
-
-      <button class="btn-speed" (click)="toggleSpeed(vid)">
-        <img src="assets/img/speed.png" alt="Speed" />
-      </button>
-
-      <button class="btn-full" (click)="goFull(player)">
-        <img src="assets/img/fullscreen.png" />
-      </button>
-    </div>
-
-  
   </div>
+
+  <!-- Plyr-Video ----------------------------------------------->
+  <!--
+    ▸ #plyr       – ViewChild-Referenz in watch.component.ts
+    ▸ poster      – Hero-Frame bis zum Start
+    ▸ playsinline – verhindert Auto-Fullscreen auf iOS
+  -->
+  <video
+    #plyr
+    class="plyr-video"
+    controls
+    playsinline
+    [attr.poster]="video()?.hero_frame_url || null"
+  ></video>
 </div>
+
+
+

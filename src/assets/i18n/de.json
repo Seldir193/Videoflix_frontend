@@ -32,8 +32,17 @@
       "heading": {
         "forgotPassword": "Passwort<br>vergessen",
         "resetPassword":  "Passwort zurücksetzen" 
-      }
+      },
     
+      
+        "label": {
+          "noAccount": "Noch kein Konto?",
+          "genre": "Genre",
+    "release": "Veröffentlichung",
+    "director": "Regisseur",
+    "license": "Lizenz",
+    "source": "Quelle"
+        }
     
 }
   

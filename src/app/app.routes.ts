@@ -1,6 +1,6 @@
 
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/auth.guard';
+//import { AuthGuard } from './core/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -29,7 +29,15 @@ export const routes: Routes = [
   // canActivate: [AuthGuard],          // ← optional, aber meist sinnvoll
   },
 
+  {
+    path: 'movie/:id',
+    loadComponent: () =>
+      import('./movie-info/movie-info.component').then(m => m.MovieInfoComponent),
+  },
+
+
   { path: '**', redirectTo: 'dashboard' },
+
 ];
 
 
