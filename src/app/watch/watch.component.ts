@@ -1,8 +1,8 @@
-
 // src/app/watch/watch.component.ts
 import {
   Component, AfterViewInit, OnDestroy,
   ViewChild, ElementRef, inject, signal, SecurityContext,
+  NgZone,                                    // <— hinzugefügt
 } from '@angular/core';
 import { CommonModule }   from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,9 +26,10 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
 
   /* ---------------- Player & State -------------------- */
   private plyr!: Plyr;
-  private currentId   = 0;
+  private currentId    = 0;
   private saveThrottle = 0;
-  private resumePos    = 0;
+  askResume = false;          // Overlay-Flag
+  private resumePos    = 0;   // letzte Position aus Backend
 
   video = signal<Video | null>(null);
 
@@ -37,6 +38,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private router    = inject(Router);
   private vs        = inject(VideoService);
   private sanitizer = inject(DomSanitizer);
+  private zone      = inject(NgZone);        // <— hinzugefügt
 
   /* ==================================================== */
   ngAfterViewInit(): void {
@@ -58,6 +60,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private initPlyr(): void {
     this.plyr = new Plyr(this.playerEl.nativeElement, {
       controls: [
+        'play-large',
         'play', 'progress', 'current-time', 'duration',
         'mute', 'volume', 'settings', 'pip', 'fullscreen',
       ],
@@ -67,7 +70,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     });
 
     this.plyr.on('qualitychange', (e: any) => {
-      const q = e.detail.plyr?.quality;
+      const q = e.detail.quality; 
       if (typeof q === 'number' && q > 0) {
         this.toast(`Qualität: ${q}p`);
       }
@@ -80,7 +83,10 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     this.resumePos = 0;
 
     /* Position + Dauer aus Backend holen */
-    this.vs.getProgress(id).subscribe(p => this.resumePos = p?.position ?? 0);
+    this.vs.getProgress(id).subscribe(r => {
+      const p = Array.isArray(r) ? r[0] : r;
+      this.resumePos = p?.position ?? 0;
+    });
 
     this.vs.detail(id).subscribe(clip => {
       this.video.set(clip);
@@ -93,7 +99,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       /* ---------- Quellen zusammenbauen ---------- */
       if (clip.sources?.length) {
         const variants: PlyrSource[] = clip.sources
-          .sort((a, b) => b.size - a.size)
+          .sort((a, b) => a.size - b.size)
           .map(v => ({
             ...v,
             src: this.sanitizer.sanitize(
@@ -103,7 +109,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
           }));
 
         const defaultSize = variants.find(v => v.size === 720)?.size
-                         ?? variants[0].size;
+          ?? variants[0].size;
 
         (this.plyr as any).quality = {
           default : defaultSize,
@@ -124,16 +130,19 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
         } as any;
       }
 
-      /* ---------- Autoplay sobald genug gepuffert ---- */
+      /* ---------- Autoplay / Resume ---------- */
       this.plyr.once('canplay', () => {
         if (
           this.resumePos > 30 &&
-          this.resumePos < this.plyr.duration - 5 &&
-          confirm('An letzter Stelle fortsetzen?')
+          this.resumePos < this.plyr.duration - 5
         ) {
-          this.plyr.currentTime = this.resumePos;
+          // Wiedergabe anhalten, Overlay zeigen
+          this.plyr.pause();
+          this.zone.run(() => (this.askResume = true));
+        } else {
+          // Normal starten
+          this.plyr.play()?.catch(() => {});
         }
-        this.plyr.play()?.catch(() => {});   // ignoriert Autoplay-Block
       });
 
       /* ---------- Fortschritt sichern --------------- */
@@ -153,9 +162,26 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  /* ---------------- Navigation ------------------------ */
-  goPrev() { this.router.navigate(['/dashboard/videos'], { replaceUrl: true }); }
-  goNext() { const id = this.video()?.id; if (id) this.router.navigate(['/movie', id]); }
+  /* ---------------- Resume-Handler ------------------- */
+  resume(continueFromLast: boolean): void {
+    if (continueFromLast) {
+      this.plyr.currentTime = this.resumePos;
+    } else {
+      this.plyr.currentTime = 0;
+    }
+
+    this.askResume = false;             // Overlay schließen
+    this.plyr.play()?.catch(() => {}); // Wiedergabe starten
+  }
+
+  /* ---------------- Navigation ----------------------- */
+  goPrev() {
+    this.router.navigate(['/dashboard/videos'], { replaceUrl: true });
+  }
+  goNext() {
+    const id = this.video()?.id;
+    if (id) this.router.navigate(['/movie', id]);
+  }
 
   /* ---------------- Mini-Toast ------------------------ */
   private toast(msg: string): void {

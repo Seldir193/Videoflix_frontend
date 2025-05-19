@@ -143,6 +143,8 @@ export class VideoService {
     ).subscribe();
   }
 
+  
+
   getProgress(videoId: number) {
     return this.http.get<{
       id: number; position: number; duration: number;

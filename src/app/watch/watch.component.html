@@ -39,6 +39,15 @@
     playsinline
     [attr.poster]="video()?.hero_frame_url || null"
   ></video>
+
+  <!-- watch.component.html – direkt unter <video> -->
+<div class="resume-box" *ngIf="askResume">
+  <p>Du hast hier aufgehört. Fortsetzen?</p>
+
+  <button (click)="resume(true)">Weiter</button>
+  <button (click)="resume(false)">Neu starten</button>
+</div>
+
 </div>
 
 

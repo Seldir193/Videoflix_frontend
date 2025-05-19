@@ -1,31 +1,32 @@
-
-
-
-
-
-
-
-
-import { Component, OnInit, inject, signal } from '@angular/core';
+// src/app/video-grid/video-grid.component.ts
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChildren,
+  QueryList,
+  ElementRef,
+  ChangeDetectorRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule }  from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { DomSanitizer }  from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { VideoService, Video } from '../../shared/video-service';
-import { SafeUrlPipe }        from '../../shared/safe-url.pipe';
+import { SafeUrlPipe }   from '../../shared/safe-url.pipe';
 
 /* --------------------------------------------------------------
- * Kategorien in fester Reihenfolge
- *  – ergänze oder ändere die Strings nach Bedarf
- * -------------------------------------------------------------- */
+   Kategorien in gewünschter Sortierung
+----------------------------------------------------------------*/
 export const CAT_ORDER = [
   'New on Videoflix',
   'Documentary',
   'Drama',
   'Romance',
 ] as const;
-
 type Cat = (typeof CAT_ORDER)[number];
 
 @Component({
@@ -34,118 +35,130 @@ type Cat = (typeof CAT_ORDER)[number];
   imports    : [CommonModule, RouterModule, TranslateModule, SafeUrlPipe],
   templateUrl: './video-grid.component.html',
   styleUrls  : ['./video-grid.component.scss'],
+  // changeDetection: ChangeDetectionStrategy.OnPush,   // optional
 })
-export class VideoGridComponent implements OnInit {
+export class VideoGridComponent implements OnInit, AfterViewInit {
 
-  /* -------------------- State (Signals) -------------------- */
-  /** Videos gruppiert nach vorgegebenen Kategorien            */
+  /* ------------------------------------------------------------
+     ViewChildren – jede Thumbnail-Zeile
+  ------------------------------------------------------------ */
+  @ViewChildren('rowEl')
+  private rows!: QueryList<ElementRef<HTMLElement>>;
+
+  /* ------------------------------------------------------------
+     Signale für Kategorien & Hero
+  ------------------------------------------------------------ */
   groups = signal<Record<Cat, Video[]>>({
     'New on Videoflix': [],
     Documentary: [],
     Drama: [],
     Romance: [],
   });
-
-  /** Hero-Clip – wird nur benutzt, wenn dein Template
-   *   weiterhin einen Hero-Bereich rendert                   */
-  hero = signal<Video | null>(null);
-
-  /** Autoplay-Flag aus ?autoplay=true in der URL              */
+  hero     = signal<Video | null>(null);
   autoplay = signal(false);
 
-  /** Reihenfolge für <ngFor> im Template                      */
   readonly catOrder = CAT_ORDER;
 
-  /* ----------------------- DI ----------------------------- */
+  /* ------------------------------------------------------------
+     Scroll-Schalter für jede Zeile
+  ------------------------------------------------------------ */
+  scrollState: { prev: boolean; next: boolean }[] = [];
+
+  /* ------------------------------------------------------------
+     DI – gemischter Stil: Constructor + inject()
+  ------------------------------------------------------------ */
+  constructor(private cdr: ChangeDetectorRef) {}
+
   private vs  = inject(VideoService);
   private rt  = inject(Router);
   private ar  = inject(ActivatedRoute);
-  private san = inject(DomSanitizer);   // nur falls du SafeUrlPipe nutzt
+  private san = inject(DomSanitizer);
 
-  /* -------------------- Lifecycle ------------------------- */
+  /* ============================================================
+     Daten holen
+  ============================================================ */
   ngOnInit(): void {
-
-    /* 1) Autoplay-Query lesen */
     this.autoplay.set(this.ar.snapshot.queryParamMap.get('autoplay') === 'true');
 
-    /* 2) Videos vom Backend holen */
     this.vs.list().subscribe(list => {
-
-      /* --- nach Kategorie einsortieren -------------------- */
+      /* Videos nach Kategorie einsortieren */
       const g: Record<Cat, Video[]> = {
         'New on Videoflix': [],
         Documentary: [],
         Drama: [],
         Romance: [],
       };
-
       for (const v of list) {
-        const cat = (v as any).category as Cat ?? 'New on Videoflix';
+        const cat = ((v as any).category as Cat) ?? 'New on Videoflix';
         (g[cat] ?? g['New on Videoflix']).push(v);
       }
       this.groups.set(g);
 
-     
+      /* Hero: jüngstes Video overall */
+      const newest = list.reduce<Video | null>(
+        (best, v) => (best === null || v.id > best.id ? v : best),
+        null
+      );
+      this.hero.set(newest);
 
-
-
-      /* --- Hero-Clip = erstes Video der 1. Kategorie ------- */
-      const firstHero = CAT_ORDER.map(c => g[c][0]).find(Boolean) ?? null;
-      this.hero.set(firstHero);
-
-
-
-/* --- Hero-Clip = Video mit höchster ID (neueste) -------------- */
-const newestHero =
-  list.reduce<Video | null>((best, v) => (best === null || v.id > best.id) ? v : best, null);
-
-this.hero.set(newestHero);
-
-
-
-
+      /* Scroll-Buttons erst nach erstem Render ermitteln */
+      setTimeout(() => this.initScrollStates());
     });
-
-
-   
-
-
   }
 
-  /* ------------------ Navigation -------------------------- */
+  /* ============================================================
+     ViewChildren initialisieren
+  ============================================================ */
+  ngAfterViewInit(): void {
+    /* Jedes Mal, wenn sich die Rows verändern (z. B. Daten nachladen) */
+    this.rows.changes.subscribe(() =>
+      setTimeout(() => this.initScrollStates())
+    );
+  }
+
+  /* ------------------------------------------------------------
+     Scroll-Status pro Zeile berechnen
+  ------------------------------------------------------------ */
+  private initScrollStates(): void {
+    this.scrollState = this.rows.toArray().map(row => {
+      const el = row.nativeElement;
+      const overflow = el.scrollWidth > el.clientWidth + 1;
+      return { prev: false, next: overflow };  // Prev erst nach Scroll
+    });
+    this.cdr.detectChanges();
+  }
+
+  /* ------------------------------------------------------------
+     Scroll-Event: Buttons zeigen / verstecken
+  ------------------------------------------------------------ */
+  onRowScroll(index: number, el: HTMLElement): void {
+    const atStart = el.scrollLeft < 1;
+    const atEnd   = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+
+    this.scrollState[index] = {
+      prev: !atStart,
+      next: !atEnd,
+    };
+    this.cdr.detectChanges();
+  }
+
+  /* ------------------------------------------------------------
+     Buttons klicken → weich scrollen
+  ------------------------------------------------------------ */
+  scroll(el: HTMLElement, dir: number, index: number): void {
+    const step = el.clientWidth;                       // eine „Seite“
+    el.scrollBy({ left: dir * step, behavior: 'smooth' });
+    setTimeout(() => this.onRowScroll(index, el), 350); // Status nachziehen
+  }
+
+  /* ------------------------------------------------------------
+     Player öffnen
+  ------------------------------------------------------------ */
   playVideo(v: Video) {
     this.rt.navigate(['/watch', v.id]);
   }
-
-
-
-
-
-/* ------------------ Navigation -------------------------- */
-//playVideo(v: Video): void {
-  /* URL objektiv erzeugen, damit Router-Konfiguration greift */
-  //const url = this.rt.serializeUrl(
-    //this.rt.createUrlTree(['/watch', v.id])
-  //);
-
-  /* Neuer Tab – 'noopener' verhindert Zugriff aufs Ursprungsfenster */
- // window.open(url, '_blank', 'noopener');
-//}
-
-
-
-
-  /** Falls dein Template einen Play-Knopf im Hero hat */
   playHero() {
     const h = this.hero();
-    if (h) { this.playVideo(h); }
+    if (h) this.playVideo(h);
   }
-
-
-
-
-
-
-
-
 }

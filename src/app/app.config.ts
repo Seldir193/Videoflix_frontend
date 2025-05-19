@@ -1,16 +1,8 @@
-
-
-
-
-
-
-
-
 import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   provideHttpClient,
-  HTTP_INTERCEPTORS, 
+  HTTP_INTERCEPTORS,
   HttpClient,
 } from '@angular/common/http';
 
@@ -27,8 +19,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { JwtInterceptor } from './core/jwt.interceptor';
 
-
-
 /* ---------- i18n ---------- */
 export function httpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
@@ -41,15 +31,13 @@ export const initLang = (translate: TranslateService) => () => {
   document.documentElement.lang = translate.currentLang;
 };
 
-
-
 /* ---------- ApplicationConfig ---------- */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
 
     /* HTTP ohne withInterceptors */
-    provideHttpClient(),          //  ← nur Basis
+    provideHttpClient(), //  ← nur Basis
 
     /* Angular Material Animations */
     provideAnimationsAsync(),
@@ -63,7 +51,7 @@ export const appConfig: ApplicationConfig = {
           useFactory: httpLoaderFactory,
           deps: [HttpClient],
         },
-      }),
+      })
     ),
 
     /* JWT-Klassen-Interceptor wie gewohnt */
@@ -82,15 +70,3 @@ export const appConfig: ApplicationConfig = {
     },
   ],
 };
-
-
-
-
-
-
-
-
-
-
-
-
