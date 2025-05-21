@@ -1,53 +1,57 @@
 {
-    "hero": {
-      "headline": "Movies, TV shows, and more",
-      "cta":      "Enter your email to create or restart your subscription.",
-      "ctb":  "Watch whenever you want wherever you want",
-      "heroSpan": "In a high-security prison, a wrongly convicted man formulates a meticulous plan to break out and prove his innocence. He must navigate a web of alliances and betrayals to reclaim his freedom and expose the truth "
-    },
-    "button": {
-      "signup": "Sign Up",
-      "login":  "Log in",
-      "logut":  "Log Out",
-      "start":  "Get Started",
-      "forgot": "Forgot password?",
-      "sign":  "Sign Up Now",
-      "email": "Send Email",
-      "reset-password": "Reset my password"
-    },
-    "error": {
-    "emailInvalid": "Invalid e-mail address",
-    "passwordShort": "Password too short",
-    "passwordMismatch": "Passwords must match"
+  "hero": {
+    "headline": "Movies, TV shows, and more",
+    "cta": "Enter your email to create or restart your subscription.",
+    "ctb": "Watch whenever you want, wherever you want",
+    "heroSpan": "In a high-security prison, a wrongly convicted man devises a meticulous plan to break out and prove his innocence. He must navigate a web of alliances and betrayals to regain his freedom and expose the truth."
+  },
+
+  "button": {
+    "signup": "Sign Up",
+    "login": "Log In",
+    "logut": "Log Out",
+    "start": "Get Started",
+    "forgot": "Forgot password?",
+    "sign": "Sign Up Now",
+    "email": "Send Email",
+    "reset-password": "Reset my password"
+  },
+
+"signup": {
+    "success": "Registration successful – please confirm your e-mail."
+  },
+
+  "login":{
+    "success": "Login successful"
   },
 
 
-  "text":{
-    "header": "We will send you an email with instructions to resed your password.",
+  "error": {
+    "emailInvalid": "Invalid e-mail address",
+    "passwordShort": "Password too short",
+    "passwordMismatch": "Passwords must match",
+    "accountInactive": "Your account has not been activated yet – please confirm your email first.",
+  "generic":         "Please check your credentials and try again."
+  },
+
+  "text": {
+    "header": "We’ll send you an email with instructions to reset your password.",
     "header-reset": "Create a new password for your <span class=\"app-name\">Videoflix</span> account.",
-    "daten": "Policy",
+    "daten": "Privacy Policy",
     "imprint": "Imprint"
   },
 
-  
-  
-    "heading": {
-      "forgotPassword": "Forgot your<br>password",
-      "resetPassword":  "Reset password"
-    },
+  "heading": {
+    "forgotPassword": "Forgot your<br>password",
+    "resetPassword": "Reset password"
+  },
 
-   "label": {
-    "noAccount": "No account yet?",
+  "label": {
+    "noAccount": "New to Videoflix?",
     "genre": "Genre",
     "release": "Release",
     "director": "Director",
     "license": "License",
     "source": "Source"
   }
-
- 
-  
-  
 }
-
-  

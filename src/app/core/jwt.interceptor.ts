@@ -1,5 +1,4 @@
-
-
+/* src/app/core/jwt.interceptor.ts */
 import { Injectable, inject } from '@angular/core';
 import {
   HttpInterceptor,
@@ -13,23 +12,23 @@ import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 
 /**
- * Interceptor, der bei allen Requests an das eigene Backend automatisch den
- * JWT-Access-Token an den `Authorization`-Header anhängt.
+ * Hängt – falls vorhanden – den Bearer-Token an **alle** Requests zum eigenen
+ * Backend an. 3rd-Party-Calls (z. B. YouTube-Thumbnail) werden ignoriert.
+ *
+ * Den Token speichern / erneuern übernimmt der AuthService bzw. der
+ * TokenRefreshInterceptor – dieser Interceptor ist read-only.
  */
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  // ab Angular 16+: Dependency-Injection per inject() statt Constructor-Args
-  private auth = inject(AuthService);
-  private apiBase = environment.apiUrl.replace(/\/$/, ''); // ohne trailing Slash
+  private auth    = inject(AuthService);
+  private apiBase = environment.apiUrl.replace(/\/$/, '');   // ohne trailing /
 
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = this.auth.accessToken;
 
-    // Header nur setzen, wenn ein Token vorhanden ist **und** die Request-URL
-    // zu unserem API-Backend gehört (vermeidet CORS/3rd-party Issues).
+    // Anhängen NUR, wenn:
+    // 1. ein Token existiert und
+    // 2. die Request-URL zu unserem API-Backend gehört
     if (token && req.url.startsWith(this.apiBase)) {
       req = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` },

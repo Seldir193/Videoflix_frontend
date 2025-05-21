@@ -1,75 +1,97 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { map, Observable } from 'rxjs';
+
+
+
+
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import {  BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 /* ---------- DTO-Typen ---------- */
 export interface AuthTokens { access: string; refresh: string; }
-export interface RegisterDTO  { email: string; password: string; re_password: string; }
-export interface LoginDTO     { email: string; password: string; }
+export interface RegisterDTO { email: string; password: string; re_password: string; }
+export interface LoginDTO { email: string; password: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Basis-URL → z. B. http://localhost:8000/api/auth */
-  private base = environment.authUrl.replace(/\/$/, ''); // Trailing slash entfernen
+  private base = `${environment.apiUrl.replace(/\/$/, '')}/auth`;
+
+  // BehaviorSubject für Login-Status
+  private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
+  public loggedIn$ = this.loggedInSubject.asObservable();  // Observable, das den Status verfolgt
 
   constructor(private http: HttpClient) {}
 
-  /* --------------------------------------------------------------
-   * Helper: Authorization-Header aus localStorage lesen
-   * -------------------------------------------------------------- */
-  private get authHeaders(): HttpHeaders {
-    const token = this.accessToken;
-    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
-  }
-
-  /* ---------- Auth-API ---------- */
-  /** Registrierung */
+  /* ---------- Registrierung ---------------------------------------- */
   register(dto: RegisterDTO): Observable<void> {
     return this.http.post<void>(`${this.base}/users/`, dto);
   }
 
-  /** Konto aktivieren */
+  /* ---------- Aktivierung ------------------------------------------ */
   activate(uid: string, token: string): Observable<void> {
     return this.http.post<void>(`${this.base}/activation/`, { uid, token });
   }
 
-  /** Login → erhalte Access + Refresh */
+  /* ---------- Login / Tokens --------------------------------------- */
   login(dto: LoginDTO): Observable<AuthTokens> {
-    return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto);
+    return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto).pipe(
+      map(tokens => {
+        this.saveTokens(tokens);
+        this.loggedInSubject.next(true);  // Update Login-Status
+        return tokens;
+      })
+    );
   }
 
-  /** Access-Token erneuern */
   refresh(refresh: string): Observable<{ access: string }> {
-    return this.http.post<{ access: string }>(`${this.base}/jwt/refresh/`, { refresh });
+    return this.http.post<{ access: string }>(`${this.base}/jwt/refresh/`, { refresh }).pipe(
+      map(r => {
+        this.saveTokens({ access: r.access, refresh });
+        return r;
+      })
+    );
   }
 
-  /** Aktuelles Benutzerprofil laden (optional) */
+  /* ---------- User-Profil ------------------------------------------ */
   me<T = any>(): Observable<T> {
-    return this.http.get<T>(`${this.base}/users/me/`, { headers: this.authHeaders });
+    return this.http.get<T>(`${this.base}/users/me/`);
   }
 
-  /* ---------- Token-Handling (Client-seitig) ---------- */
-  saveTokens(tokens: AuthTokens) {
+  /* ---------- Token-Utilities -------------------------------------- */
+  private saveTokens(tokens: AuthTokens) {
     localStorage.setItem('access', tokens.access);
     localStorage.setItem('refresh', tokens.refresh);
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
+    this.loggedInSubject.next(false);  // Setze Login-Status auf false
   }
 
-  get accessToken(): string | null {
-    return localStorage.getItem('access');
-  }
+  get accessToken(): string | null { return localStorage.getItem('access'); }
+  get refreshToken(): string | null { return localStorage.getItem('refresh'); }
 
-  get refreshToken(): string | null {
-    return localStorage.getItem('refresh');
-  }
-
-  /** Prüft simples Vorhandensein eines Access-Tokens. */
+  /** Einfacher Login-Check (reicht für Guards/Routing) */
   isLoggedIn(): boolean {
     return !!this.accessToken;
   }
+
 }

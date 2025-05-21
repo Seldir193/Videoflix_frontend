@@ -1,57 +1,34 @@
-
-
-
-
-
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Movie {
   id: number;
   title: string;
-  // weitere Felder nach Bedarf (description, genre, etc.)
+  description: string;
+  stream_url: string;
+  poster_url: string;
+  duration: number;          // Sekunden
 }
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
-  /** Basis-URL für alle Movie-Endpunkte */
-  private base = `${environment.apiUrl}/movies/`;
+  private api = environment.apiUrl.replace(/\/$/, '');
+  private videos   = `${this.api}/videos/`;    // ← stimmt mit Django überein
+  private progress = `${this.api}/progress/`;
 
   constructor(private http: HttpClient) {}
 
-  /* --------------------------------------------------------------
-   * Helper: baut Authorization‑Header, falls Access‑Token vorhanden
-   * -------------------------------------------------------------- */
-  private get authHeaders(): HttpHeaders {
-    const token = localStorage.getItem('access');
-    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : new HttpHeaders();
-  }
-
   /* ---------- CRUD ---------- */
-  /** Liste aller Filme */
-  getMovies(): Observable<Movie[]> {
-    return this.http.get<Movie[]>(this.base, { headers: this.authHeaders });
-  }
+  getMovies():  Observable<Movie[]>       { return this.http.get<Movie[]>(this.videos); }
+  getMovie(id: number): Observable<Movie> { return this.http.get<Movie>(`${this.videos}${id}/`); }
+  createMovie(data: Partial<Movie>)  { return this.http.post<Movie>(this.videos, data); }
+  updateMovie(id: number, data: Partial<Movie>) { return this.http.put<Movie>(`${this.videos}${id}/`, data); }
+  deleteMovie(id: number) { return this.http.delete<void>(`${this.videos}${id}/`); }
 
-  /** Ein Film im Detail */
-  getMovie(id: number): Observable<Movie> {
-    return this.http.get<Movie>(`${this.base}${id}/`, { headers: this.authHeaders });
-  }
-
-  /** Neuen Film anlegen */
-  createMovie(data: Partial<Movie>): Observable<Movie> {
-    return this.http.post<Movie>(this.base, data, { headers: this.authHeaders });
-  }
-
-  /** Film aktualisieren */
-  updateMovie(id: number, data: Partial<Movie>): Observable<Movie> {
-    return this.http.put<Movie>(`${this.base}${id}/`, data, { headers: this.authHeaders });
-  }
-
-  /** Film löschen */
-  deleteMovie(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}${id}/`, { headers: this.authHeaders });
+  /* ---------- Fortschritt speichern (optional) ---------- */
+  setProgress(movieId: number, seconds: number) {
+    return this.http.post(`${this.progress}`, { movie: movieId, seconds });
   }
 }

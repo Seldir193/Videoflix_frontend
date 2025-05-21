@@ -82,14 +82,75 @@ input[type='password']::-ms-clear {
   font-weight: 700;
 }
 
-@media (max-width: 580px) {
-  .signup-box {
-    padding: 43px 24px;
+
+
+
+
+
+/* Grundzustand – aktiv & klickbar */
+.btn-login {
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;                     /* Text immer weiß */
+  background: var(--color-primary);
+  cursor: pointer;
+  transition: background .2s, opacity .2s;
+  
+  /* Hover, solange NICHT disabled */
+  &:hover:not(:disabled) {
+    background: darken($color-primary, 8%);
   }
+}
+
+/* Deaktiviert */
+.btn-login:disabled {
+  background: #666;                /* Grauer Hintergrund */
+  opacity: 1;                     /* leicht transparent */
+  cursor: not-allowed;
+  
+  /* Hover-Feedback auch im Disabled-Zustand */
+  &:hover {
+    opacity: .85;                  /* minimal heller beim Überfahren */
+  }
+}
+
+
+
+:host {
+  display: flex;
+       // füllt die Seite
+  overflow-y: auto;       // eigene Scrollbar, unabhängig vom Body
+  align-items: center;
+}
+
+
+
+
+
+
+@media (max-width: 580px) {
+  .signup-box{
+    padding:43px 24px;
+  }
+
+  :host{
+    min-height: calc(100dvh - 5rem);
+   // min-height: 100vh;
+    //align-items: unset;
+   
+  }
+  
+ 
   .input-group input {
     width: 100%;
   }
   .title{
     font-size: 40px !important;
+ }
+ .container{
+  padding:0px 10px;
  }
 }

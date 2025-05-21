@@ -12,6 +12,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AuthService } from '../../core/auth.service'; // Pfad ggf. anpassen
+import { TranslateService } from '@ngx-translate/core';
+import { ToastComponent }   from '../../toast/toast.component'; 
 
 @Component({
   selector: 'app-signup',
@@ -30,6 +32,9 @@ export class SignupComponent implements OnInit {
   showPassword = false;
   showRepeat = false;
 
+  loading = false;           
+  genericError = false; 
+ 
   private password_match = (
     group: AbstractControl
   ): ValidationErrors | null => {
@@ -50,7 +55,9 @@ export class SignupComponent implements OnInit {
     private fb: FormBuilder,
     private auth: AuthService,
     private snack: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
+
   ) {}
 
   /* ---------- Lifecycle ---------- */
@@ -75,27 +82,60 @@ export class SignupComponent implements OnInit {
       : (this.showRepeat = !this.showRepeat);
   }
 
+
+
+
+
   submit(): void {
     this.submitted = true;
     if (this.form.invalid) return;
-
-    const dto = this.form.getRawValue(); // ← statt this.form.value
+  
+    this.loading = true;
+  
+    const dto = this.form.getRawValue();
     this.auth.register(dto).subscribe({
+      /* ---------- SUCCESS ---------- */
       next: () => {
-        this.snack.open(
-          'Registrierung erfolgreich – bitte E-Mail bestätigen.',
-          undefined,
-          { duration: 4000 }
-        );
-        //this.router.navigate(['/login']);
+        this.snack.openFromComponent(ToastComponent, {     // ⚠️ hier open → openFromComponent
+          data: this.translate.instant('signup.success'),
+          duration: 4000,
+          horizontalPosition: 'start',
+          verticalPosition:   'bottom',
+          panelClass: ['slide-toast', 'no-bg','success' ], // ← extra Klasse
+        });
+        
         this.router.navigate(['/auth/login']);
       },
-      error: () =>
-        this.snack.open(
-          'Bitte überprüfe deine Eingaben und versuche es erneut.',
-          undefined,
-          { duration: 4000 }
-        ),
+  
+      /* ---------- ERROR ---------- */
+      error: () => {
+        this.snack.openFromComponent(ToastComponent, {
+          data: this.translate.instant('error.generic'),
+          duration: 5000,
+          horizontalPosition: 'start',
+          verticalPosition:   'bottom',
+          panelClass: ['slide-toast', 'no-bg'],            // ohne „success“
+        });
+        this.loading = false;
+      },
+  
+      complete: () => (this.loading = false),
     });
   }
+  
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+

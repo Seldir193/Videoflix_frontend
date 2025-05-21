@@ -1,9 +1,33 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @use "styles" as *;
 
 :host {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+.content {
+  @include dFlex(center, center, 0);
+  flex: 1;
+  background: transparent;
+  padding: 0;
 }
 
 .bg-fullscreen {
@@ -13,6 +37,7 @@
   height: 100%;
   object-fit: cover;
   z-index: -2;
+  pointer-events: none;
 }
 
 .vf-page-overlay {
@@ -26,13 +51,6 @@
     rgba(0 0 0 / 0) 45%,
     rgba(0 0 0 / 0.99) 100%
   );
-}
-
-.content {
-  @include dFlex(center, center, 0);
-  flex: 1;
-  background: transparent;
-  padding: 0;
 }
 
 .content--left {
@@ -50,5 +68,30 @@
 }
 
 @media (max-width: 1278px) {
- 
+  .content.content--left {
+    display: block; /* oder einfach 'unset' – Hauptsache nicht flex */
+  }
+
+  .content.content--left {
+    display: block; /* kein zentrierendes Flex-Layout           */
+    flex: 1 1 auto; /* trotzdem im Flex-Flow → Footer sichtbar  */
+    min-height: 0;
+    overflow-y: visible; /* Grid scrollt seine Rows intern           */
+  }
 }
+
+@media (max-height: 1200px) {
+  .content.content--left {
+    display: block; /* oder einfach 'unset' – Hauptsache nicht flex */
+  }
+}
+
+/* darüber (z. B. Zoom 25 %, 4 K)  →  Begrenzung wieder aufheben */
+@media (min-height: 1201px) {
+  .content.content--left {
+    display: block; /* oder einfach 'unset' – Hauptsache nicht flex */
+  }
+}
+
+
+

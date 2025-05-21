@@ -1,4 +1,4 @@
-// src/app/shared/video-service.ts
+/* src/app/shared/video.service.ts */
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
@@ -11,33 +11,24 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { environment } from '../../environments/environment';
 
-/* ------------------------------------------------------------------ */
-/* Typdefinitionen                                                    */
-/* ------------------------------------------------------------------ */
+/* ---------- Typdefinitionen / Interfaces ---------- */
 export interface PlyrSource {
-  src : string;   // absolute URL (video/mp4)
+  src : string;
   type: string;
-  size: number;   // 1080, 720 …
+  size: number;
 }
 
 export interface VideoBackend {
   id: number;
   title: string;
   description?: string;
-
-  /* Original-Quelle */
+  /* … alle Felder wie gehabt … */
   url: string | null;
   video_file?: string | null;
-
-  /* Transkodierte Varianten */
   source_url?: string | null;
   source_variants?: { path: string; height: number }[];
-
-  /* Bilder */
   hero_frame?: string | null;
   thumb?: string | null;
-
-  /* Metadaten */
   created_at: string;
   genre?: string;
   release?: string;
@@ -47,48 +38,41 @@ export interface VideoBackend {
 }
 
 export interface Video extends Omit<VideoBackend, 'source_variants'> {
-  video_file_url: string | null;     // absoluter 720-p- oder Original-Link
+  video_file_url: string | null;
   hero_frame_url: string | null;
   sources: PlyrSource[];
 }
-/* ------------------------------------------------------------------ */
-/* Service                                                            */
-/* ------------------------------------------------------------------ */
+
+/* ---------- Service ------------------------------------------------ */
 @Injectable({ providedIn: 'root' })
 export class VideoService {
 
-  /* API-Endpunkte --------------------------------------------------- */
-  private readonly videoApi    = `${environment.apiUrl}/videos/`;
-  private readonly progressApi = `${environment.apiUrl}/progress/`;
-  private readonly staticRoot  = environment.staticUrl;           // endet mit /
+  private readonly api       = environment.apiUrl.replace(/\/$/, '');
+  private readonly videoApi  = `${this.api}/videos/`;
+  private readonly progressApi = `${this.api}/progress/`;
+  private readonly staticRoot  = environment.staticUrl;     // endet mit /
 
   constructor(
     private http: HttpClient,
     private i18n: TranslateService,
   ) {}
 
-  /* JWT- und Language-Header --------------------------------------- */
-  private get authHeaders(): HttpHeaders {
-    const token = localStorage.getItem('access');
-    const lang  = this.i18n.currentLang || 'en';
-    let h       = new HttpHeaders({ 'Accept-Language': lang });
-    if (token) h = h.set('Authorization', `Bearer ${token}`);
-    return h;
+  /* -------- Accept-Language Header (JWT kommt global) -------------- */
+  private langHeaders(): HttpHeaders {
+    const lang = this.i18n.currentLang || 'en';
+    return new HttpHeaders({ 'Accept-Language': lang });
   }
 
-  /* MEDIA-URL absolut machen --------------------------------------- */
+  /* -------- Hilfsfunktionen ---------------------------------------- */
   private abs = (rel?: string | null): string | null =>
     rel ? `${this.staticRoot}media/${rel}` : null;
 
-  /* Backend → Frontend-Mapping ------------------------------------- */
   private mapVideo = (v: VideoBackend): Video => ({
     ...v,
-    video_file_url : v.source_url
-      ? this.abs(v.source_url)         // erzeugtes 720 p
-      : this.abs(v.video_file),        // Original-Upload
+    video_file_url : v.source_url ? this.abs(v.source_url) : this.abs(v.video_file),
     hero_frame_url : this.abs(v.hero_frame),
     sources: (v.source_variants ?? [])
-      .sort((a, b) => b.height - a.height)         // höchste Auflösung zuerst
+      .sort((a, b) => b.height - a.height)
       .map(variant => ({
         src : this.abs(variant.path)!,
         type: 'video/mp4',
@@ -96,9 +80,9 @@ export class VideoService {
       })),
   });
 
-  /* ---------- Videos – CRUD -------------------------------------- */
+  /* ---------- Videos – Liste (gecached) ---------------------------- */
   private readonly videos$ = this.http
-    .get<VideoBackend[]>(this.videoApi, { headers: this.authHeaders })
+    .get<VideoBackend[]>(this.videoApi, { headers: this.langHeaders() })
     .pipe(
       map(arr => arr.map(this.mapVideo)),
       shareReplay({ bufferSize: 1, refCount: true }),
@@ -112,15 +96,16 @@ export class VideoService {
     return this.videos$;
   }
 
+  /* ---------- Videos – Detail & CRUD ------------------------------- */
   detail(id: number): Observable<Video> {
     return this.http
-      .get<VideoBackend>(`${this.videoApi}${id}/`, { headers: this.authHeaders })
+      .get<VideoBackend>(`${this.videoApi}${id}/`, { headers: this.langHeaders() })
       .pipe(map(this.mapVideo));
   }
 
   create(payload: Partial<Video>): Observable<Video> {
     return this.http
-      .post<VideoBackend>(this.videoApi, payload, { headers: this.authHeaders })
+      .post<VideoBackend>(this.videoApi, payload, { headers: this.langHeaders() })
       .pipe(map(this.mapVideo));
   }
 
@@ -128,30 +113,29 @@ export class VideoService {
     const fd = new FormData();
     fd.append('video_file', file, file.name);
     return this.http.post<VideoBackend>(this.videoApi, fd, {
-      headers: this.authHeaders,
       reportProgress: true,
-      observe: 'events',
+      observe:       'events',
+      headers:       this.langHeaders(),
     }) as unknown as Observable<HttpEvent<Video>>;
   }
 
-  /* ---------- Wiedergabe-Fortschritt ----------------------------- */
+  /* ---------- Wiedergabe-Fortschritt ------------------------------- */
   saveProgress(videoId: number, pos: number, dur: number): void {
     this.http.post(
       this.progressApi,
       { video: videoId, position: pos, duration: dur },
-      { headers: this.authHeaders },
+      { headers: this.langHeaders() },
     ).subscribe();
   }
 
-  
-
   getProgress(videoId: number) {
-    return this.http.get<{
-      id: number; position: number; duration: number;
-    }>(`${this.progressApi}?video=${videoId}`, { headers: this.authHeaders });
+    return this.http.get<{ id: number; position: number; duration: number }>(
+      `${this.progressApi}?video=${videoId}`,
+      { headers: this.langHeaders() }
+    );
   }
 
-  /* ---------- Mock-Fallback (DEV) -------------------------------- */
+  /* ---------- Mock-Fallback (DEV) ---------------------------------- */
   private readonly mockVideos: Video[] = [
     {
       id: 1,

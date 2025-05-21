@@ -6,7 +6,7 @@
 
 
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
+import { Router, RouterOutlet, NavigationEnd, ActivatedRouteSnapshot} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 
@@ -14,6 +14,11 @@ import { HeaderComponent }  from '../header/header.component';
 import { FooterComponent }  from '../footer/footer.component';
 import { VideoService, Video } from '../../shared/video-service';
 import { SafeUrlPipe } from '../../shared/safe-url.pipe';
+
+function deepest(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
+  while (route.firstChild) route = route.firstChild;
+  return route;
+} 
 
 @Component({
   selector   : 'app-layout-shell',
@@ -31,7 +36,10 @@ import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 export class LayoutShellComponent implements OnInit {
 
   /* -------------- Bild / Trailer ------------------ */
-  bgSrc       = signal<string>('assets/img/start.jpg');     // Fallback-Bild
+  /* Signal leer starten */
+bgSrc = signal<string | null>(null);
+
+  //bgSrc       = signal<string>('assets/img/start.jpg');     // Fallback-Bild
   hero        = signal<Video | null>(null);                 // liefert Trailer
   isVideoGrid = signal(false);                              // steuert Grid-Spezifika
   showHF      = signal(true);                               // Header/Footer anzeigen?
@@ -50,6 +58,9 @@ export class LayoutShellComponent implements OnInit {
   /* -------------- DI ------------------------------- */
   private vs = inject(VideoService);
   private rt = inject(Router);
+
+
+
 
   ngOnInit(): void {
 
@@ -77,9 +88,13 @@ export class LayoutShellComponent implements OnInit {
     } else {
       this.hero.set(null);
 
-      const route = this.rt.routerState.root.firstChild;
-      const bg = route?.snapshot.data['background'] as string | undefined;
-      this.bgSrc.set(bg ? `assets/img/${bg}` : 'assets/img/start.jpg');
+      const active = deepest(this.rt.routerState.snapshot.root);
+      const bgFile = active.data['background'] as string | undefined;
+
+      this.bgSrc.set(bgFile ? `assets/img/${bgFile}` : 'assets/img/start.jpg');
+
+      
+      
     }
 });
 
@@ -87,6 +102,14 @@ export class LayoutShellComponent implements OnInit {
  
   }
 
+
+
+
+
+
+
+
+  
   forcePlay(el: EventTarget | null): void {
     const v = el as HTMLVideoElement | null;
     if (!v) return;
@@ -105,3 +128,5 @@ export class LayoutShellComponent implements OnInit {
   
   
 }
+
+

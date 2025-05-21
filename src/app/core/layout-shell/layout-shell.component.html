@@ -28,11 +28,11 @@
 <!-- Header auf Dashboard + Grid ---------------------------------- -->
 <app-header *ngIf="showHF()"></app-header>
 
-<main class="content" 
-[class.content--left]="isVideoGrid()">
+
+<main class="content"   
+[class.content--left]="isVideoGrid()"  >
   <router-outlet></router-outlet>
 </main>
-
 <!-- Footer auf Dashboard + Grid ---------------------------------- -->
 <app-footer *ngIf="showHF()"
             [ngClass]="{ 'footer--video': isVideoGrid() }"></app-footer>

@@ -14,7 +14,7 @@
 
 
 
-
+<div class="container">
 <form
   class="signup-box"
   [formGroup]="form"
@@ -118,13 +118,15 @@
     </p>
   </div>
 
+  
   <!-- ───── SUBMIT ───── -->
-  <button type="submit" class="btn-login" [disabled]="form.invalid">
-    {{ 'button.start' | translate }}
+  <button type="submit" class="btn-login" [disabled]="form.invalid|| loading">
+    {{ 'button.sign' | translate }}
   </button>
+  
 </form>
 
-
+</div>
 
 
 

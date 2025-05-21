@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AuthService } from '../../core/auth.service';
+import { ToastComponent } from '../../toast/toast.component';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-login',
@@ -27,6 +26,7 @@ import { AuthService } from '../../core/auth.service';
 export class LoginComponent implements OnInit {
   submitted = false;
   show_password = false;
+  genericError = '';
 
   form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -38,6 +38,7 @@ export class LoginComponent implements OnInit {
     private auth: AuthService,
     private snack: MatSnackBar,
     private router: Router,
+    private translate: TranslateService
   ) {}
 
   /**──────────────────────────────────────────────
@@ -47,7 +48,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.auth.isLoggedIn()) {
       this.router.navigate(['/dashboard'], { replaceUrl: true });
-      return;                               // Rest wird nicht mehr ausgeführt
+      return; // Rest wird nicht mehr ausgeführt
     }
 
     this.form.valueChanges.subscribe(() => (this.submitted = false));
@@ -69,24 +70,52 @@ export class LoginComponent implements OnInit {
    * 2)   Nach Login → /dashboard/videos
    *      UND /auth/login-Eintrag ersetzen
    *──────────────────────────────────────────────*/
+  
+
   submit(): void {
     this.submitted = true;
     if (this.form.invalid) return;
+  
+    this.auth.login(this.form.getRawValue()).subscribe({
+      next: () => {
 
-    const creds = this.form.getRawValue();
-    this.auth.login(creds).subscribe({
-      next: (tokens) => {
-        this.auth.saveTokens(tokens);
+      
+          this.snack.openFromComponent(ToastComponent, {     // ⚠️ hier open → openFromComponent
+            data: this.translate.instant('login.success'),
+            duration: 4000,
+            horizontalPosition: 'start',
+            verticalPosition:   'bottom',
+            panelClass: ['slide-toast', 'no-bg','success' ], // ← extra Klasse
+          });
+          
+        
+        
+    
 
-        /* <<< Hier entscheidend: replaceUrl: true >>> */
+
         this.router.navigate(['/dashboard/videos'], { replaceUrl: true });
       },
-      error: () =>
-        this.snack.open(
-          'Bitte überprüfe deine Eingaben und versuche es erneut.',
-          undefined,
-          { duration: 3500 },
-        ),
+    
+      /* ───── Fehlermeldungen ───── */
+      error: (err) => {
+        const inactive =
+          err.status === 401 &&
+          (err.error?.code   === 'no_active_account' ||
+           err.error?.detail?.toLowerCase().includes('no active'));
+
+        /* hier: Custom-Toast einblenden */
+        this.snack.openFromComponent(ToastComponent, {
+          data: this.translate.instant(
+            inactive ? 'error.accountInactive' : 'error.generic'
+          ),
+          duration: 5000,             // schliesst sich nach 5 s
+          horizontalPosition: 'start',// von links einblenden
+          verticalPosition   : 'bottom',      //  ↓  unten
+          panelClass         : ['slide-toast', 'no-bg']
+        });
+    
+        
+      }
     });
   }
 }

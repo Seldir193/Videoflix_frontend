@@ -17,6 +17,7 @@
   role="button">
 
 <img class="logo-mobile"
+*ngIf="!isMovieInfo"
   src="assets/img/blue-pfeil.png"
   alt="Videoflix-Icon"
   (click)="goBack()"
@@ -31,29 +32,58 @@
        tabindex="0"
        (click)="goBack()">
 
+
+
+
+       <img
+       class="logo-mobile"
+       *ngIf="isMovieInfo"
+       src="assets/img/Logo.png"
+       alt="Videoflix-Logo"
+       role="button"
+       tabindex="0"
+       (click)="goBackToGrid()"
+     />
+
+
+
+
+
+
        <img *ngIf="isMovieInfo"
-       class="logo-back"
+       class="logo-back  back-movie"
        src="assets/img/back.png"
        alt="Zurück"
        tabindex="0" role="button"
        (click)="goBackToGrid()" />
 
 
+
     
-        <button *ngIf="!onLoginPage && !isVideoPage && !isMovieInfo"
-                class="btn-login"
-                (click)="openLogin()">
-          {{ 'button.login' | translate }}
-        </button>
-    
-        
-        <button *ngIf="isVideoPage"
-                class="btn-login"
-                (click)="logout()">
-          <img src="assets/img/logout.png" alt="" />
-          {{ 'button.logut' | translate }}
-        </button>
- 
+
+
+
+
+
+<!-- Login-Button nur, wenn NICHT eingeloggt -->
+<button *ngIf="!isLoggedIn && !onLoginPage && !isVideoPage && !isMovieInfo"
+        class="btn-login"
+        (click)="openLogin()">
+  {{ 'button.login' | translate }}
+</button>
+
+<!-- Logout-Button, sobald eingeloggt – egal auf welcher Route -->
+<button *ngIf="isLoggedIn"
+        class="btn-login"
+        (click)="logout()">
+  <img src="assets/img/logout.png" alt="">
+  {{ 'button.logut' | translate }}
+</button>
+
 
 
 </header>
+
+
+
+

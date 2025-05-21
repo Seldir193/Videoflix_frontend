@@ -1,0 +1,71 @@
+@use "styles" as *;
+
+/* ─── Hülle ─────────────────────────────────────── */
+.toast {
+    width: 540px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    background: #2e3edf;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0 0 0 / .35);
+    overflow: hidden;           /* Rand-Band bleibt rund */
+  }
+  
+  /* ─── Linkes Rand-Band ──────────────────────────── */
+  .end-bar {
+    width: 38px;
+    height: 80px;
+    background: #ff002e;
+    flex: 0 0 auto;
+  }
+  
+  /* ─── Innen-Content mit gewünschtem Padding ─────── */
+  .content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    width: 100%;               /* füllt die restliche Breite */
+  }
+  
+  /* ─── Einzelelemente ────────────────────────────── */
+  .icon    { width: 32px; height: 32px; flex: 0 0 auto; }
+  .msg     { flex: 1 1 auto; font-weight: 600; }
+  .divider {
+    width: 1px;
+    height: 32px;
+    background: #ffff;
+   
+   
+    opacity: 1; 
+    
+  }
+  
+  .close   { width: 24px; height: 24px; cursor: pointer; flex: 0 0 auto; }
+  
+ 
+/* styles.scss  (global)  */
+::ng-deep .mat-mdc-snack-bar-container.no-bg,
+::ng-deep .mat-mdc-snack-bar-container.no-bg .mdc-snackbar__surface {
+  background: transparent !important;   /* kein Material-Hintergrund */
+  box-shadow: none       !important;    /* optional: Schatten ebenfalls weg */
+}
+
+/* toast.component.scss – nur anhängen */
+
+
+
+
+
+
+/* toast.component.scss */
+
+/* Fehler (rot) bleibt wie er ist */
+.toast.error   .end-bar { background:#ff002e; }
+
+/* Erfolg (grün) – Selektor auf übergeordnetes Element erweitern */
+.slide-toast.success .end-bar { background:#12c95b; }   // ← neu
+.slide-toast.success { filter: brightness(1.05); }
+

@@ -1,12 +1,13 @@
-import { ApplicationConfig, APP_INITIALIZER } from '@angular/core';
+
+import { ApplicationConfig, APP_INITIALIZER,importProvidersFrom  } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   provideHttpClient,
   HTTP_INTERCEPTORS,
   HttpClient,
+  withInterceptorsFromDi 
 } from '@angular/common/http';
 
-import { importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import {
@@ -18,6 +19,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
 import { JwtInterceptor } from './core/jwt.interceptor';
+import { TokenRefreshInterceptor } from './core/token-refresh.interceptor';
+
 
 /* ---------- i18n ---------- */
 export function httpLoaderFactory(http: HttpClient) {
@@ -36,8 +39,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
 
-    /* HTTP ohne withInterceptors */
-    provideHttpClient(), //  ← nur Basis
+    provideHttpClient(withInterceptorsFromDi()   ),
 
     /* Angular Material Animations */
     provideAnimationsAsync(),
@@ -54,12 +56,8 @@ export const appConfig: ApplicationConfig = {
       })
     ),
 
-    /* JWT-Klassen-Interceptor wie gewohnt */
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true,
-    },
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor,          multi: true },
+{ provide: HTTP_INTERCEPTORS, useClass: TokenRefreshInterceptor, multi: true },
 
     /* Initiale Sprachwahl */
     {
@@ -70,3 +68,7 @@ export const appConfig: ApplicationConfig = {
     },
   ],
 };
+
+
+
+
