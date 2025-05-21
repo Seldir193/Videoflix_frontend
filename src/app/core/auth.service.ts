@@ -94,4 +94,18 @@ export class AuthService {
     return !!this.accessToken;
   }
 
+
+  /* auth.service.ts – neue Endpunkte */
+  requestPasswordReset(email: string) {
+    return this.http.post<void>(`${this.base}/password/reset/`, { email });
+  }
+  
+
+confirmPasswordReset(dto: {
+  uid: string; token: string; password: string; re_password: string;
+}) {
+  return this.http.post<void>(`${this.base}/password/reset/confirm/`, dto);
+}
+
+
 }

@@ -24,6 +24,17 @@
     "success": "Erfogreich eingeloggt"
   },
 
+  "forgot": {
+    "success": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich nun mit deinem neuen Passwort anmelden.",
+    "error": "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
+  },
+
+  "reset": {
+    "success": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich nun mit deinem neuen Passwort anmelden.",
+    "error": "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
+  },
+
+
   "error": {
     "emailInvalid": "Ungültige E-Mail-Adresse",
     "passwordShort": "Passwort zu kurz",
@@ -52,4 +63,5 @@
     "license": "Lizenz",
     "source": "Quelle"
   }
-}
+
+  }

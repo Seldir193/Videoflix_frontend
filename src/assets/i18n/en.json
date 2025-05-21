@@ -25,6 +25,15 @@
     "success": "Login successful"
   },
 
+  "forgot": {
+    "success": "Your password has been successfully reset. You can now log in with your new password.",
+    "error": "An error occurred while resetting your password. Please try again later."
+  },
+"reset": {
+    "success": "Your password has been successfully reset. You can now log in with your new password.",
+    "error": "An error occurred while resetting your password. Please try again later."
+  },
+
 
   "error": {
     "emailInvalid": "Invalid e-mail address",
