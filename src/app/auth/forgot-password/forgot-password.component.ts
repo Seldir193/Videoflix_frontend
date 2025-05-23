@@ -6,6 +6,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AuthService } from '../../core/auth.service';
 import { ToastComponent } from '../../toast/toast.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
@@ -28,54 +29,58 @@ export class ForgotPasswordComponent {
     private auth: AuthService,
     private snack: MatSnackBar,
     private translate: TranslateService,
+    private router: Router 
   ) {}
 
+  submit(): void {
+    this.submitted = true;
+    if (this.form.invalid) return;
 
+    this.loading = true;
+    const email = this.form.value.email ?? '';
 
+    // Passwörter zurücksetzen - API-Anfrage
+    this.auth.requestPasswordReset(email).subscribe({
+      next: () => this.showSuccess(),  // Bei Erfolg
+      error: () => this.showError(),   // Bei Fehler
+    });
+  }
 
+  // Erfolgsmeldung
+  private showSuccess(): void {
+    this.snack.openFromComponent(ToastComponent, {
+      data: this.translate.instant('forgot.success'),
+      duration: 5000,
+      horizontalPosition: 'start',
+      verticalPosition: 'bottom',
+      panelClass: ['slide-toast', 'no-bg', 'success'],
+    });
+    this.done = true;
+    this.loading = false;
 
+   // const uid = 'userUid';  // Beispielwert, musst du anpassen
+    //const token = 'resetToken';  // Beispielwert, musst du anpassen
+  
+    // Weiterleitung zur Reset-Password-Seite mit den entsprechenden Parametern.
+    //setTimeout(() => {
+    //  this.router.navigate([`/auth/reset/${uid}/${token}`]);  // Navigiere zu reset-password Seite
+   // }, 2000);  // Na
+  }
 
-// forgot-password.component.ts
-
-submit(): void {
-  this.submitted = true;
-  if (this.form.invalid) return;
-
-  this.loading = true;
-  const email = this.form.value.email ?? '';
-
-  // Passwörter zurücksetzen - API-Anfrage
-  this.auth.requestPasswordReset(email).subscribe({
-    next: () => this.showSuccess(),  // Bei Erfolg
-    error: () => this.showError(),   // Bei Fehler
-  });
-}
-
-// Erfolgsmeldung
-private showSuccess(): void {
-  this.snack.openFromComponent(ToastComponent, {
-    data: this.translate.instant('forgot.sent'),
-    duration: 5000,
-    horizontalPosition: 'start',
-    verticalPosition: 'bottom',
-    panelClass: ['slide-toast', 'no-bg', 'success'],
-  });
-  this.done = true;
-  this.loading = false;
-}
-
-// Fehlermeldung
-private showError(): void {
-  this.snack.openFromComponent(ToastComponent, {
-    data: this.translate.instant('forgot.error'),  // Hier kannst du auch eine spezifische Fehlermeldung einfügen
-    duration: 5000,
-    horizontalPosition: 'start',
-    verticalPosition: 'bottom',
-    panelClass: ['slide-toast', 'no-bg', 'error'],
-  });
-  this.loading = false;
-}
+  // Fehlermeldung
+  private showError(): void {
+    this.snack.openFromComponent(ToastComponent, {
+      data: this.translate.instant('forgot.error'),  // Hier kannst du auch eine spezifische Fehlermeldung einfügen
+      duration: 5000,
+      horizontalPosition: 'start',
+      verticalPosition: 'bottom',
+      panelClass: ['slide-toast', 'no-bg', 'error'],
+    });
+    this.loading = false;
+  }
 
   /* Template Getter */
   get email() { return this.form.controls.email; }
+
+  
 }

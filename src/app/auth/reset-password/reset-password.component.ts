@@ -17,24 +17,23 @@ import { ToastComponent } from '../../toast/toast.component';
 })
 export class ResetPasswordComponent implements OnInit {
 
-  uid = '';   // kommt aus Route
-  token = '';
+  uid = '';   // UID aus der URL
+  token = ''; // Token aus der URL
 
   submitted = false;
   loading = false;
-  done = false;
+  done = false; // Status, ob der Benutzer das Passwort erfolgreich zurückgesetzt hat
 
   form = this.fb.nonNullable.group(
     {
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      re_password: ['', Validators.required],
-      repeat: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8)]],  // Passwort mit Mindestlänge
+      re_password: ['', Validators.required], // Passwort-Wiederholung
     },
-    { validators: this.samePwd }
+    { validators: this.samePwd } // Validierung für Passwort-Wiederholung
   );
 
-  showPassword = false;   // Für das Umschalten der Passwortsichtbarkeit
-  showRepeat = false;     // Für das Umschalten der Wiederholungssichtbarkeit
+  showPassword = false;   // Toggle für Passwort-Sichtbarkeit
+  showRepeat = false;     // Toggle für Wiederholungs-Passwort-Sichtbarkeit
 
   constructor(
     private fb: FormBuilder,
@@ -46,15 +45,16 @@ export class ResetPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // UID und Token aus der URL auslesen
     this.uid = this.route.snapshot.paramMap.get('uid')!;
     this.token = this.route.snapshot.paramMap.get('token')!;
 
-    this.form.valueChanges.subscribe(() => (this.submitted = false));
+    this.form.valueChanges.subscribe(() => (this.submitted = false)); // Zurücksetzen der "submitted"-Status bei Form-Änderung
   }
 
   private samePwd(group: AbstractControl): ValidationErrors | null {
     const { password, re_password } = group.value;
-    return password === re_password ? null : { mismatch: true };
+    return password === re_password ? null : { mismatch: true }; // Überprüfen, ob die Passwörter übereinstimmen
   }
 
   submit(): void {
@@ -63,6 +63,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.loading = true;
 
+    // Daten für die Passwortbestätigung
     const dto = {
       uid: this.uid,
       token: this.token,
@@ -70,15 +71,17 @@ export class ResetPasswordComponent implements OnInit {
       re_password: this.form.value.re_password!,
     };
 
+    // Anfrage an den AuthService zur Bestätigung des Passworts
     this.auth.confirmPasswordReset(dto).subscribe({
-      next: () => this.showSuccess(),
-      error: () => this.showError(),
+      next: () => this.showSuccess(),  // Bei Erfolg
+      error: () => this.showError(),   // Bei Fehler
     });
   }
 
+  // Erfolgsmeldung anzeigen
   private showSuccess(): void {
     this.snack.openFromComponent(ToastComponent, {
-      data: this.translate.instant('reset.success'),
+      data: this.translate.instant('reset.success'), // Erfolgsmeldung
       duration: 4000,
       horizontalPosition: 'start',
       verticalPosition: 'bottom',
@@ -87,13 +90,14 @@ export class ResetPasswordComponent implements OnInit {
     this.done = true;
     this.loading = false;
 
-    // 3 s später automatisch zum Login
+    // 3 Sekunden später zum Login-Bereich weiterleiten
     setTimeout(() => this.router.navigate(['/auth/login']), 3000);
   }
 
+  // Fehlermeldung anzeigen
   private showError(): void {
     this.snack.openFromComponent(ToastComponent, {
-      data: this.translate.instant('reset.error'),
+      data: this.translate.instant('reset.error'), // Fehlermeldung
       duration: 5000,
       horizontalPosition: 'start',
       verticalPosition: 'bottom',
@@ -102,19 +106,16 @@ export class ResetPasswordComponent implements OnInit {
     this.loading = false;
   }
 
-  /* Template Getter */
+  /* Getter für die Form-Controls */
   get password() { return this.form.controls.password; }
   get re_password() { return this.form.controls.re_password; }
 
-  get repeat() {
-    return this.form.controls.repeat;
-  }
-  
-
+  // Toggle für die Sichtbarkeit des Passworts
   toggleShowPassword(): void {
     this.showPassword = !this.showPassword;
   }
 
+  // Toggle für die Sichtbarkeit der Passwort-Wiederholung
   toggleShowRepeat(): void {
     this.showRepeat = !this.showRepeat;
   }

@@ -1,30 +1,9 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { map, Observable } from 'rxjs';
-
-
-
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {  BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-/* ---------- DTO-Typen ---------- */
 export interface AuthTokens { access: string; refresh: string; }
 export interface RegisterDTO { email: string; password: string; re_password: string; }
 export interface LoginDTO { email: string; password: string; }
@@ -33,33 +12,33 @@ export interface LoginDTO { email: string; password: string; }
 export class AuthService {
   private base = `${environment.apiUrl.replace(/\/$/, '')}/auth`;
 
-  // BehaviorSubject für Login-Status
   private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
-  public loggedIn$ = this.loggedInSubject.asObservable();  // Observable, das den Status verfolgt
+  public loggedIn$ = this.loggedInSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  /* ---------- Registrierung ---------------------------------------- */
+  // Registrierung
   register(dto: RegisterDTO): Observable<void> {
     return this.http.post<void>(`${this.base}/users/`, dto);
   }
 
-  /* ---------- Aktivierung ------------------------------------------ */
+  // Aktivierung
   activate(uid: string, token: string): Observable<void> {
-    return this.http.post<void>(`${this.base}/activation/`, { uid, token });
+    return this.http.post<void>(`${this.base}/users/activation/`, { uid, token });
   }
 
-  /* ---------- Login / Tokens --------------------------------------- */
+  // Login
   login(dto: LoginDTO): Observable<AuthTokens> {
     return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto).pipe(
       map(tokens => {
         this.saveTokens(tokens);
-        this.loggedInSubject.next(true);  // Update Login-Status
+        this.loggedInSubject.next(true);
         return tokens;
       })
     );
   }
 
+  // Token-Refresh
   refresh(refresh: string): Observable<{ access: string }> {
     return this.http.post<{ access: string }>(`${this.base}/jwt/refresh/`, { refresh }).pipe(
       map(r => {
@@ -69,12 +48,12 @@ export class AuthService {
     );
   }
 
-  /* ---------- User-Profil ------------------------------------------ */
+  // User-Profil
   me<T = any>(): Observable<T> {
     return this.http.get<T>(`${this.base}/users/me/`);
   }
 
-  /* ---------- Token-Utilities -------------------------------------- */
+  // Token-Utilities
   private saveTokens(tokens: AuthTokens) {
     localStorage.setItem('access', tokens.access);
     localStorage.setItem('refresh', tokens.refresh);
@@ -83,29 +62,32 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
-    this.loggedInSubject.next(false);  // Setze Login-Status auf false
+    this.loggedInSubject.next(false);
   }
 
   get accessToken(): string | null { return localStorage.getItem('access'); }
   get refreshToken(): string | null { return localStorage.getItem('refresh'); }
 
-  /** Einfacher Login-Check (reicht für Guards/Routing) */
   isLoggedIn(): boolean {
     return !!this.accessToken;
   }
 
-
-  /* auth.service.ts – neue Endpunkte */
+  // Passwort-Reset-Anfrage
   requestPasswordReset(email: string) {
-    return this.http.post<void>(`${this.base}/password/reset/`, { email });
+    const headers = new HttpHeaders().set('X-CSRFToken', this.getCSRFToken()); 
+    // Endpunkt geändert auf /users/reset_password/
+    return this.http.post<void>(`${this.base}/users/reset_password/`, { email }, { headers, withCredentials: true });
   }
-  
 
-confirmPasswordReset(dto: {
-  uid: string; token: string; password: string; re_password: string;
-}) {
-  return this.http.post<void>(`${this.base}/password/reset/confirm/`, dto);
-}
+  // Passwort-Reset-Bestätigung
+  confirmPasswordReset(dto: { uid: string; token: string; password: string; re_password: string }) {
+    const headers = new HttpHeaders().set('X-CSRFToken', this.getCSRFToken()); 
+    // Endpunkt geändert auf /users/reset_password_confirm/
+    return this.http.post<void>(`${this.base}/users/reset_password_confirm/`, dto, { headers });
+  }
 
-
+  private getCSRFToken(): string {
+    const csrfToken = document.cookie.match(/csrftoken=([^;]+)/);
+    return csrfToken ? csrfToken[1] : '';
+  }
 }
