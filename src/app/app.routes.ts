@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './core/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  //{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
   {
     path: 'auth',
@@ -35,6 +35,9 @@ export const routes: Routes = [
   },
 
 
+  //{ path: '**', redirectTo: 'dashboard' },
+
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: 'dashboard' },
 
 ];

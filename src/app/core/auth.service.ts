@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 export interface AuthTokens { access: string; refresh: string; }
 export interface RegisterDTO { email: string; password: string; re_password: string; }
 export interface LoginDTO { email: string; password: string; }
+import { catchError } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,30 +24,50 @@ export class AuthService {
   }
 
   // Aktivierung
-  activate(uid: string, token: string): Observable<void> {
+ activate(uid: string, token: string): Observable<void> {
     return this.http.post<void>(`${this.base}/users/activation/`, { uid, token });
   }
+  //activate(uid: string, token: string): Observable<void> {
+ //   return this.http.post<void>(`${this.base}/users/activate/${uid}/${token}/`, {});
+//  }
+  
 
-  // Login
+
+
   login(dto: LoginDTO): Observable<AuthTokens> {
-    return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto).pipe(
+    return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto).pipe(  // Der richtige JWT-Login-Endpunkt
       map(tokens => {
-        this.saveTokens(tokens);
-        this.loggedInSubject.next(true);
+        this.saveTokens(tokens);  // Speichern des Tokens im localStorage
+        this.loggedInSubject.next(true);  // Setze loggedIn auf true
         return tokens;
+      }),
+      catchError(error => {
+        console.error('Login failed', error);  // Fehlerbehandlung, wenn der Login nicht erfolgreich ist
+        throw error;  // Fehler weiter werfen
       })
     );
   }
 
-  // Token-Refresh
+ 
+
+
+
+
+  
+
   refresh(refresh: string): Observable<{ access: string }> {
     return this.http.post<{ access: string }>(`${this.base}/jwt/refresh/`, { refresh }).pipe(
       map(r => {
         this.saveTokens({ access: r.access, refresh });
         return r;
+      }),
+      catchError(error => {
+        console.error('Token refresh failed', error);  // Fehlerbehandlung
+        throw error;
       })
     );
   }
+
 
   // User-Profil
   me<T = any>(): Observable<T> {
@@ -80,7 +101,7 @@ export class AuthService {
   }
 
   // Passwort-Reset-Bestätigung
-  confirmPasswordReset(dto: { uid: string; token: string; password: string; re_password: string }) {
+  confirmPasswordReset(dto: { uid: string; token: string; new_password: string; re_new_password: string }) {
     const headers = new HttpHeaders().set('X-CSRFToken', this.getCSRFToken()); 
     // Endpunkt geändert auf /users/reset_password_confirm/
     return this.http.post<void>(`${this.base}/users/reset_password_confirm/`, dto, { headers });

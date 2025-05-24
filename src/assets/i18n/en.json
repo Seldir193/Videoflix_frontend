@@ -22,7 +22,9 @@
   },
 
   "login":{
-    "success": "Login successful"
+    "success": "Login successful",
+    "accountActivated":   "Your account has been activated.",
+    "activationFailed":   "Activation link is invalid or expired."
   },
 
   "forgot": {
@@ -34,13 +36,20 @@
     "error": "An error occurred while resetting your password. Please try again later."
   },
 
+  "placeholder": {
+    "email": "Email",
+    "password": "Password (min. 8 characters)",
+    "rePassword": "Confirm password",
+    "password-reset": "Enter a password",
+    "password-again": "Confirm password"
+  },
 
   "error": {
     "emailInvalid": "Invalid e-mail address",
     "passwordShort": "Password too short",
     "passwordMismatch": "Passwords must match",
-    "accountInactive": "Your account has not been activated yet – please confirm your email first.",
-  "generic":         "Please check your credentials and try again."
+    "accountInactive":    "Please activate your account first.",
+    "generic":            "Something went wrong. Please try again."
   },
 
   "text": {

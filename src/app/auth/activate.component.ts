@@ -15,8 +15,10 @@ export class ActivateComponent {
     const uid   = this.route.snapshot.paramMap.get('uid')!;
     const token = this.route.snapshot.paramMap.get('token')!;
 
+
     this.auth.activate(uid, token).subscribe({
       next: ()  => this.router.navigate(['/auth/login'], { queryParams:{ activated:'yes' } }),
+      
       error: () => this.router.navigate(['/auth/login'], { queryParams:{ activated:'fail'} }),
     });
   }

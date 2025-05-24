@@ -21,7 +21,9 @@
     "success": "Registrierung erfolgreich – bitte E-Mail bestätigen."
   },
   "login":{
-    "success": "Erfogreich eingeloggt"
+    "success": "Erfogreich eingeloggt",
+    "accountActivated":   "Dein Konto wurde aktiviert.",
+    "activationFailed":   "Aktivierungs-Link ist ungültig oder abgelaufen."
   },
 
   "forgot": {
@@ -34,13 +36,20 @@
     "error": "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
   },
 
+  "placeholder": {
+    "email": "E-Mail",
+    "password": "Passwort (min. 8 Zeichen)",
+    "rePassword": "Passwort wiederholen",
+    "password-reset": "Passwort eingeben",
+    "password-again": "Passwort bestätigen"
+  },
 
   "error": {
     "emailInvalid": "Ungültige E-Mail-Adresse",
     "passwordShort": "Passwort zu kurz",
     "passwordMismatch": "Passwörter stimmen nicht überein",
-    "accountInactive": "Dein Konto ist noch nicht aktiviert – bitte E-Mail bestätigen.",
-    "generic": "Bitte überprüfe deine Eingaben und versuche es erneut."
+    "accountInactive":    "Bitte aktiviere zuerst dein Konto.",
+    "generic":            "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
   },
 
   "text": {

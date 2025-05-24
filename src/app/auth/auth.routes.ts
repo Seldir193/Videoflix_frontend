@@ -23,6 +23,7 @@ export const AUTH_ROUTES: Routes = [
     data: { background: 'login.jpg' },
   },
 
+
   {
     path: 'signup',
     component: SignupComponent,
@@ -36,15 +37,14 @@ export const AUTH_ROUTES: Routes = [
   //canActivate: [GuestGuard],
     data: { background: 'login.jpg' },
   },
-
  
+  
   {
-    path: 'reset/:uid/:token',
+    path: 'reset-password/:uid/:token', // route für reset-password
     component: ResetPasswordComponent,
-   // canActivate: [GuestGuard],
     data: { background: 'login.jpg' },
   },
-
+  
 
   { path: 'activate/:uid/:token',
     component: ActivateComponent,          // ← eigenständiges Component

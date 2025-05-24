@@ -27,7 +27,7 @@
   <div class="field-block">
     <div class="input-group" [class.invalid]="email.invalid && email.touched">
       <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
-      <input type="email" placeholder="E-Mail" formControlName="email" />
+      <input type="email"  [placeholder]="'placeholder.email' | translate" formControlName="email" />
     </div>
     <p class="error" *ngIf="email.errors?.['email'] && email.touched">
       <img src="assets/img/warning.png" aria-hidden="true" />
@@ -44,7 +44,7 @@
       <img class="icon" src="assets/img/password.png" aria-hidden="true" />
       <input
         [type]="showPassword ? 'text' : 'password'"
-        placeholder="Passwort (min. 8 Zeichen)"
+        [placeholder]="'placeholder.password' | translate"
         formControlName="password"
       />
 
@@ -88,7 +88,7 @@
       <img class="icon" src="assets/img/password.png" aria-hidden="true" />
       <input
         [type]="showRepeat ? 'text' : 'password'"
-        placeholder="Passwort wiederholen"
+        [placeholder]="'placeholder.rePassword' | translate"
         formControlName="re_password"
       />
 

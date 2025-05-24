@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -24,10 +25,11 @@ export class ResetPasswordComponent implements OnInit {
   loading = false;
   done = false; // Status, ob der Benutzer das Passwort erfolgreich zurückgesetzt hat
 
+  
   form = this.fb.nonNullable.group(
     {
-      password: ['', [Validators.required, Validators.minLength(8)]],  // Passwort mit Mindestlänge
-      re_password: ['', Validators.required], // Passwort-Wiederholung
+      new_password: ['', [Validators.required, Validators.minLength(8)]],  // Passwort mit Mindestlänge
+      re_new_password: ['', Validators.required], // Passwort-Wiederholung
     },
     { validators: this.samePwd } // Validierung für Passwort-Wiederholung
   );
@@ -53,8 +55,8 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   private samePwd(group: AbstractControl): ValidationErrors | null {
-    const { password, re_password } = group.value;
-    return password === re_password ? null : { mismatch: true }; // Überprüfen, ob die Passwörter übereinstimmen
+    const { new_password, re_new_password } = group.value;
+    return new_password === re_new_password ? null : { mismatch: true }; // Überprüfen, ob die Passwörter übereinstimmen
   }
 
   submit(): void {
@@ -63,12 +65,13 @@ export class ResetPasswordComponent implements OnInit {
 
     this.loading = true;
 
+    
     // Daten für die Passwortbestätigung
     const dto = {
       uid: this.uid,
       token: this.token,
-      password: this.form.value.password!,
-      re_password: this.form.value.re_password!,
+      new_password: this.form.value.new_password!,
+      re_new_password: this.form.value.re_new_password!
     };
 
     // Anfrage an den AuthService zur Bestätigung des Passworts
@@ -106,9 +109,8 @@ export class ResetPasswordComponent implements OnInit {
     this.loading = false;
   }
 
-  /* Getter für die Form-Controls */
-  get password() { return this.form.controls.password; }
-  get re_password() { return this.form.controls.re_password; }
+  get password() { return this.form.controls.new_password; }
+  get re_password() { return this.form.controls.re_new_password; }
 
   // Toggle für die Sichtbarkeit des Passworts
   toggleShowPassword(): void {
@@ -120,3 +122,10 @@ export class ResetPasswordComponent implements OnInit {
     this.showRepeat = !this.showRepeat;
   }
 }
+
+
+
+
+
+
+
