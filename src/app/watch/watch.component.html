@@ -1,15 +1,10 @@
-
-
-
-
-<div class="player-wrap" (mousemove)="showBar()"       
-  (touchstart)="showBar()" >
-
-  
-  <!-- Top-Bar --------------------------------------------------->
-  <div class="top-bar"  [class.show]="barVisible"
-  (mouseenter)="showBar()"    
-  (mouseleave)="scheduleHide()">
+<div class="player-wrap" (mousemove)="showBar()" (touchstart)="showBar()">
+  <div
+    class="top-bar"
+    [class.show]="barVisible"
+    (mouseenter)="showBar()"
+    (mouseleave)="scheduleHide()"
+  >
     <button
       class="btn-nav"
       type="button"
@@ -31,14 +26,6 @@
     </button>
   </div>
 
-  
-
-  <!-- Plyr-Video ----------------------------------------------->
-  <!--
-    ▸ #plyr       – ViewChild-Referenz in watch.component.ts
-    ▸ poster      – Hero-Frame bis zum Start
-    ▸ playsinline – verhindert Auto-Fullscreen auf iOS
-  -->
   <video
     #plyr
     class="plyr-video"
@@ -47,15 +34,10 @@
     [attr.poster]="video()?.hero_frame_url || null"
   ></video>
 
-  <!-- watch.component.html – direkt unter <video> -->
-<div class="resume-box" *ngIf="askResume">
-  <p>Du hast hier aufgehört. Fortsetzen?</p>
+  <div class="resume-box" *ngIf="askResume">
+    <p>Du hast hier aufgehört. Fortsetzen?</p>
 
-  <button (click)="resume(true)">Weiter</button>
-  <button (click)="resume(false)">Neu starten</button>
+    <button (click)="resume(true)">Weiter</button>
+    <button (click)="resume(false)">Neu starten</button>
+  </div>
 </div>
-
-</div>
-
-
-

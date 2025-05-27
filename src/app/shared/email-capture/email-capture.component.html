@@ -3,22 +3,22 @@
     type="email"
     formControlName="email"
     [placeholder]="'placeholder.Email-Placeholder' | translate"
-    [class.invalid]="emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)"
+    [class.invalid]="
+      emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)
+    "
   />
 
   <!-- Fehlermeldung -->
-  <p class="error"
-     *ngIf="emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)">
-    {{ 'error.emailInvalid' | translate }}
+  <p
+    class="error"
+    *ngIf="emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)"
+  >
+    {{ "error.emailInvalid" | translate }}
   </p>
 
   <div class="button-container">
-    <button
-      type="submit"
-      class="btn-login"
-      [disabled]="emailForm.invalid"
-    >
-      {{ 'button.signup' | translate }}
+    <button type="submit" class="btn-login" [disabled]="emailForm.invalid">
+      {{ "button.signup" | translate }}
       <img src="assets/img/pfeil-right.png" />
     </button>
   </div>

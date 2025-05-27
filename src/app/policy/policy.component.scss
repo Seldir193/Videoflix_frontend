@@ -1,30 +1,14 @@
-
-
-
-
-
-
-
-
 @use "styles" as *;
 
-/* ───────────────────────────────────────────────
-   ÄUSSERE HÜLLE – füllt den kompletten Viewport
-   ─────────────────────────────────────────────── */
 .movie-info {
   position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
-
-  background: #000;        /* Schwarz über die ganze Fläche  */
+  background: #000;
   color: #fff;
   overflow-y: auto;
-  
-  /* 1920-Deckel HIER entfernen  ↓  */
-   
   width: 100%;
-  //margin-inline: 0;        /* entfällt bei voller Breite     */
 
   .info-header {
     position: sticky;
@@ -37,32 +21,32 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
- max-width:1920px;
- width:100%;
- margin-inline: auto;
+  max-width: 1920px;
+  width: 100%;
+  margin-inline: auto;
   box-sizing: border-box;
 
-  h2 { font: 700 40px/1 'DM Sans', sans-serif; }
-  h3, h4, h5, h6 { font: 600 24px/1 'DM Sans', sans-serif; }
-  p  { font: 400 16px/1.4 'DM Sans', sans-serif; }
+  h2 {
+    font: 700 40px/1 "DM Sans", sans-serif;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    font: 600 24px/1 "DM Sans", sans-serif;
+  }
+  p {
+    font: 400 16px/1.4 "DM Sans", sans-serif;
+  }
 }
 
+.info-header .header-box {
+  background-color: #000 !important;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 96px;
+}
 
-
-/* ───────────────────────────────────────────────
-   HEADER-INHALT – begrenzt sich selbst
-   ─────────────────────────────────────────────── */
-   .info-header .header-box {
-    background-color: #000 !important;
-    width: 100%;
-    //max-width: 1920px;       /* Deckel nur für den Inhalt      */
-    margin-inline: auto;     /* zentriert                      */
-    padding-inline: 96px;
-  }
-  
-/* ───────────────────────────────────────────────
-   POLICY-TEXTBLOCK
-   ─────────────────────────────────────────────── */
 .box {
   display: flex;
   flex-direction: column;
@@ -73,24 +57,30 @@
   justify-content: center;
 
   width: 100%;
-                        
+
   margin-inline: auto;
 
-  h2 { font-size: 40px; font-weight: 700; }
-  h3, h4, h5, h6 { font-size: 24px; font-weight: 600; }
-}
-
-/* ───────────────────────────────────────────────
-   RESPONSIVE < 1280 px
-   ─────────────────────────────────────────────── */
-@media (max-width: 1278px) {
-  .info-header .header-box { padding-inline: 16px; }
-  .box {
-    padding: 10px 16px;
-    h2 { font-size: 26px; }
+  h2 {
+    font-size: 40px;
+    font-weight: 700;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: 24px;
+    font-weight: 600;
   }
 }
 
-
-
-
+@media (max-width: 1278px) {
+  .info-header .header-box {
+    padding-inline: 16px;
+  }
+  .box {
+    padding: 10px 16px;
+    h2 {
+      font-size: 26px;
+    }
+  }
+}

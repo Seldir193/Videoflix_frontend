@@ -1,6 +1,5 @@
 @use "styles" as *;
 
-/* ─── Hülle ─────────────────────────────────────── */
 .toast {
   width: 540px;
   height: 80px;
@@ -10,11 +9,10 @@
   background: #2e3edf;
   color: #fff;
   box-shadow: 0 4px 12px rgba(0 0 0 / 0.35);
-  overflow: hidden; /* Rand-Band bleibt rund */
-  margin-bottom:20px;
+  overflow: hidden;
+  margin-bottom: 20px;
 }
 
-/* ─── Linkes Rand-Band ──────────────────────────── */
 .end-bar {
   width: 38px;
   height: 80px;
@@ -22,16 +20,14 @@
   flex: 0 0 auto;
 }
 
-/* ─── Innen-Content mit gewünschtem Padding ─────── */
 .content {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 24px 32px;
-  width: 100%; /* füllt die restliche Breite */
+  width: 100%;
 }
 
-/* ─── Einzelelemente ────────────────────────────── */
 .icon {
   width: 32px;
   height: 32px;
@@ -45,7 +41,6 @@
   width: 1px;
   height: 32px;
   background: #ffff;
-
   opacity: 1;
 }
 
@@ -56,70 +51,29 @@
   flex: 0 0 auto;
 }
 
-/* styles.scss  (global)  */
 ::ng-deep .mat-mdc-snack-bar-container.no-bg,
 ::ng-deep .mat-mdc-snack-bar-container.no-bg .mdc-snackbar__surface {
-  background: transparent !important; /* kein Material-Hintergrund */
-  box-shadow: none !important; /* optional: Schatten ebenfalls weg */
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-/* toast.component.scss – nur anhängen */
-
-/* toast.component.scss */
-
-/* Fehler (rot) bleibt wie er ist */
 .toast.error .end-bar {
   background: #ff002e;
 }
 
-/* Erfolg (grün) – Selektor auf übergeordnetes Element erweitern */
 .slide-toast.success .end-bar {
   background: #12c95b;
-} // ← neu
+}
 .slide-toast.success {
   filter: brightness(1.05);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* styles.scss  ──────────────────────────────────────────────────
-   MOBIL  (< 640 px)  –  Snackbar vollbreit unten
-   Desktop bleibt unangetastet
-   ───────────────────────────────────────────────────────────── */
-   @media (max-width: 1278px) {
-
-   
-
-
-
-
-
-    .toast {
-      flex-direction: column;          /* statt row */
-      width:100vw;
-      height:unset;
-      border-radius: 20px 20px 0 0;
-      margin-bottom:unset;
-    }
-  
-    
-
-
-
+@media (max-width: 1278px) {
+  .toast {
+    flex-direction: column;
+    width: 100vw;
+    height: unset;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: unset;
   }
-  
+}

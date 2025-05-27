@@ -1,38 +1,30 @@
-
-
-<!-- Abdunklung ---------------------------------------------------- -->
 <div class="vf-page-overlay"></div>
 
+<video
+  *ngIf="isVideoGrid() && trailerSrc"
+  class="bg-fullscreen-video"
+  [src]="trailerSrc | safeUrl"
+  muted
+  autoplay
+  loop
+  playsinline
+  (loadedmetadata)="forcePlay($any($event.target))"
+></video>
 
+<img
+  *ngIf="!isVideoGrid()"
+  class="bg-fullscreen"
+  [src]="bgSrc()"
+  alt=""
+  aria-hidden="true"
+/>
 
-
-<!-- Trailer NUR im Video-Grid ------------------------------------ -->
-<video *ngIf="isVideoGrid() && trailerSrc"
-       class="bg-fullscreen-video"
-       [src]="trailerSrc | safeUrl"
-       muted autoplay loop playsinline
-       (loadedmetadata)="forcePlay($any($event.target))">
-</video>
-
-
-<!-- Statisches Bild auf allen Nicht-Grid-Seiten ------------------- -->
-<img *ngIf="!isVideoGrid()"
-     class="bg-fullscreen"
-     [src]="bgSrc()"
-     alt="" aria-hidden="true" />
-
-
- 
-
-<!-- Header auf Dashboard + Grid ---------------------------------- -->
 <app-header *ngIf="showHF()"></app-header>
 
-
-<main class="content"   
-[class.content--left]="isVideoGrid()"  >
+<main class="content" [class.content--left]="isVideoGrid()">
   <router-outlet></router-outlet>
- 
 </main>
-<!-- Footer auf Dashboard + Grid ---------------------------------- -->
-<app-footer *ngIf="showHF()"
-            [ngClass]="{ 'footer--video': isVideoGrid() }"></app-footer>
+<app-footer
+  *ngIf="showHF()"
+  [ngClass]="{ 'footer--video': isVideoGrid() }"
+></app-footer>

@@ -109,74 +109,42 @@
   font-weight: 700;
 }
 
-/* login.component.scss (oder global) */
-
-/* Grundzustand – aktiv & klickbar */
 .btn-login {
   padding: 12px 24px;
   border: none;
   border-radius: var(--radius-lg);
   font-weight: 700;
   font-size: 18px;
-  color: #fff; /* Text immer weiß */
+  color: #fff;
   background: var(--color-primary);
   cursor: pointer;
   transition: background 0.2s, opacity 0.2s;
 
-  /* Hover, solange NICHT disabled */
   &:hover:not(:disabled) {
     background: darken($color-primary, 8%);
   }
 }
 
-/* Deaktiviert */
 .btn-login:disabled {
-  background: #666; /* Grauer Hintergrund */
-  opacity: 1; /* leicht transparent */
+  background: #666;
+  opacity: 1;
   cursor: not-allowed;
 
-  /* Hover-Feedback auch im Disabled-Zustand */
   &:hover {
-    opacity: 0.85; /* minimal heller beim Überfahren */
+    opacity: 0.85;
   }
 }
 
 :host {
   display: flex;
-  // füllt die Seite
-  overflow-y: auto; // eigene Scrollbar, unabhängig vom Body
+  overflow-y: auto;
   align-items: center;
 }
 
-/* signup.component.scss  – oder wo dein Hinweis steht */
 .signup-hint .label-noaccount {
-  color: #d3d3d3; /* LightGray */
-  font-weight: 400; /* falls du nur die Farbe ändern willst */
+  color: #d3d3d3;
+  font-weight: 400;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @media (max-width: 580px) {
   .login-box {
@@ -185,8 +153,6 @@
 
   :host {
     min-height: calc(100dvh - 5rem);
-    // min-height: 100vh;
-    //align-items: unset;
   }
 
   .signup-hint .label-noaccount {
@@ -202,19 +168,4 @@
   .container {
     padding: 0px 10px;
   }
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
 }

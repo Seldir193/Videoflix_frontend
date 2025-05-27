@@ -39,67 +39,32 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 .button-container {
   max-width: 144px;
   width: 100%;
- //background-color: $color-primary;
   border-radius: var(--radius-lg);
   flex: 0 0 auto;
 }
 
-/* ─── States ergänzen ────────────────────────────────────────────── */
-
-/* 1) E-Mail‐Feld invalid (rot) */
 .capture-row input[type="email"].invalid {
   border-color: #e50914;
 }
 
-/* 2) Button deaktiviert (grau & nicht klickbar) */
 .button-container .btn-login:disabled {
   background: #4d4d4d;
   opacity: 0.6;
   cursor: not-allowed;
 
   &:hover {
-    opacity: .85;                  /* minimal heller beim Überfahren */
+    opacity: 0.85;
   }
 }
-
 
 .error {
   margin-top: 0.5rem;
   color: #e50914;
   font-size: 0.875rem;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 @media (max-width: 1278px) {
   .capture-row {

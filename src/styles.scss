@@ -1,11 +1,9 @@
 @import "plyr/dist/plyr.css";
 
-
 $color-primary: #2e3edf;
 $gray-900: #0d0d0d;
 $radius-lg: 0.75rem;
 $space-4: 1rem;
-//$font-sans: "Inter", sans-serif;
 $white: #ffffff;
 $background-dialog: #1b1b22d9;
 
@@ -16,7 +14,6 @@ $background-dialog: #1b1b22d9;
   --radius-lg: #{40px};
   --radius-in: #{12px};
   --space-4: #{$space-4};
- // --font-base: #{$font-sans};
 }
 
 $break-sm: 640px;
@@ -53,22 +50,19 @@ video {
 
 body {
   background: url("assets/img/start.jpg") center / cover no-repeat fixed;
- // font-family: var(--font-base);
   background: var(--color-bg);
   color: #fff;
   line-height: 1.5;
- 
 
   &::before {
     content: "";
-    //position: fixed;
-    position: absolute; 
+    position: absolute;
 
     inset: 0;
-    background: rgba(0 0 0 / 0.45); /* 45 % Schwarz */
-    pointer-events: none; /* klickt nicht drüber */
+    background: rgba(0 0 0 / 0.45);
+    pointer-events: none;
 
-    @include respond($break-lg) {   /* ab 1024 px */
+    @include respond($break-lg) {
       position: fixed;
     }
   }
@@ -110,169 +104,84 @@ a {
 
 html,
 body {
- // height: 100%;
-  min-height: 100%;   // statt height
+  min-height: 100%;
   overflow-y: auto;
-  //overflow-y: hidden;
 }
 body {
   margin: 0;
- // font-family: Roboto, "Helvetica Neue", sans-serif;
-
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: "DM Sans", system-ui, sans-serif;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ::ng-deep .mat-mdc-snack-bar-container.slide-toast.success .end-bar {
-  background:#12c95b !important;   /* grün */
+  background: #12c95b !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ::ng-deep .mdc-snackbar__label {
-  padding-left: unset !important;      /* links bündig */
-  padding-bottom:unset !important;
+  padding-left: unset !important;
+  padding-bottom: unset !important;
 }
 
-
-
-
-
-
-
-
-
-
-
-/* styles.scss  ──────────────────────────────────────────────────
-   MOBIL  (< 640 px)  –  Snackbar vollbreit unten
-   Desktop bleibt unangetastet
-   ───────────────────────────────────────────────────────────── */
-   @media (max-width: 1278px) {
-
-    /* 1 │ Wrapper: Padding & Zentrierung weg */
-    ::ng-deep .cdk-global-overlay-wrapper.mat-mdc-snack-bar-wrapper {
-      padding: 0 !important;
-      justify-content: flex-start !important;   /* links anlegen */
-    }
-  
-    /* 2 │ Pane: Links bündig, volle Breite */
-    ::ng-deep .cdk-overlay-pane.mat-mdc-snack-bar-panel {
-      left: 0 !important;
-      transform: none !important;               /* zentrier-Translate löschen */
-      width: 100vw !important;
-    }
-  
-    /* 3 │ Container  (deine panelClass = slide-toast) */
-    ::ng-deep .mat-mdc-snack-bar-container.slide-toast {
-     // position: fixed !important;
-      inset: auto 0 0 0 !important;             /* bottom 0, left/right 0 */
-    //  width: 100vw !important;
-      //height: 232px !important;                 /* fixe Höhe */
-      margin: 0 !important;                     /* 8-px Margin entfernen */
-      border-radius: 20px 20px 0 0 !important;
-      padding: 0 !important;                    /* Interior-Padding macht Surface */
-      transform: translateY(100%);
-      animation: toastIn .3s ease-out forwards;
-    }
-  
-    /* 4 │ Label ohne Extra-Padding (optional) */
-    ::ng-deep .mat-mdc-snackbar__label {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  
-    /* Slide-Up & Slide-Down */
-    @keyframes toastIn  { from { transform: translateY(100%);} to { transform: translateY(0);} }
-    @keyframes toastOut { from { transform: translateY(0);}   to { transform: translateY(100%);} }
-    ::ng-deep .mat-mdc-snack-bar-exit.slide-toast {
-      animation: toastOut .25s ease-in forwards;
-    }
-
-
-
-
-
-
-    .toast {
-      flex-direction: column;          /* statt row */
-      width:100vw;
-      height:unset;
-      border-radius: 20px 20px 0 0;
-      margin-bottom:unset;
-    }
-  
-    /* 2 │ .end-bar jetzt als horizontale Leiste */
-    .toast .end-bar {
-      width: 100% !important;          /* volle Breite */
-      height: 16px !important;         /* Dicke wie zuvor */
-      flex: 0 0 auto;                  /* bleibt unverändert */
-    }
-  
-    
-/* 3 │ Optional: etwas Abstand oberhalb des Textes */
-.toast .content {
-  padding:12px 32px !important;               /* oder dein bisheriges Padding */
-}
-
-
-
+@media (max-width: 1278px) {
+  ::ng-deep .cdk-global-overlay-wrapper.mat-mdc-snack-bar-wrapper {
+    padding: 0 !important;
+    justify-content: flex-start !important;
   }
-  
 
+  ::ng-deep .cdk-overlay-pane.mat-mdc-snack-bar-panel {
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+  }
 
+  ::ng-deep .mat-mdc-snack-bar-container.slide-toast {
+    inset: auto 0 0 0 !important;
+    margin: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 0 !important;
+    transform: translateY(100%);
+    animation: toastIn 0.3s ease-out forwards;
+  }
 
+  ::ng-deep .mat-mdc-snackbar__label {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 
+  @keyframes toastIn {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes toastOut {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
+  }
+  ::ng-deep .mat-mdc-snack-bar-exit.slide-toast {
+    animation: toastOut 0.25s ease-in forwards;
+  }
 
+  .toast {
+    flex-direction: column;
+    width: 100vw;
+    height: unset;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: unset;
+  }
 
+  .toast .end-bar {
+    width: 100% !important;
+    height: 16px !important;
+    flex: 0 0 auto;
+  }
 
-
-
-
-
-
+  .toast .content {
+    padding: 12px 32px !important;
+  }
+}

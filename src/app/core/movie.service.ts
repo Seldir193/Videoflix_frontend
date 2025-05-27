@@ -9,25 +9,32 @@ export interface Movie {
   description: string;
   stream_url: string;
   poster_url: string;
-  duration: number;          // Sekunden
+  duration: number;
 }
 
 @Injectable({ providedIn: 'root' })
 export class MovieService {
   private api = environment.apiUrl.replace(/\/$/, '');
-  private videos   = `${this.api}/videos/`;    // ← stimmt mit Django überein
+  private videos = `${this.api}/videos/`;
   private progress = `${this.api}/progress/`;
 
   constructor(private http: HttpClient) {}
 
-  /* ---------- CRUD ---------- */
-  getMovies():  Observable<Movie[]>       { return this.http.get<Movie[]>(this.videos); }
-  getMovie(id: number): Observable<Movie> { return this.http.get<Movie>(`${this.videos}${id}/`); }
-  createMovie(data: Partial<Movie>)  { return this.http.post<Movie>(this.videos, data); }
-  updateMovie(id: number, data: Partial<Movie>) { return this.http.put<Movie>(`${this.videos}${id}/`, data); }
-  deleteMovie(id: number) { return this.http.delete<void>(`${this.videos}${id}/`); }
-
-  /* ---------- Fortschritt speichern (optional) ---------- */
+  getMovies(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(this.videos);
+  }
+  getMovie(id: number): Observable<Movie> {
+    return this.http.get<Movie>(`${this.videos}${id}/`);
+  }
+  createMovie(data: Partial<Movie>) {
+    return this.http.post<Movie>(this.videos, data);
+  }
+  updateMovie(id: number, data: Partial<Movie>) {
+    return this.http.put<Movie>(`${this.videos}${id}/`, data);
+  }
+  deleteMovie(id: number) {
+    return this.http.delete<void>(`${this.videos}${id}/`);
+  }
   setProgress(movieId: number, seconds: number) {
     return this.http.post(`${this.progress}`, { movie: movieId, seconds });
   }

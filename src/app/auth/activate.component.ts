@@ -8,24 +8,23 @@ import { AuthService } from '../core/auth.service';
 })
 export class ActivateComponent {
   private route = inject(ActivatedRoute);
-  private auth  = inject(AuthService);
-  private router= inject(Router);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit() {
-    const uid   = this.route.snapshot.paramMap.get('uid')!;
+    const uid = this.route.snapshot.paramMap.get('uid')!;
     const token = this.route.snapshot.paramMap.get('token')!;
 
-
     this.auth.activate(uid, token).subscribe({
-      next: ()  => this.router.navigate(['/auth/login'], { queryParams:{ activated:'yes' } }),
-      
-      error: () => this.router.navigate(['/auth/login'], { queryParams:{ activated:'fail'} }),
+      next: () =>
+        this.router.navigate(['/auth/login'], {
+          queryParams: { activated: 'yes' },
+        }),
+
+      error: () =>
+        this.router.navigate(['/auth/login'], {
+          queryParams: { activated: 'fail' },
+        }),
     });
   }
 }
-
-
-
-
-
-

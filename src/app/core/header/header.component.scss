@@ -1,67 +1,67 @@
-@use 'styles' as *; 
+@use "styles" as *;
 
 .header-box {
   @include dFlex(center, center);
-  padding: 10px 96px;             
-  background: transparent; 
-  height:108px;
-  //backdrop-filter: blur(2px);  
-  background-color: black;
+  padding: 10px 96px;
+  background: transparent;
+  height: 108px;
+  backdrop-filter: blur(2px);  
+ // background-color: black;
 
-
-
-  img{
-  cursor: pointer;
+  img {
+    cursor: pointer;
   }
 }
 
-.button-container{
-  max-width:102px;
-  width:100%;
+.button-container {
+  max-width: 102px;
+  width: 100%;
   background-color: $color-primary;
   border-radius: var(--radius-lg);
-  flex:0 0 auto;
+  flex: 0 0 auto;
 }
 
-.logo-desktop { display: none; }
-.logo-mobile  { display: inline-block; }
-
+.logo-desktop {
+  display: none;
+}
+.logo-mobile {
+  display: inline-block;
+}
 
 .btn-login {
   display: flex;
   align-items: center;
-  gap: 4px; 
+  gap: 4px;
 }
 
-
-
-
-.max-width-box{
+.max-width-box {
   width: 100%;
-    max-width: 1920px;
-    height: 100%;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  max-width: 1920px;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-
-
-
-
-@media (max-width: 1278px){
-  .header-box{
-    padding:10px 16px;
+@media (max-width: 1278px) {
+  .header-box {
+    padding: 10px 16px;
   }
-  .logo-back { display: none; } 
+  .logo-back {
+    display: none;
+  }
 
-  .back-movie { display: block; }
+  .back-movie {
+    display: block;
+  }
 }
 
 @media (min-width: 1278px) {
-  .logo-desktop { display: inline-block; }
-  .logo-mobile  { display: none; }
-  
-
+  .logo-desktop {
+    display: inline-block;
+  }
+  .logo-mobile {
+    display: none;
+  }
 }

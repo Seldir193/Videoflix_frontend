@@ -10,11 +10,9 @@ import {
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
-import { AuthService } from '../../core/auth.service'; // Pfad ggf. anpassen
+import { AuthService } from '../../core/auth.service';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastComponent }   from '../../toast/toast.component'; 
-
+import { ToastComponent } from '../../toast/toast.component';
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -29,18 +27,12 @@ import { ToastComponent }   from '../../toast/toast.component';
 })
 export class SignupComponent implements OnInit {
   submitted = false;
+  loading = false;
   showPassword = false;
   showRepeat = false;
 
-  loading = false;           
-  genericError = false; 
- 
-  private password_match = (
-    group: AbstractControl
-  ): ValidationErrors | null => {
-    const { password, re_password } = group.value;
-    return password === re_password ? null : { mismatch: true };
-  };
+  private password_match = (g: AbstractControl): ValidationErrors | null =>
+    g.value.password === g.value.re_password ? null : { mismatch: true };
 
   form = this.fb.nonNullable.group(
     {
@@ -57,15 +49,12 @@ export class SignupComponent implements OnInit {
     private snack: MatSnackBar,
     private router: Router,
     private translate: TranslateService
-
   ) {}
 
-  /* ---------- Lifecycle ---------- */
   ngOnInit(): void {
     this.form.valueChanges.subscribe(() => (this.submitted = false));
   }
 
-  /* ---------- Form Helpers ---------- */
   get email() {
     return this.form.controls.email;
   }
@@ -76,66 +65,41 @@ export class SignupComponent implements OnInit {
     return this.form.controls.re_password;
   }
 
-  toggle_show_pwd(which: 'pwd' | 'rep'): void {
+  toggle_show_pwd(which: 'pwd' | 'rep') {
     which === 'pwd'
       ? (this.showPassword = !this.showPassword)
       : (this.showRepeat = !this.showRepeat);
   }
 
-
-
-
-
   submit(): void {
     this.submitted = true;
     if (this.form.invalid) return;
-  
     this.loading = true;
-  
-    const dto = this.form.getRawValue();
-    this.auth.register(dto).subscribe({
-      /* ---------- SUCCESS ---------- */
-      next: () => {
-        this.snack.openFromComponent(ToastComponent, {     // ⚠️ hier open → openFromComponent
-          data: this.translate.instant('signup.success'),
-          duration: 3000,
-          horizontalPosition: 'left',
-          verticalPosition:   'bottom',
-          panelClass: ['slide-toast', 'no-bg','success' ], // ← extra Klasse
-        });
-        
-        this.router.navigate(['/auth/login']);
-      },
-  
-      /* ---------- ERROR ---------- */
-      error: () => {
-        this.snack.openFromComponent(ToastComponent, {
-          data: this.translate.instant('error.generic'),
-          duration: 3000,
-          horizontalPosition: 'left',
-          verticalPosition:   'bottom',
-          panelClass: ['slide-toast', 'no-bg'],            // ohne „success“
-        });
-        this.loading = false;
-      },
-  
+
+    this.auth.register(this.form.getRawValue()).subscribe({
+      next: () => this.handleSuccess(),
+      error: () => this.handleError(),
       complete: () => (this.loading = false),
     });
   }
-  
 
+  private handleSuccess(): void {
+    this.openToast('signup.success', true);
+    this.router.navigate(['/auth/login']);
+  }
 
+  private handleError(): void {
+    this.openToast('error.generic', false);
+    this.loading = false;
+  }
 
-
-
-
-
-
-
-
+  private openToast(key: string, success = false, dur = 3000) {
+    this.snack.openFromComponent(ToastComponent, {
+      data: this.translate.instant(key),
+      duration: dur,
+      horizontalPosition: 'left',
+      verticalPosition: 'bottom',
+      panelClass: ['slide-toast', 'no-bg'].concat(success ? ['success'] : []),
+    });
+  }
 }
-
-
-
-
-

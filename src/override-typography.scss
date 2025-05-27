@@ -1,54 +1,41 @@
+.mat-typography .mat-h1,
+.mat-typography .mat-headline-5,
+.mat-typography .mat-body,
+.mat-typography .mat-body-1,
+.mat-typography .mat-body-2,
+.mat-typography h1,
+.mat-typography h2,
+.mat-typography h3,
+.mat-typography h4,
+.mat-typography h5,
+.mat-typography h6,
+.mat-typography p,
+.mat-typography a,
+.mat-typography button,
+.mat-h1,
+.mat-headline-5,
+.mat-body,
+.mat-body-1,
+.mat-body-2,
+input,
+textarea,
+ul,
+ol,
+li,
+nav,
+div h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+a,
+button {
+  font-family: "DM Sans", system-ui, sans-serif;
+}
 
-
-
-/* -----------------------------------------------------------------
-   DM Sans für alle Material-Typo-Level + Basis-HTML  (Spezifität 0,2,0)
-   ----------------------------------------------------------------- */
-   .mat-typography .mat-h1,
-   .mat-typography .mat-headline-5,
-   .mat-typography .mat-body,
-   .mat-typography .mat-body-1,
-   .mat-typography .mat-body-2,
-   .mat-typography h1,
-   .mat-typography h2,
-   .mat-typography h3,
-   .mat-typography h4,
-   .mat-typography h5,
-   .mat-typography h6,
-   .mat-typography p,
-   .mat-typography a,
-   .mat-typography button,
-   .mat-h1,
-   .mat-headline-5,
-   .mat-body,
-   .mat-body-1,
-   .mat-body-2,
-   input, textarea,
-ul, ol, li, nav, div
-   h1,
-   h2,
-   h3,
-   h4,
-   h5,
-   h6,
-   p,
-   a,
-   button {
-     font-family: 'DM Sans', system-ui, sans-serif;
-   }
-   
-   /* Placeholder-Text ebenfalls auf DM Sans bringen */
-   input::placeholder,
-   textarea::placeholder {
-     font-family: 'DM Sans', system-ui, sans-serif;
-   }
-   
-
-
-
-
-
-
-
-
-
+input::placeholder,
+textarea::placeholder {
+  font-family: "DM Sans", system-ui, sans-serif;
+}

@@ -1,14 +1,10 @@
-
-
 @use "styles" as *;
 
 $turquoise: #14c8ff;
 $bar-h: 8vh;
 
-/* --------------------------------------------------------------
-   Vollbild‑Layout
-----------------------------------------------------------------*/
-html, body {
+html,
+body {
   margin: 0;
   height: 100%;
   overflow: hidden;
@@ -18,11 +14,9 @@ html, body {
   position: fixed;
   inset: 0;
   display: flex;
-  //flex-direction: column;
   background: #000;
 }
 
-/* Video‑Container ------------------------------------------------*/
 .player {
   flex: 1 1 auto;
   position: relative;
@@ -31,23 +25,9 @@ html, body {
 .player video {
   width: 100%;
   height: 100%;
-  object-fit: contain;        // Letterbox – Original‑Ratio wahren
+  object-fit: contain;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-/* --------------------------------------------------------------
-   Top‑Bar (Navigation)
-----------------------------------------------------------------*/
 .top-bar {
   position: absolute;
   top: 16px;
@@ -55,31 +35,22 @@ html, body {
   right: 32px;
   display: flex;
   align-items: center;
-  z-index: 5;    
-  
-  
-  transition: opacity .35s ease;   /* weich ein-/ausblenden */
-  opacity: 0;                      /* Standard = unsichtbar */
-  pointer-events: none;            /* klickt nicht durch    */
+  z-index: 5;
+  transition: opacity 0.35s ease;
+  opacity: 0;
+  pointer-events: none;
 
-  &.show {                         /* barVisible = true     */
+  &.show {
     opacity: 1;
-    pointer-events: auto;          /* Buttons wieder klickbar */
+    pointer-events: auto;
   }
 }
-
-
-
-
-
-
-
 
 .btn-nav,
 .btn-right {
   background: none;
   border: none;
-  padding: .25rem;
+  padding: 0.25rem;
   cursor: pointer;
 
   img {
@@ -88,13 +59,12 @@ html, body {
   }
 
   &:hover {
-   // background: rgba(255, 255, 255, .12);
     border-radius: 4px;
   }
 }
 
-.btn-nav{
-  &:hover{
+.btn-nav {
+  &:hover {
     background: $turquoise;
   }
 }
@@ -106,25 +76,16 @@ html, body {
   font-size: 3rem;
   margin: 0;
   font-weight: 700;
- 
 }
 
-
-
-
-/* --------------------------------------------------------------
-   Plyr Theme Overrides
-----------------------------------------------------------------*/
 :root {
   --plyr-color-main: #{$turquoise};
 }
 
-/* Slider‑Thumb etwas cleaner */
-.plyr--full-ui input[type='range']::-webkit-slider-thumb {
+.plyr--full-ui input[type="range"]::-webkit-slider-thumb {
   box-shadow: none;
 }
 
-/* Big Play Button */
 .plyr__control--overlaid {
   background: $turquoise;
   color: #000;
@@ -135,16 +96,11 @@ html, body {
   line-height: 90px;
 }
 
-/* --------------------------------------------------------------
-   Control‑Bar Sichtbarkeit
-----------------------------------------------------------------*/
-
-// 1) Standard: Controls nur auf Hover sichtbar
 .plyr--full-ui.plyr {
   .plyr__controls {
     opacity: 0 !important;
-    transition: opacity .25s;
-    pointer-events: none;      // verhindert Ghost‑Clicks
+    transition: opacity 0.25s;
+    pointer-events: none;
   }
   &:hover .plyr__controls {
     opacity: 1 !important;
@@ -152,29 +108,17 @@ html, body {
   }
 }
 
-// 2) Im Fullscreen permanent sichtbar – unabhängig von Hover
 .plyr--fullscreen {
   .plyr__controls {
     opacity: 1 !important;
     pointer-events: auto;
   }
- 
 }
 
-/* Safari / iOS: native Controls im Fullscreen erzwingen */
 video:-webkit-full-screen::-webkit-media-controls {
   display: flex !important;
 }
 
-
-
-
-
-
-
-
-
-/* watch.component.scss  – ganz unten anhängen */
 .resume-box {
   position: absolute;
   inset: 0;
@@ -184,10 +128,10 @@ video:-webkit-full-screen::-webkit-media-controls {
   align-items: center;
   gap: 1.2rem;
 
-  background: rgba(0, 0, 0, .72);
+  background: rgba(0, 0, 0, 0.72);
   color: #fff;
   text-align: center;
-  z-index: 30;                 // über Top-Bar & Plyr-Controls
+  z-index: 30;
 
   p {
     margin: 0;
@@ -196,45 +140,44 @@ video:-webkit-full-screen::-webkit-media-controls {
 
   button {
     min-width: 120px;
-    padding: .6rem 1.2rem;
+    padding: 0.6rem 1.2rem;
     font-size: 1rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: transform .15s;
+    transition: transform 0.15s;
 
-    &:first-of-type {          /* „Weiter“ */
+    &:first-of-type {
       background: #14c8ff;
       color: #000;
     }
-    &:last-of-type {           /* „Neu starten“ */
+    &:last-of-type {
       background: #555;
       color: #fff;
     }
 
-    &:hover { transform: scale(1.05); }
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 }
 
-
-
-
-@media(max-width:1278px){
+@media (max-width: 1278px) {
   .btn-nav,
-.btn-right{
-img{
-  width:32px;
-  height:32px;
-}
-}
+  .btn-right {
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
 
-.vid-title{
-  font-size: 20px;
-}
+  .vid-title {
+    font-size: 20px;
+  }
 
-.top-bar{
-  top:10px;
-  left:16px;
-  right:16px;
-}
+  .top-bar {
+    top: 10px;
+    left: 16px;
+    right: 16px;
+  }
 }

@@ -6,7 +6,11 @@
     <div class="field-block">
       <div class="input-group" [class.invalid]="email.invalid && email.touched">
         <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
-        <input type="email" [placeholder]="'placeholder.email' | translate" formControlName="email" />
+        <input
+          type="email"
+          [placeholder]="'placeholder.email' | translate"
+          formControlName="email"
+        />
       </div>
 
       <p class="error" *ngIf="email.errors?.['email'] && email.touched">
@@ -69,10 +73,9 @@
         {{ "button.forgot" | translate }}
       </a>
 
-
       <p class="signup-hint" routerLink="/auth/signup">
-        <span class="label-noaccount">{{ 'label.noAccount' | translate }}</span>
-      
+        <span class="label-noaccount">{{ "label.noAccount" | translate }}</span>
+
         <a class="text-link sign-now" routerLink="/auth/signup">
           {{ "button.sign" | translate }}
         </a>

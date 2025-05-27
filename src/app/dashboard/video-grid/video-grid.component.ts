@@ -1,4 +1,3 @@
-// src/app/video-grid/video-grid.component.ts
 import {
   Component,
   OnInit,
@@ -10,17 +9,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { CommonModule }  from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { DomSanitizer }  from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
+import { VideoService } from '../../shared/video-service';
+import { Video } from '../../shared/models/video.model';
+import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 
-import { VideoService, Video } from '../../shared/video-service';
-import { SafeUrlPipe }   from '../../shared/safe-url.pipe';
-
-/* --------------------------------------------------------------
-   Kategorien in gewünschter Sortierung
-----------------------------------------------------------------*/
 export const CAT_ORDER = [
   'New on Videoflix',
   'Documentary',
@@ -30,130 +26,98 @@ export const CAT_ORDER = [
 type Cat = (typeof CAT_ORDER)[number];
 
 @Component({
-  selector   : 'app-video-grid',
-  standalone : true,
-  imports    : [CommonModule, RouterModule, TranslateModule, SafeUrlPipe],
+  selector: 'app-video-grid',
+  standalone: true,
+  imports: [CommonModule, RouterModule, TranslateModule, SafeUrlPipe],
   templateUrl: './video-grid.component.html',
-  styleUrls  : ['./video-grid.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,   // optional
+  styleUrls: ['./video-grid.component.scss'],
 })
 export class VideoGridComponent implements OnInit, AfterViewInit {
+  @ViewChildren('rowEl') private rows!: QueryList<ElementRef<HTMLElement>>;
 
-  /* ------------------------------------------------------------
-     ViewChildren – jede Thumbnail-Zeile
-  ------------------------------------------------------------ */
-  @ViewChildren('rowEl')
-  private rows!: QueryList<ElementRef<HTMLElement>>;
-
-  /* ------------------------------------------------------------
-     Signale für Kategorien & Hero
-  ------------------------------------------------------------ */
   groups = signal<Record<Cat, Video[]>>({
     'New on Videoflix': [],
     Documentary: [],
     Drama: [],
     Romance: [],
   });
-  hero     = signal<Video | null>(null);
+  hero = signal<Video | null>(null);
   autoplay = signal(false);
-
   readonly catOrder = CAT_ORDER;
-
-  /* ------------------------------------------------------------
-     Scroll-Schalter für jede Zeile
-  ------------------------------------------------------------ */
   scrollState: { prev: boolean; next: boolean }[] = [];
 
-  /* ------------------------------------------------------------
-     DI – gemischter Stil: Constructor + inject()
-  ------------------------------------------------------------ */
+  private vs = inject(VideoService);
+  private rt = inject(Router);
+  private ar = inject(ActivatedRoute);
+  private san = inject(DomSanitizer);
   constructor(private cdr: ChangeDetectorRef) {}
 
-  private vs  = inject(VideoService);
-  private rt  = inject(Router);
-  private ar  = inject(ActivatedRoute);
-  private san = inject(DomSanitizer);
-
-  /* ============================================================
-     Daten holen
-  ============================================================ */
   ngOnInit(): void {
-    this.autoplay.set(this.ar.snapshot.queryParamMap.get('autoplay') === 'true');
-
-    this.vs.list().subscribe(list => {
-      /* Videos nach Kategorie einsortieren */
-      const g: Record<Cat, Video[]> = {
-        'New on Videoflix': [],
-        Documentary: [],
-        Drama: [],
-        Romance: [],
-      };
-      for (const v of list) {
-        const cat = ((v as any).category as Cat) ?? 'New on Videoflix';
-        (g[cat] ?? g['New on Videoflix']).push(v);
-      }
-      this.groups.set(g);
-
-      /* Hero: jüngstes Video overall */
-      const newest = list.reduce<Video | null>(
-        (best, v) => (best === null || v.id > best.id ? v : best),
-        null
-      );
-      this.hero.set(newest);
-
-      /* Scroll-Buttons erst nach erstem Render ermitteln */
-      setTimeout(() => this.initScrollStates());
-    });
+    this.setAutoplayFlag();
+    this.vs.list().subscribe((list) => this.processVideoList(list));
   }
 
-  /* ============================================================
-     ViewChildren initialisieren
-  ============================================================ */
   ngAfterViewInit(): void {
-    /* Jedes Mal, wenn sich die Rows verändern (z. B. Daten nachladen) */
     this.rows.changes.subscribe(() =>
       setTimeout(() => this.initScrollStates())
     );
   }
 
-  /* ------------------------------------------------------------
-     Scroll-Status pro Zeile berechnen
-  ------------------------------------------------------------ */
+  private setAutoplayFlag(): void {
+    this.autoplay.set(
+      this.ar.snapshot.queryParamMap.get('autoplay') === 'true'
+    );
+  }
+
+  private processVideoList(list: Video[]): void {
+    this.groups.set(this.buildGroups(list));
+    this.hero.set(this.pickNewest(list));
+    setTimeout(() => this.initScrollStates());
+  }
+
+  private buildGroups(list: Video[]): Record<Cat, Video[]> {
+    const g: Record<Cat, Video[]> = {
+      'New on Videoflix': [],
+      Documentary: [],
+      Drama: [],
+      Romance: [],
+    };
+    for (const v of list) {
+      const cat = ((v as any).category as Cat) ?? 'New on Videoflix';
+      (g[cat] ?? g['New on Videoflix']).push(v);
+    }
+    return g;
+  }
+
+  private pickNewest(list: Video[]): Video | null {
+    return list.reduce<Video | null>(
+      (best, v) => (!best || v.id > best.id ? v : best),
+      null
+    );
+  }
+
   private initScrollStates(): void {
-    this.scrollState = this.rows.toArray().map(row => {
+    this.scrollState = this.rows.toArray().map((row) => {
       const el = row.nativeElement;
       const overflow = el.scrollWidth > el.clientWidth + 1;
-      return { prev: false, next: overflow };  // Prev erst nach Scroll
+      return { prev: false, next: overflow };
     });
     this.cdr.detectChanges();
   }
 
-  /* ------------------------------------------------------------
-     Scroll-Event: Buttons zeigen / verstecken
-  ------------------------------------------------------------ */
-  onRowScroll(index: number, el: HTMLElement): void {
-    const atStart = el.scrollLeft < 1;
-    const atEnd   = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-
-    this.scrollState[index] = {
-      prev: !atStart,
-      next: !atEnd,
+  onRowScroll(i: number, el: HTMLElement): void {
+    this.scrollState[i] = {
+      prev: el.scrollLeft > 0,
+      next: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
     };
     this.cdr.detectChanges();
   }
 
-  /* ------------------------------------------------------------
-     Buttons klicken → weich scrollen
-  ------------------------------------------------------------ */
-  scroll(el: HTMLElement, dir: number, index: number): void {
-    const step = el.clientWidth;                       // eine „Seite“
-    el.scrollBy({ left: dir * step, behavior: 'smooth' });
-    setTimeout(() => this.onRowScroll(index, el), 350); // Status nachziehen
+  scroll(el: HTMLElement, dir: number, idx: number): void {
+    el.scrollBy({ left: dir * el.clientWidth, behavior: 'smooth' });
+    setTimeout(() => this.onRowScroll(idx, el), 350);
   }
 
-  /* ------------------------------------------------------------
-     Player öffnen
-  ------------------------------------------------------------ */
   playVideo(v: Video) {
     this.rt.navigate(['/watch', v.id]);
   }

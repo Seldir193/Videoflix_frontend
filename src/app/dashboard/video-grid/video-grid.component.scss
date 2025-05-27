@@ -3,14 +3,8 @@
 .hero {
   position: relative;
   height: 100dvh;
-
-  // width: 100vw;
   overflow: hidden;
   padding: 30px 96px;
-   
- 
-
-  
 
   .bg-video {
     position: absolute;
@@ -24,8 +18,6 @@
     position: relative;
     z-index: 1;
     max-width: 440px;
-    //margin: 0 auto;
-    // padding: 8rem 1rem 4rem;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -49,28 +41,19 @@
   }
 }
 
-
 .hero-inner {
   width: 100%;
-  max-width: 1920px;          /* Deckel */
-  margin-inline: auto;        /* zentriert */
- 
+  max-width: 1920px;
+  margin-inline: auto;
 }
 
-
-/* video-grid.component.scss */
-
-/* Overlay-Row liegt über dem Video, bündig mit Seitenrand */
 .overlay-row {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 2rem; /* Abstand vom Unterrand des Videos */
-  padding: 0 96px; /* gleicht das Shell-Padding aus  */
-  z-index: 2; /* über der hero-content (1) + Video (-) */
-
-
-  
+  bottom: 2rem;
+  padding: 0 96px;
+  z-index: 2;
 
   .cat-title {
     font-size: 1rem;
@@ -83,13 +66,11 @@
 .row {
   display: flex;
   gap: 16px;
-  overflow-x: auto; /* ← wieder scrollbar */
+  overflow-x: auto;
   padding-bottom: 4px;
   scroll-behavior: smooth;
-
-  /* Balken verstecken */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* alter Edge/IE */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .row::-webkit-scrollbar {
   width: 0;
@@ -97,23 +78,21 @@
 }
 
 .thumb {
-  position: relative; /* nötig für Overlay + Caption */
+  position: relative;
   cursor: pointer;
   flex: 0 0 213px;
   text-align: center;
 
-  /* ---------------- Overlay zum Abdunkeln ---------------- */
   &::before {
     content: "";
     position: absolute;
-    inset: 0; /* füllt das komplette Thumb */
-    background: rgba(0, 0, 0, 0.35); /* Helligkeit ↓ hier einstellen */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
     border-radius: var(--radius-md);
-    transition: opacity 0.3s; /* wird „weggeblendet“ */
-    z-index: 1; /* unter der Beschriftung */
+    transition: opacity 0.3s;
+    z-index: 1;
   }
 
-  /* ---------------- Bild / Videovorschau ----------------- */
   img,
   video {
     width: 213px;
@@ -129,27 +108,23 @@
     transform: scale(1.05);
   }
 
-  /* Hover = Overlay ausblenden → wird hell */
   &:hover::before {
     opacity: 0;
   }
 
-  /* ---------------- Beschriftung ------------------------- */
   figcaption {
     position: absolute;
     left: 6px;
     bottom: 4px;
     font-size: 0.8rem;
     color: #fff;
-    text-shadow: none; /* kein Glow */
-    z-index: 2; /* über dem Overlay */
+    text-shadow: none;
+    z-index: 2;
     pointer-events: none;
   }
 }
 
 .categories {
-  // background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(20, 20, 20, 0) 50%, #141414 100%);
-
   background: linear-gradient(
     180deg,
     rgba(20, 20, 20, 0) 0%,
@@ -161,37 +136,29 @@
 
   padding: 0px 96px 0;
   padding: 30px 96px;
-  
   display: flex;
   flex-direction: column;
   gap: 48px;
-
   padding-block: 30px;
- 
-
 }
 
 .categories-inner {
   width: 100%;
-  max-width: 1920px;            /* Deckel                     */
-  margin-inline: auto;          /* zentriert                  */
- 
+  max-width: 1920px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: 48px;
 }
-
 
 .button-box {
   display: flex;
 }
 
-/* --- Scroll-Wrapper --- */
 .row-wrap {
   position: relative;
 }
 
-/* --- Buttons --- */
 .scroll-btn {
   position: absolute;
   top: 50%;
@@ -207,22 +174,22 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 4; /* über Thumbnails */
+  z-index: 4;
 
   img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    pointer-events: none; /* Bild soll Klicks nicht abfangen */
+    pointer-events: none;
   }
 }
 
 .scroll-btn.prev {
   left: -22px;
-} /* halbe Breite «ausserhalb»  */
+}
 .scroll-btn.next {
   right: -22px;
-} /* dito                         */
+}
 
 .scroll-btn:hover {
   background: rgba(0, 0, 0, 0.85);
@@ -275,7 +242,6 @@
     right: 0;
   }
 
-  /* Sicherheitsnetz: falls später etwas anderes überläuft */
   .categories {
     overflow-x: clip;
   }
@@ -294,7 +260,6 @@
   }
 }
 
-/* darüber (z. B. Zoom 25 %, 4 K)  →  Begrenzung wieder aufheben */
 @media (min-height: 1201px) {
   .hero {
     max-height: none;

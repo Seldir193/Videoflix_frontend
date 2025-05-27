@@ -1,145 +1,113 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div class="container">
-<form
-  class="signup-box"
-  [formGroup]="form"
-  (ngSubmit)="submit()"
-  novalidate
->
-  <h1 class="title">{{ 'button.signup' | translate }}</h1>
+  <form class="signup-box" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h1 class="title">{{ "button.signup" | translate }}</h1>
 
-  <!-- ───── E-MAIL ───── -->
-  <div class="field-block">
-    <div class="input-group" [class.invalid]="email.invalid && email.touched">
-      <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
-      <input type="email"  [placeholder]="'placeholder.email' | translate" formControlName="email" />
-    </div>
-    <p class="error" *ngIf="email.errors?.['email'] && email.touched">
-      <img src="assets/img/warning.png" aria-hidden="true" />
-      {{ 'error.emailInvalid' | translate }}
-    </p>
-  </div>
-
-  <!-- ───── PASSWORT ───── -->
-  <div class="field-block">
-    <div
-      class="input-group"
-      [class.invalid]="password.invalid && (password.touched || submitted)"
-    >
-      <img class="icon" src="assets/img/password.png" aria-hidden="true" />
-      <input
-        [type]="showPassword ? 'text' : 'password'"
-        [placeholder]="'placeholder.password' | translate"
-        formControlName="password"
-      />
-
-      <button
-        type="button"
-        class="eye"
-        (click)="toggle_show_pwd('pwd')"
-        aria-label="Passwort anzeigen"
-      >
-        <img
-          [src]="
-            showPassword
-              ? 'assets/img/visibility_off.png'
-              : 'assets/img/visibility.png'
-          "
-          aria-hidden="true"
+    <!-- ───── E-MAIL ───── -->
+    <div class="field-block">
+      <div class="input-group" [class.invalid]="email.invalid && email.touched">
+        <img class="icon" src="assets/img/mail.png" aria-hidden="true" />
+        <input
+          type="email"
+          [placeholder]="'placeholder.email' | translate"
+          formControlName="email"
         />
-      </button>
+      </div>
+      <p class="error" *ngIf="email.errors?.['email'] && email.touched">
+        <img src="assets/img/warning.png" aria-hidden="true" />
+        {{ "error.emailInvalid" | translate }}
+      </p>
     </div>
 
-    <p
-      class="error"
-      *ngIf="
+    <!-- ───── PASSWORT ───── -->
+    <div class="field-block">
+      <div
+        class="input-group"
+        [class.invalid]="password.invalid && (password.touched || submitted)"
+      >
+        <img class="icon" src="assets/img/password.png" aria-hidden="true" />
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [placeholder]="'placeholder.password' | translate"
+          formControlName="password"
+        />
+
+        <button
+          type="button"
+          class="eye"
+          (click)="toggle_show_pwd('pwd')"
+          aria-label="Passwort anzeigen"
+        >
+          <img
+            [src]="
+              showPassword
+                ? 'assets/img/visibility_off.png'
+                : 'assets/img/visibility.png'
+            "
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+
+      <p
+        class="error"
+        *ngIf="
         password.errors?.['minlength']  && (password.touched || submitted)
       "
-    >
-      <img src="assets/img/warning.png" aria-hidden="true" />
-      {{ 'error.passwordShort' | translate }}
-    </p>
-  </div>
+      >
+        <img src="assets/img/warning.png" aria-hidden="true" />
+        {{ "error.passwordShort" | translate }}
+      </p>
+    </div>
 
-  <!-- ───── PASSWORT WIEDERHOLEN ───── -->
-  <div class="field-block">
-    <div
-      class="input-group"
-      [class.invalid]="
+    <!-- ───── PASSWORT WIEDERHOLEN ───── -->
+    <div class="field-block">
+      <div
+        class="input-group"
+        [class.invalid]="
         (re_password.invalid && (re_password.touched || submitted)) ||
         form.errors?.['mismatch']
       "
-    >
-      <img class="icon" src="assets/img/password.png" aria-hidden="true" />
-      <input
-        [type]="showRepeat ? 'text' : 'password'"
-        [placeholder]="'placeholder.rePassword' | translate"
-        formControlName="re_password"
-      />
-
-      <button
-        type="button"
-        class="eye"
-        (click)="toggle_show_pwd('rep')"
-        aria-label="Passwort anzeigen"
       >
-        <img
-          [src]="
-            showRepeat
-              ? 'assets/img/visibility_off.png'
-              : 'assets/img/visibility.png'
-          "
-          aria-hidden="true"
+        <img class="icon" src="assets/img/password.png" aria-hidden="true" />
+        <input
+          [type]="showRepeat ? 'text' : 'password'"
+          [placeholder]="'placeholder.rePassword' | translate"
+          formControlName="re_password"
         />
-      </button>
+
+        <button
+          type="button"
+          class="eye"
+          (click)="toggle_show_pwd('rep')"
+          aria-label="Passwort anzeigen"
+        >
+          <img
+            [src]="
+              showRepeat
+                ? 'assets/img/visibility_off.png'
+                : 'assets/img/visibility.png'
+            "
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+
+      <p
+        class="error"
+        *ngIf="form.errors?.['mismatch'] && (re_password.touched || submitted)"
+      >
+        <img src="assets/img/warning.png" aria-hidden="true" />
+        {{ "error.passwordMismatch" | translate }}
+      </p>
     </div>
 
-    <p
-      class="error"
-      *ngIf="form.errors?.['mismatch'] && (re_password.touched || submitted)"
+    <!-- ───── SUBMIT ───── -->
+    <button
+      type="submit"
+      class="btn-login"
+      [disabled]="form.invalid || loading"
     >
-      <img src="assets/img/warning.png" aria-hidden="true" />
-      {{ 'error.passwordMismatch' | translate }}
-    </p>
-  </div>
-
-  
-  <!-- ───── SUBMIT ───── -->
-  <button type="submit" class="btn-login" [disabled]="form.invalid|| loading">
-    {{ 'button.sign' | translate }}
-  </button>
-  
-</form>
-
+      {{ "button.sign" | translate }}
+    </button>
+  </form>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,41 +1,47 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-
 import { AuthService } from '../../core/auth.service';
 import { ToastComponent } from '../../toast/toast.component';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, MatSnackBarModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss'],
 })
 export class ResetPasswordComponent implements OnInit {
-
-  uid = '';   // UID aus der URL
-  token = ''; // Token aus der URL
-
+  uid = '';
+  token = '';
   submitted = false;
   loading = false;
-  done = false; // Status, ob der Benutzer das Passwort erfolgreich zurückgesetzt hat
+  done = false;
 
-  
   form = this.fb.nonNullable.group(
     {
-      new_password: ['', [Validators.required, Validators.minLength(8)]],  // Passwort mit Mindestlänge
-      re_new_password: ['', Validators.required], // Passwort-Wiederholung
+      new_password: ['', [Validators.required, Validators.minLength(8)]],
+      re_new_password: ['', Validators.required],
     },
-    { validators: this.samePwd } // Validierung für Passwort-Wiederholung
+    { validators: this.samePwd }
   );
 
-  showPassword = false;   // Toggle für Passwort-Sichtbarkeit
-  showRepeat = false;     // Toggle für Wiederholungs-Passwort-Sichtbarkeit
+  showPassword = false;
+  showRepeat = false;
 
   constructor(
     private fb: FormBuilder,
@@ -47,16 +53,14 @@ export class ResetPasswordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // UID und Token aus der URL auslesen
-    this.uid = this.route.snapshot.paramMap.get('uid')!;
-    this.token = this.route.snapshot.paramMap.get('token')!;
-
-    this.form.valueChanges.subscribe(() => (this.submitted = false)); // Zurücksetzen der "submitted"-Status bei Form-Änderung
+    this.uid = this.route.snapshot.paramMap.get('uid') || '';
+    this.token = this.route.snapshot.paramMap.get('token') || '';
+    this.form.valueChanges.subscribe(() => (this.submitted = false));
   }
 
   private samePwd(group: AbstractControl): ValidationErrors | null {
     const { new_password, re_new_password } = group.value;
-    return new_password === re_new_password ? null : { mismatch: true }; // Überprüfen, ob die Passwörter übereinstimmen
+    return new_password === re_new_password ? null : { mismatch: true };
   }
 
   submit(): void {
@@ -64,68 +68,55 @@ export class ResetPasswordComponent implements OnInit {
     if (this.form.invalid) return;
 
     this.loading = true;
-
-    
-    // Daten für die Passwortbestätigung
-    const dto = {
-      uid: this.uid,
-      token: this.token,
-      new_password: this.form.value.new_password!,
-      re_new_password: this.form.value.re_new_password!
-    };
-
-    // Anfrage an den AuthService zur Bestätigung des Passworts
-    this.auth.confirmPasswordReset(dto).subscribe({
-      next: () => this.showSuccess(),  // Bei Erfolg
-      error: () => this.showError(),   // Bei Fehler
+    this.auth.confirmPasswordReset(this.buildDto()).subscribe({
+      next: () => this.handleSuccess(),
+      error: () => this.handleError(),
     });
   }
 
-  // Erfolgsmeldung anzeigen
-  private showSuccess(): void {
-    this.snack.openFromComponent(ToastComponent, {
-      data: this.translate.instant('reset.success'), // Erfolgsmeldung
-      duration: 3000,
-      horizontalPosition: 'left',
-      verticalPosition: 'bottom',
-      panelClass: ['slide-toast', 'no-bg', 'success'],
-    });
+  private handleSuccess(): void {
+    this.openToast('reset.success', true);
     this.done = true;
     this.loading = false;
 
-    // 3 Sekunden später zum Login-Bereich weiterleiten
     setTimeout(() => this.router.navigate(['/auth/login']), 3000);
   }
 
-  // Fehlermeldung anzeigen
-  private showError(): void {
-    this.snack.openFromComponent(ToastComponent, {
-      data: this.translate.instant('reset.error'), // Fehlermeldung
-      duration: 3000,
-      horizontalPosition: 'left',
-      verticalPosition: 'bottom',
-      panelClass: ['slide-toast', 'no-bg'],
-    });
+  private handleError(): void {
+    this.openToast('reset.error');
     this.loading = false;
   }
 
-  get password() { return this.form.controls.new_password; }
-  get re_password() { return this.form.controls.re_new_password; }
-
-  // Toggle für die Sichtbarkeit des Passworts
-  toggleShowPassword(): void {
-    this.showPassword = !this.showPassword;
+  private buildDto() {
+    return {
+      uid: this.uid,
+      token: this.token,
+      new_password: this.form.value.new_password!,
+      re_new_password: this.form.value.re_new_password!,
+    };
   }
 
-  // Toggle für die Sichtbarkeit der Passwort-Wiederholung
-  toggleShowRepeat(): void {
+  private openToast(key: string, success = false, dur = 3000) {
+    return this.snack.openFromComponent(ToastComponent, {
+      data: this.translate.instant(key),
+      duration: dur,
+      horizontalPosition: 'left',
+      verticalPosition: 'bottom',
+      panelClass: ['slide-toast', 'no-bg'].concat(success ? ['success'] : []),
+    });
+  }
+
+  get password() {
+    return this.form.controls.new_password;
+  }
+  get re_password() {
+    return this.form.controls.re_new_password;
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
+  }
+  toggleShowRepeat() {
     this.showRepeat = !this.showRepeat;
   }
 }
-
-
-
-
-
-
-

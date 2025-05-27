@@ -1,27 +1,10 @@
-
-
-
-
-
-
-
-
-
-
-
-
 @use "styles" as *;
 
-/* ──────────────────────────────────────────
-   BASIS  – Footer-Box auf 1920 px deckeln
-   ────────────────────────────────────────── */
 .footer-box {
   @include dFlex(center, null, 48px);
   padding: 10px 96px;
   background: transparent;
   backdrop-filter: blur(2px);
-
-  /* ▼ NEU: Breiten-Deckel + Zentrierung */
   width: 100%;
   max-width: 1920px;
   margin-inline: auto;
@@ -32,48 +15,31 @@
     cursor: pointer;
     transition: color 125ms;
 
-    &:hover { color: $color-primary; }
+    &:hover {
+      color: $color-primary;
+    }
   }
 }
 
-/* ──────────────────────────────────────────
-   VIDEO-OVERLAY-VARIANTE
-   ────────────────────────────────────────── */
 :host-context(.footer--video) .footer-box {
   justify-content: flex-end;
   padding: 10px 96px;
-
- 
-
-
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0)   0%,
+    rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 0.9) 50%
   );
 
-  /* ▼ Deckel & Zentrierung gelten hier ebenso */
   width: 100%;
   max-width: 1920px;
   margin-inline: auto;
 }
 
-/* ──────────────────────────────────────────
-   MOBIL  < 1278 px  –  Deckel weg, schmaleres Padding
-   ────────────────────────────────────────── */
 @media (max-width: 1278px) {
   .footer-box,
   :host-context(.footer--video) .footer-box {
-    max-width: none;        /* Begrenzung weg            */
-    padding: 10px 16px;     /* dein mobiles Padding       */
+    max-width: none;
+    padding: 10px 16px;
     justify-content: center;
   }
 }
-
-
-
-
-
-
-
-

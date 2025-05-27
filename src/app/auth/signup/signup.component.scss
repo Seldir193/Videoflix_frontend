@@ -70,8 +70,8 @@
   font-size: 0.875rem;
 }
 
-input[type='password']::-ms-reveal,
-input[type='password']::-ms-clear {
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
   display: none;
 }
 
@@ -82,75 +82,54 @@ input[type='password']::-ms-clear {
   font-weight: 700;
 }
 
-
-
-
-
-
-/* Grundzustand – aktiv & klickbar */
 .btn-login {
   padding: 12px 24px;
   border: none;
   border-radius: var(--radius-lg);
   font-weight: 700;
   font-size: 18px;
-  color: #fff;                     /* Text immer weiß */
+  color: #fff;
   background: var(--color-primary);
   cursor: pointer;
-  transition: background .2s, opacity .2s;
-  
-  /* Hover, solange NICHT disabled */
+  transition: background 0.2s, opacity 0.2s;
+
   &:hover:not(:disabled) {
     background: darken($color-primary, 8%);
   }
 }
 
-/* Deaktiviert */
 .btn-login:disabled {
-  background: #666;                /* Grauer Hintergrund */
-  opacity: 1;                     /* leicht transparent */
+  background: #666;
+  opacity: 1;
   cursor: not-allowed;
-  
-  /* Hover-Feedback auch im Disabled-Zustand */
+
   &:hover {
-    opacity: .85;                  /* minimal heller beim Überfahren */
+    opacity: 0.85;
   }
 }
-
-
 
 :host {
   display: flex;
-       // füllt die Seite
-  overflow-y: auto;       // eigene Scrollbar, unabhängig vom Body
+  overflow-y: auto;
   align-items: center;
 }
 
-
-
-
-
-
 @media (max-width: 580px) {
-  .signup-box{
-    padding:43px 24px;
+  .signup-box {
+    padding: 43px 24px;
   }
 
-  :host{
+  :host {
     min-height: calc(100dvh - 5rem);
-   // min-height: 100vh;
-    //align-items: unset;
-   
   }
-  
- 
+
   .input-group input {
     width: 100%;
   }
-  .title{
+  .title {
     font-size: 40px !important;
- }
- .container{
-  padding:0px 10px;
- }
+  }
+  .container {
+    padding: 0px 10px;
+  }
 }
