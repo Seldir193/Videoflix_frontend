@@ -28,6 +28,7 @@ export class HeaderComponent implements OnInit {
   isVideoPage = false;
   isMovieInfo = false;
   isLoggedIn = false;
+  
 
   constructor(
     private location: Location,
@@ -53,7 +54,12 @@ export class HeaderComponent implements OnInit {
     this.isVideoPage =
       url.startsWith('/dashboard/videos') || url.startsWith('/watch/');
     this.isMovieInfo = url.includes('/movie/');
+   
   }
+
+ 
+
+
 
   /* ---------- Zurück navigieren → je nach Seite unterschiedliche Logik --------- */
   goBack(): void {
@@ -61,6 +67,7 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/dashboard/videos'], { replaceUrl: true });
     } else if (this.isMovieInfo) {
       this.goBackToGrid(); // Gehe zum Grid
+
     } else if (this.onLoginPage) {
       if (this.auth.isLoggedIn()) {
         // Wenn der Benutzer eingeloggt ist und auf der Login-Seite ist, leite ihn zum Dashboard weiter
@@ -72,6 +79,11 @@ export class HeaderComponent implements OnInit {
       this.location.back(); // Standard-Rück-Navigation
     }
   }
+
+
+
+
+
 
   /* ---------- Login-Seite öffnen ------------------------ */
   openLogin(): void {

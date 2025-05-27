@@ -4,6 +4,10 @@
 
 <!-- ---------------- HERO-BEREICH ------------------------------- -->
 <section class="hero" *ngIf="hero() as h; else loading">
+
+  
+<div class="hero-inner">
+
   <div class="hero-content">
     <h1 class="title">{{ h.title }}</h1>
     <p class="tagline">{{ 'hero.heroSpan' | translate }}</p>
@@ -16,6 +20,8 @@
     </div>
   </div>
 
+</div>
+
 
 </section>
 
@@ -24,8 +30,11 @@
   <p class="text-center text-gray-400">Loading …</p>
 </ng-template>
 
+
+
 <!-- ---------------- VIDEOS NACH KATEGORIEN --------------------- -->
 <section class="categories" *ngIf="groups() as g">
+  <div class="categories-inner">
   <ng-container *ngFor="let cat of catOrder; let i = index">
     <div class="cat-block" *ngIf="$any(g)[cat]?.length">
       <!-- Kategorie-Titel -->
@@ -90,4 +99,7 @@
       </div>
     </div>
   </ng-container>
+  </div>
 </section>
+
+

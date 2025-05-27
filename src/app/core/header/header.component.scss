@@ -1,11 +1,14 @@
 @use 'styles' as *; 
 
 .header-box {
-  @include dFlex(space-between, center);
+  @include dFlex(center, center);
   padding: 10px 96px;             
   background: transparent; 
   height:108px;
-  backdrop-filter: blur(2px);  
+  //backdrop-filter: blur(2px);  
+  background-color: black;
+
+
 
   img{
   cursor: pointer;
@@ -29,6 +32,22 @@
   align-items: center;
   gap: 4px; 
 }
+
+
+
+
+.max-width-box{
+  width: 100%;
+    max-width: 1920px;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
 
 
 @media (max-width: 1278px){

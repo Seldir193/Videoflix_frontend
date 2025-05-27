@@ -3,10 +3,14 @@
 .hero {
   position: relative;
   height: 100dvh;
-  
- // width: 100vw;
+
+  // width: 100vw;
   overflow: hidden;
-  padding:30px 96px;
+  padding: 30px 96px;
+   
+ 
+
+  
 
   .bg-video {
     position: absolute;
@@ -21,7 +25,7 @@
     z-index: 1;
     max-width: 440px;
     //margin: 0 auto;
-   // padding: 8rem 1rem 4rem;
+    // padding: 8rem 1rem 4rem;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -45,6 +49,15 @@
   }
 }
 
+
+.hero-inner {
+  width: 100%;
+  max-width: 1920px;          /* Deckel */
+  margin-inline: auto;        /* zentriert */
+ 
+}
+
+
 /* video-grid.component.scss */
 
 /* Overlay-Row liegt über dem Video, bündig mit Seitenrand */
@@ -56,6 +69,9 @@
   padding: 0 96px; /* gleicht das Shell-Padding aus  */
   z-index: 2; /* über der hero-content (1) + Video (-) */
 
+
+  
+
   .cat-title {
     font-size: 1rem;
     margin-bottom: 0.5rem;
@@ -64,35 +80,21 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 .row {
   display: flex;
   gap: 16px;
-  overflow-x: auto;          /* ← wieder scrollbar */
+  overflow-x: auto; /* ← wieder scrollbar */
   padding-bottom: 4px;
   scroll-behavior: smooth;
 
   /* Balken verstecken */
-  scrollbar-width: none;     /* Firefox */
-  -ms-overflow-style: none;  /* alter Edge/IE */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* alter Edge/IE */
 }
-.row::-webkit-scrollbar { width: 0; height: 0; }
-
-
-
-
-
-
-
+.row::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
 
 .thumb {
   position: relative; /* nötig für Overlay + Caption */
@@ -146,6 +148,8 @@
 }
 
 .categories {
+  // background: linear-gradient(180deg, rgba(20, 20, 20, 0.6) 0%, rgba(20, 20, 20, 0) 50%, #141414 100%);
+
   background: linear-gradient(
     180deg,
     rgba(20, 20, 20, 0) 0%,
@@ -154,28 +158,33 @@
     rgba(20, 20, 20, 0.65) 0%,
     #141414 10%
   );
+
   padding: 0px 96px 0;
-  padding:30px 96px;
- // width: 100vw;
+  padding: 30px 96px;
+  
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+
+  padding-block: 30px;
+ 
+
+}
+
+.categories-inner {
+  width: 100%;
+  max-width: 1920px;            /* Deckel                     */
+  margin-inline: auto;          /* zentriert                  */
+ 
   display: flex;
   flex-direction: column;
   gap: 48px;
 }
 
+
 .button-box {
   display: flex;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 /* --- Scroll-Wrapper --- */
 .row-wrap {
@@ -191,38 +200,45 @@
   height: 44px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, .55);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
   font-size: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 4;               /* über Thumbnails */
+  z-index: 4; /* über Thumbnails */
 
   img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    pointer-events: none;   /* Bild soll Klicks nicht abfangen */
+    pointer-events: none; /* Bild soll Klicks nicht abfangen */
   }
 }
 
-.scroll-btn.prev { left: -22px;  }  /* halbe Breite «ausserhalb»  */
-.scroll-btn.next { right: -22px; }  /* dito                         */
+.scroll-btn.prev {
+  left: -22px;
+} /* halbe Breite «ausserhalb»  */
+.scroll-btn.next {
+  right: -22px;
+} /* dito                         */
 
-.scroll-btn:hover { background: rgba(0, 0, 0, .85); }
+.scroll-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
 
+.scroll-btn {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.scroll-btn.ng-star-inserted {
+  opacity: 1;
+}
 
-
-
-.scroll-btn { opacity: 0; transition: opacity .25s; }
-.scroll-btn.ng-star-inserted { opacity: 1; }
-
-.row-wrap:hover .scroll-btn { opacity: 1 !important; }
-
-
-
+.row-wrap:hover .scroll-btn {
+  opacity: 1 !important;
+}
 
 @media (max-width: 1278px) {
   .hero.hero-content {
@@ -239,8 +255,8 @@
 
   .hero {
     padding: 20px 16px;
-    width:unset;
-    height:unset;
+    width: unset;
+    height: unset;
   }
 
   .overlay-row {
@@ -249,18 +265,20 @@
 
   .categories {
     padding: 10px 16px;
-    width:unset;
+    width: unset;
   }
 
-
-  .scroll-btn.prev { left: 0; }
-  .scroll-btn.next { right: 0; }
+  .scroll-btn.prev {
+    left: 0;
+  }
+  .scroll-btn.next {
+    right: 0;
+  }
 
   /* Sicherheitsnetz: falls später etwas anderes überläuft */
-  .categories { overflow-x: clip; }  
-
-
-
+  .categories {
+    overflow-x: clip;
+  }
 }
 
 @media (max-width: 390px) {
@@ -270,22 +288,15 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
 @media (max-height: 1200px) {
-  .hero { max-height: 350px; }
+  .hero {
+    max-height: 350px;
+  }
 }
 
 /* darüber (z. B. Zoom 25 %, 4 K)  →  Begrenzung wieder aufheben */
 @media (min-height: 1201px) {
-  .hero { max-height: none; }
+  .hero {
+    max-height: none;
+  }
 }

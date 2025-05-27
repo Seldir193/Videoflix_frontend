@@ -50,8 +50,8 @@ export class ForgotPasswordComponent {
   private showSuccess(): void {
     this.snack.openFromComponent(ToastComponent, {
       data: this.translate.instant('forgot.success'),
-      duration: 5000,
-      horizontalPosition: 'start',
+      duration: 3000,
+      horizontalPosition: 'left',
       verticalPosition: 'bottom',
       panelClass: ['slide-toast', 'no-bg', 'success'],
     });
@@ -71,8 +71,8 @@ export class ForgotPasswordComponent {
   private showError(): void {
     this.snack.openFromComponent(ToastComponent, {
       data: this.translate.instant('forgot.error'),  // Hier kannst du auch eine spezifische Fehlermeldung einfügen
-      duration: 5000,
-      horizontalPosition: 'start',
+      duration: 3000,
+      horizontalPosition: 'left',
       verticalPosition: 'bottom',
       panelClass: ['slide-toast', 'no-bg', 'error'],
     });

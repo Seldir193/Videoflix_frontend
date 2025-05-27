@@ -12,9 +12,9 @@
   backdrop-filter: blur(4px);
 }
 
-.signup-hint{
+.signup-hint {
   cursor: pointer;
-  font-size:18px;
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -84,7 +84,7 @@
   color: inherit;
   cursor: pointer;
   text-decoration: none;
-  font-size:18px;
+  font-size: 18px;
   font-weight: 500;
 }
 
@@ -109,8 +109,6 @@
   font-weight: 700;
 }
 
-
-
 /* login.component.scss (oder global) */
 
 /* Grundzustand – aktiv & klickbar */
@@ -120,11 +118,11 @@
   border-radius: var(--radius-lg);
   font-weight: 700;
   font-size: 18px;
-  color: #fff;                     /* Text immer weiß */
+  color: #fff; /* Text immer weiß */
   background: var(--color-primary);
   cursor: pointer;
-  transition: background .2s, opacity .2s;
-  
+  transition: background 0.2s, opacity 0.2s;
+
   /* Hover, solange NICHT disabled */
   &:hover:not(:disabled) {
     background: darken($color-primary, 8%);
@@ -133,45 +131,90 @@
 
 /* Deaktiviert */
 .btn-login:disabled {
-  background: #666;                /* Grauer Hintergrund */
-  opacity: 1;                     /* leicht transparent */
+  background: #666; /* Grauer Hintergrund */
+  opacity: 1; /* leicht transparent */
   cursor: not-allowed;
-  
+
   /* Hover-Feedback auch im Disabled-Zustand */
   &:hover {
-    opacity: .85;                  /* minimal heller beim Überfahren */
+    opacity: 0.85; /* minimal heller beim Überfahren */
   }
 }
-
 
 :host {
   display: flex;
-       // füllt die Seite
-  overflow-y: auto;       // eigene Scrollbar, unabhängig vom Body
+  // füllt die Seite
+  overflow-y: auto; // eigene Scrollbar, unabhängig vom Body
   align-items: center;
 }
+
+/* signup.component.scss  – oder wo dein Hinweis steht */
+.signup-hint .label-noaccount {
+  color: #d3d3d3; /* LightGray */
+  font-weight: 400; /* falls du nur die Farbe ändern willst */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @media (max-width: 580px) {
-  .login-box{
-    padding:43px 24px;
+  .login-box {
+    padding: 43px 24px;
   }
 
-  :host{
+  :host {
     min-height: calc(100dvh - 5rem);
-   // min-height: 100vh;
+    // min-height: 100vh;
     //align-items: unset;
-   
   }
 
-  
-
+  .signup-hint .label-noaccount {
+    font-size: 1rem;
+  }
 
   .input-group input {
     width: 100%;
   }
-  .title{
+  .title {
     font-size: 40px !important;
- }
- .container{
-  padding:0px 10px;
- }
+  }
+  .container {
+    padding: 0px 10px;
+  }
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
 }

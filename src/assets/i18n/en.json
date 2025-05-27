@@ -12,7 +12,7 @@
     "logut": "Log Out",
     "start": "Get Started",
     "forgot": "Forgot password?",
-    "sign": "Sign Up Now",
+    "sign": "Get Started",
     "email": "Send Email",
     "reset-password": "Reset my password"
   },
@@ -38,10 +38,11 @@
 
   "placeholder": {
     "email": "Email",
-    "password": "Password (min. 8 characters)",
+    "password": "Password",
     "rePassword": "Confirm password",
     "password-reset": "Enter a password",
-    "password-again": "Confirm password"
+    "password-again": "Confirm password",
+     "Email-Placeholder": "E-Mail Adress"
   },
 
   "error": {
@@ -53,7 +54,7 @@
   },
 
   "text": {
-    "header": "We’ll send you an email with instructions to reset your password.",
+    "header": "We will send you an email with instructions to reset your password.",
     "header-reset": "Create a new password for your <span class=\"app-name\">Videoflix</span> account.",
     "daten": "Privacy Policy",
     "imprint": "Imprint"

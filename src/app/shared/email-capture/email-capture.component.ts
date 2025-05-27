@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   standalone: true,
@@ -20,7 +20,7 @@ export class EmailCaptureComponent {
   /** Optional: E-Mail nach außen geben (z. B. Analytics) */
   @Output() captured = new EventEmitter<string>();
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(private fb: FormBuilder, private router: Router, private translate: TranslateService,) {}
 
   /** Getter für übersichtliches Template-Binding */
   get emailCtrl() {

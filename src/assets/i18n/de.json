@@ -12,7 +12,7 @@
     "logut": "Abmelden",
     "start": "Anmelden",
     "forgot": "Passwort vergessen",
-    "sign": "Jetzt registrieren",
+    "sign": "Loslegen",
     "email": "E-Mail senden",
     "reset-password": "Passwort zurücksetzen"
   },
@@ -38,10 +38,11 @@
 
   "placeholder": {
     "email": "E-Mail",
-    "password": "Passwort (min. 8 Zeichen)",
+    "password": "Passwort",
     "rePassword": "Passwort wiederholen",
     "password-reset": "Passwort eingeben",
-    "password-again": "Passwort bestätigen"
+    "password-again": "Passwort bestätigen",
+    "Email-Placeholder": "E-Mail Adresse"
   },
 
   "error": {

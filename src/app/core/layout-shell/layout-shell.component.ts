@@ -15,6 +15,8 @@ import { FooterComponent }  from '../footer/footer.component';
 import { VideoService, Video } from '../../shared/video-service';
 import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 
+
+
 function deepest(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
   while (route.firstChild) route = route.firstChild;
   return route;
@@ -28,7 +30,8 @@ function deepest(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
     RouterOutlet,
     HeaderComponent,
     FooterComponent,
-    SafeUrlPipe
+    SafeUrlPipe,
+  
   ],
   templateUrl: './layout-shell.component.html',
   styleUrls  : ['./layout-shell.component.scss']
@@ -75,6 +78,7 @@ bgSrc = signal<string | null>(null);
     const grid = url.includes('/videos');          // ① trifft auch /dashboard/videos
 
     const dash = url === '/' || url.startsWith('/dashboard');
+    
     const auth = url.startsWith('/auth');
 
     this.showHF.set(grid || dash || auth);

@@ -34,7 +34,8 @@
               "node_modules/plyr/dist/plyr.css", 
               "node_modules/video.js/dist/video-js.css",
               "node_modules/videojs-hls-quality-selector/dist/videojs-hls-quality-selector.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/override-typography.scss"
             ],
             "scripts": [],
 

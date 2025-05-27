@@ -98,8 +98,8 @@ export class SignupComponent implements OnInit {
       next: () => {
         this.snack.openFromComponent(ToastComponent, {     // ⚠️ hier open → openFromComponent
           data: this.translate.instant('signup.success'),
-          duration: 4000,
-          horizontalPosition: 'start',
+          duration: 3000,
+          horizontalPosition: 'left',
           verticalPosition:   'bottom',
           panelClass: ['slide-toast', 'no-bg','success' ], // ← extra Klasse
         });
@@ -111,8 +111,8 @@ export class SignupComponent implements OnInit {
       error: () => {
         this.snack.openFromComponent(ToastComponent, {
           data: this.translate.instant('error.generic'),
-          duration: 5000,
-          horizontalPosition: 'start',
+          duration: 3000,
+          horizontalPosition: 'left',
           verticalPosition:   'bottom',
           panelClass: ['slide-toast', 'no-bg'],            // ohne „success“
         });

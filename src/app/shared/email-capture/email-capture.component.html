@@ -2,7 +2,7 @@
   <input
     type="email"
     formControlName="email"
-    placeholder="E-Mail Adresse"
+    [placeholder]="'placeholder.Email-Placeholder' | translate"
     [class.invalid]="emailCtrl.invalid && (emailCtrl.touched || emailCtrl.dirty)"
   />
 

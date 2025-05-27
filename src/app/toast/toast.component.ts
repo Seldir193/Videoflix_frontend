@@ -4,14 +4,17 @@
 
 
 
-import { Component, Inject, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Inject, ElementRef, AfterViewInit} from '@angular/core';
 import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
+
+
 
 @Component({
   standalone: true,
   selector: 'app-toast',
   templateUrl: './toast.component.html',
-  styleUrls: ['./toast.component.scss'],
+  styleUrls: ['./toast.component.scss']
+ 
 })
 export class ToastComponent implements AfterViewInit {
    
@@ -20,6 +23,8 @@ export class ToastComponent implements AfterViewInit {
     @Inject(MAT_SNACK_BAR_DATA) public text: string,
     private ref: MatSnackBarRef<ToastComponent>,
     private el : ElementRef<HTMLElement>
+   
+    
   ) {}
 
   ngAfterViewInit(): void {

@@ -85,8 +85,8 @@ export class ResetPasswordComponent implements OnInit {
   private showSuccess(): void {
     this.snack.openFromComponent(ToastComponent, {
       data: this.translate.instant('reset.success'), // Erfolgsmeldung
-      duration: 4000,
-      horizontalPosition: 'start',
+      duration: 3000,
+      horizontalPosition: 'left',
       verticalPosition: 'bottom',
       panelClass: ['slide-toast', 'no-bg', 'success'],
     });
@@ -101,8 +101,8 @@ export class ResetPasswordComponent implements OnInit {
   private showError(): void {
     this.snack.openFromComponent(ToastComponent, {
       data: this.translate.instant('reset.error'), // Fehlermeldung
-      duration: 5000,
-      horizontalPosition: 'start',
+      duration: 3000,
+      horizontalPosition: 'left',
       verticalPosition: 'bottom',
       panelClass: ['slide-toast', 'no-bg'],
     });

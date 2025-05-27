@@ -2,9 +2,14 @@
 
 
 
-<div class="player-wrap">
+<div class="player-wrap" (mousemove)="showBar()"       
+  (touchstart)="showBar()" >
+
+  
   <!-- Top-Bar --------------------------------------------------->
-  <div class="top-bar">
+  <div class="top-bar"  [class.show]="barVisible"
+  (mouseenter)="showBar()"    
+  (mouseleave)="scheduleHide()">
     <button
       class="btn-nav"
       type="button"
@@ -25,6 +30,8 @@
       <img src="assets/img/blue-pfeil.png" alt="Weiter" />
     </button>
   </div>
+
+  
 
   <!-- Plyr-Video ----------------------------------------------->
   <!--
