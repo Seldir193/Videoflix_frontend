@@ -1,27 +1,34 @@
 # VideoflixUi
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.8.
+# 📺 Videoflix
 
-## Development server
+**Full-stack Netflix-Clone** powered by **Angular 17.3** (frontend) und  
+**Django 4 + PostgreSQL** (API).  
+Streamt MP4-Varianten, merkt die letzte Position, versendet
+Aktivierungs- und Reset-E-Mails und speichert Fortschritt im 5-Sek-Takt.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+| Layer        | Tech / Libs                                                    |
+|--------------|----------------------------------------------------------------|
+| Frontend     | Angular 17.3 · SCSS · Plyr · ngx-translate                     |
+| Backend API  | Django 4 · Django REST Framework · djoser · SimpleJWT          |
+| DB           | PostgreSQL 16                                                  |
+| Queue/Cache  | Redis 6 + django-rq · django-redis                             |
+| Extras       | modeltranslation · import-export · debug-toolbar               |
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## 🚀 Schnellstart
 
-## Build
+### Lokal (ohne Docker)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+# Frontend
+npm i
+npm run start          # http://localhost:4200
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+# Backend (Python 3.11)
+python -m venv .venv && source .venv/bin/activate
+pip install -r backend/requirements.txt
+cp backend/.env.example backend/.env
+python backend/manage.py migrate --settings=config.settings.local
+python backend/manage.py runserver 8000

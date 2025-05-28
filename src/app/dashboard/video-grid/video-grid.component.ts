@@ -17,13 +17,9 @@ import { VideoService } from '../../shared/video-service';
 import { Video } from '../../shared/models/video.model';
 import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 
-export const CAT_ORDER = [
-  'New on Videoflix',
-  'Documentary',
-  'Drama',
-  'Romance',
-] as const;
-type Cat = (typeof CAT_ORDER)[number];
+export const CAT_KEYS = ['new', 'documentary', 'drama', 'romance'] as const;
+type CatKey = (typeof CAT_KEYS)[number];
+
 
 @Component({
   selector: 'app-video-grid',
@@ -35,15 +31,15 @@ type Cat = (typeof CAT_ORDER)[number];
 export class VideoGridComponent implements OnInit, AfterViewInit {
   @ViewChildren('rowEl') private rows!: QueryList<ElementRef<HTMLElement>>;
 
-  groups = signal<Record<Cat, Video[]>>({
-    'New on Videoflix': [],
-    Documentary: [],
-    Drama: [],
-    Romance: [],
+  groups = signal<Record<CatKey, Video[]>>({
+    new: [],
+    documentary: [],
+    drama: [],
+    romance: [],
   });
   hero = signal<Video | null>(null);
   autoplay = signal(false);
-  readonly catOrder = CAT_ORDER;
+  readonly catKeys = CAT_KEYS;
   scrollState: { prev: boolean; next: boolean }[] = [];
 
   private vs = inject(VideoService);
@@ -75,16 +71,26 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
     setTimeout(() => this.initScrollStates());
   }
 
-  private buildGroups(list: Video[]): Record<Cat, Video[]> {
-    const g: Record<Cat, Video[]> = {
-      'New on Videoflix': [],
-      Documentary: [],
-      Drama: [],
-      Romance: [],
+
+  private buildGroups(list: Video[]): Record<CatKey, Video[]> {
+    const g: Record<CatKey, Video[]> = {
+      new: [],
+      documentary: [],
+      drama: [],
+      romance: [],
     };
+
+    /** Zuordnung Back-End-Klartext ➜ Key */
+    const map: Record<string, CatKey> = {
+      'New on Videoflix': 'new',
+      Documentary:        'documentary',
+      Drama:              'drama',
+      Romance:            'romance',
+    };
+
     for (const v of list) {
-      const cat = ((v as any).category as Cat) ?? 'New on Videoflix';
-      (g[cat] ?? g['New on Videoflix']).push(v);
+      const key = map[(v as any).category] ?? 'new';
+      g[key].push(v);
     }
     return g;
   }

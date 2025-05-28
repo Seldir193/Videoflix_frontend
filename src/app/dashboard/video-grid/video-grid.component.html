@@ -2,7 +2,7 @@
   <div class="hero-inner">
     <div class="hero-content">
       <h1 class="title">{{ h.title }}</h1>
-      <p class="tagline">{{ "hero.heroSpan" | translate }}</p>
+      <p class="tagline">{{  h.description  }}</p>
 
       <div class="button-box">
         <button class="btn-login" (click)="playVideo(h)">
@@ -19,9 +19,9 @@
 
 <section class="categories" *ngIf="groups() as g">
   <div class="categories-inner">
-    <ng-container *ngFor="let cat of catOrder; let i = index">
-      <div class="cat-block" *ngIf="$any(g)[cat]?.length">
-        <h2 class="cat-title">{{ cat }}</h2>
+    <ng-container *ngFor="let cat of catKeys; let i = index">
+      <div class="cat-block" *ngIf="$any(groups())[cat]?.length">
+        <h2 class="cat-title">{{ ('cat.' + cat) | translate }}</h2>
 
         <div class="row-wrap">
           <div class="row" #rowEl (scroll)="onRowScroll(i, rowEl)">

@@ -2,8 +2,14 @@
   "hero": {
     "headline": "Movies, TV shows, and more",
     "cta": "Enter your email to create or restart your subscription.",
-    "ctb": "Watch whenever you want, wherever you want",
-    "heroSpan": "In a high-security prison, a wrongly convicted man devises a meticulous plan to break out and prove his innocence. He must navigate a web of alliances and betrayals to regain his freedom and expose the truth."
+    "ctb": "Watch whenever you want, wherever you want"
+  },
+
+"cat": {
+    "new": "New on Videoflix",
+    "documentary": "Documentary",
+    "drama": "Drama",
+    "romance": "Romance"
   },
 
   "button": {

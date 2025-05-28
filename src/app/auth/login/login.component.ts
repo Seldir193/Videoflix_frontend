@@ -34,6 +34,7 @@ export class LoginComponent implements OnInit {
 
   submitted = false;
   show_password = false;
+  genericError: string | null = null;
 
   get email() {
     return this.form.controls.email;
@@ -77,6 +78,7 @@ export class LoginComponent implements OnInit {
         err.error?.detail?.toLowerCase().includes('no active'));
 
     const key = inactive ? 'error.accountInactive' : 'error.generic';
+    this.genericError = key;
     this.openToast(key, false, 5000);
   }
 
