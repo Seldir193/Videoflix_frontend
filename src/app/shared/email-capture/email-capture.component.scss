@@ -2,66 +2,67 @@
 
 .capture-row {
   @include dFlex(center, center, 10px);
+  flex-wrap: nowrap;
 
-  input[type="email"] {
-    padding: 14px 24px;
-    font-size: 1rem;
-    border: 1px solid $white;
-    border-radius: var(--radius-lg);
-    background: #1c1a20cc;
-    color: $white;
-    box-sizing: border-box;
-    flex: 0 0 auto;
+  .input-group {
+    position: relative;
     max-width: 360px;
     width: 100%;
 
-    &::placeholder {
+    input[type="email"] {
+      padding: 14px 24px;
+      font-size: 1rem;
+      border: 1px solid $white;
+      border-radius: var(--radius-lg);
+      background: #1c1a20cc;
       color: $white;
-      opacity: 0.8;
+      width: 100%;
+
+      &.invalid {
+        border-color: #e50914;
+      }
+
+      &::placeholder,
+      &::-webkit-input-placeholder,
+      &::-moz-placeholder,
+      &:-ms-input-placeholder {
+        color: $white;
+        opacity: 0.8;
+      }
     }
-    &::-webkit-input-placeholder {
-      color: $white;
-      opacity: 0.8;
-    } /* Safari/Chrome */
-    &::-moz-placeholder {
-      color: $white;
-      opacity: 0.8;
-    } /* Firefox */
-    &:-ms-input-placeholder {
-      color: $white;
-      opacity: 0.8;
-    } /* Edge (legacy) */
+
+    .error {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      padding-left: 24px;
+      margin-top: 4px;
+    }
   }
 
-  .btn-login,
-  img {
-    @include dFlex(center, center, 4px);
-  }
-}
+  .button-container {
+    max-width: 144px;
+    width: 100%;
+    flex: 0 0 auto;
 
-.button-container {
-  max-width: 144px;
-  width: 100%;
-  border-radius: var(--radius-lg);
-  flex: 0 0 auto;
-}
+    .btn-login,
+    img {
+      @include dFlex(center, center, 4px);
+    }
 
-.capture-row input[type="email"].invalid {
-  border-color: #e50914;
-}
+    .btn-login:disabled {
+      background: #4d4d4d;
+      opacity: 0.6;
+      cursor: not-allowed;
 
-.button-container .btn-login:disabled {
-  background: #4d4d4d;
-  opacity: 0.6;
-  cursor: not-allowed;
-
-  &:hover {
-    opacity: 0.85;
+      &:hover {
+        opacity: 0.85;
+      }
+    }
   }
 }
 
 .error {
-  margin-top: 0.5rem;
   color: #e50914;
   font-size: 0.875rem;
 }

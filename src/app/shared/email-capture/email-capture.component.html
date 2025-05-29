@@ -1,4 +1,6 @@
 <form [formGroup]="emailForm" (ngSubmit)="submit()" class="capture-row">
+
+  <div class="input-group">
   <input
     type="email"
     formControlName="email"
@@ -15,6 +17,7 @@
   >
     {{ "error.emailInvalid" | translate }}
   </p>
+  </div>
 
   <div class="button-container">
     <button type="submit" class="btn-login" [disabled]="emailForm.invalid">
