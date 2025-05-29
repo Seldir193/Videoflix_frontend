@@ -14,7 +14,7 @@
       <img src="assets/img/back.png" alt="Zurück" />
     </button>
 
-    <h2 class="vid-title" *ngIf="video() as clip">{{ clip.title }}</h2>
+    <h2 class="vid-title">{{ video()?.title || " " }}</h2>
 
     <button
       class="btn-right"
@@ -33,7 +33,6 @@
     playsinline
     [attr.poster]="video()?.hero_frame_url || null"
   ></video>
-  
 
   <div class="resume-box" *ngIf="askResume">
     <p>Du hast hier aufgehört. Fortsetzen?</p>

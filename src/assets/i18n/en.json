@@ -33,14 +33,18 @@
     "activationFailed":   "Activation link is invalid or expired."
   },
 
-  "forgot": {
-    "success": "Your password has been successfully reset. You can now log in with your new password.",
-    "error": "An error occurred while resetting your password. Please try again later."
-  },
-"reset": {
-    "success": "Your password has been successfully reset. You can now log in with your new password.",
-    "error": "An error occurred while resetting your password. Please try again later."
-  },
+  
+    "forgot": {
+      "success": "If an account exists for this email address, you'll receive a message with a link to reset your password shortly.",
+      "error":   "Oops — something went wrong. Please try again later."
+    },
+  
+    "reset": {
+      "success": "Your password has been reset successfully. You can now log in with your new password.",
+      "error":   "An error occurred while resetting your password. Please try again later."
+    },
+  
+  
 
   "placeholder": {
     "email": "Email",

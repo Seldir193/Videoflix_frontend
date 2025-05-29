@@ -20,7 +20,6 @@ import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 export const CAT_KEYS = ['new', 'documentary', 'drama', 'romance'] as const;
 type CatKey = (typeof CAT_KEYS)[number];
 
-
 @Component({
   selector: 'app-video-grid',
   standalone: true,
@@ -50,6 +49,9 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.setAutoplayFlag();
+    this.vs
+      .getTrailers()
+      .subscribe((t) => this.hero.set(t.length ? t[0] : null));
     this.vs.list().subscribe((list) => this.processVideoList(list));
   }
 
@@ -67,10 +69,8 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
 
   private processVideoList(list: Video[]): void {
     this.groups.set(this.buildGroups(list));
-    this.hero.set(this.pickNewest(list));
     setTimeout(() => this.initScrollStates());
   }
-
 
   private buildGroups(list: Video[]): Record<CatKey, Video[]> {
     const g: Record<CatKey, Video[]> = {
@@ -80,15 +80,15 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
       romance: [],
     };
 
-    /** Zuordnung Back-End-Klartext ➜ Key */
     const map: Record<string, CatKey> = {
       'New on Videoflix': 'new',
-      Documentary:        'documentary',
-      Drama:              'drama',
-      Romance:            'romance',
+      Documentary: 'documentary',
+      Drama: 'drama',
+      Romance: 'romance',
     };
 
     for (const v of list) {
+      if ((v as any).is_trailer) continue;
       const key = map[(v as any).category] ?? 'new';
       g[key].push(v);
     }

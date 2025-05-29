@@ -38,6 +38,19 @@ export class VideoService {
       })),
   });
 
+  private trailers$ = this.http
+    .get<VideoBackend[]>(`${this.api}/trailers/`, {
+      headers: this.langHeaders(),
+    })
+    .pipe(
+      map((arr) => arr.map(this.mapVideo)),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+  getTrailers(): Observable<Video[]> {
+    return this.trailers$;
+  }
+
   private readonly videos$ = this.http
     .get<VideoBackend[]>(this.videoApi, { headers: this.langHeaders() })
     .pipe(

@@ -36,6 +36,7 @@ export class LayoutShellComponent implements OnInit {
   hero = signal<Video | null>(null);
   isVideoGrid = signal(false);
   showHF = signal(true);
+
   get trailerSrc() {
     return this.hero()?.video_file ?? null;
   }
@@ -56,13 +57,13 @@ export class LayoutShellComponent implements OnInit {
         const auth = url.startsWith('/auth');
         this.showHF.set(grid || dash || auth);
         this.isVideoGrid.set(grid);
-        if (grid) {
+        if (grid || dash) {
           if (!this.hero()) {
-            this.vs.list().subscribe((list) => this.hero.set(list[0] ?? null));
+            this.vs
+              .getTrailers()
+              .subscribe((list) => this.hero.set(list.length ? list[0] : null));
           }
         } else {
-          this.hero.set(null);
-
           const active = deepest(this.rt.routerState.snapshot.root);
           const bgFile = active.data['background'] as string | undefined;
 

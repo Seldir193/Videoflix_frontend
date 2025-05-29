@@ -32,15 +32,15 @@
     "activationFailed":   "Aktivierungs-Link ist ungültig oder abgelaufen."
   },
 
-  "forgot": {
-    "success": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich nun mit deinem neuen Passwort anmelden.",
-    "error": "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
-  },
+ "forgot": {
+  "success": "Falls zu dieser E-Mail-Adresse ein Konto existiert, erhältst du in Kürze eine Nachricht mit einem Link zum Zurücksetzen deines Passworts.",
+  "error":   "Upps – gerade ist etwas schiefgelaufen. Bitte versuche es später noch einmal."
+},
 
-  "reset": {
-    "success": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich nun mit deinem neuen Passwort anmelden.",
-    "error": "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
-  },
+"reset": {
+  "success": "Dein Passwort wurde erfolgreich zurückgesetzt. Du kannst dich nun mit deinem neuen Passwort anmelden.",
+  "error":   "Beim Zurücksetzen deines Passworts ist ein Fehler aufgetreten. Bitte versuche es später noch einmal."
+},
 
   "placeholder": {
     "email": "E-Mail",

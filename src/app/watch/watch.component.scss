@@ -10,28 +10,18 @@ body {
   overflow: hidden;
 }
 
-
-
-
-
-
-
-
-
-
 .player-wrap {
   position: fixed;
   inset: 0;
   display: flex;
-  justify-content: center;   // mittig in X-Richtung
+  justify-content: center;
   background: #000;
 
-  /* Video + Plyr-Wrapper immer 100 % */
   video,
   .plyr {
     width: 100vw;
     height: 100vh;
-    object-fit: contain;     // oder cover
+    object-fit: contain;
   }
 }
 
@@ -40,13 +30,6 @@ body {
   height: 100vh;
   position: relative;
 }
-
-
-
-
-
-
-
 
 .top-bar {
   position: absolute;
