@@ -56,7 +56,7 @@
   },
 
   "error": {
-    "emailInvalid": "Invalid e-mail address",
+    "emailInvalid": "Please enter a valid email address",
     "passwordShort": "Password too short",
     "passwordMismatch": "Passwords must match",
     "accountInactive":    "Please activate your account first.",

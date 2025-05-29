@@ -52,7 +52,7 @@
   },
 
   "error": {
-    "emailInvalid": "Ungültige E-Mail-Adresse",
+    "emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein.",
     "passwordShort": "Passwort zu kurz",
     "passwordMismatch": "Passwörter stimmen nicht überein",
     "accountInactive":    "Bitte aktiviere zuerst dein Konto.",
