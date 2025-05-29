@@ -1,8 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  inject,
+  signal,
+} from '@angular/core';
 import {
   Router,
-  RouterOutlet,
   NavigationEnd,
+  RouterOutlet,
   ActivatedRouteSnapshot,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,9 +20,9 @@ import { VideoService } from '../../shared/video-service';
 import { Video } from '../../shared/models/video.model';
 import { SafeUrlPipe } from '../../shared/safe-url.pipe';
 
-function deepest(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
-  while (route.firstChild) route = route.firstChild;
-  return route;
+function deepest(r: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
+  while (r.firstChild) r = r.firstChild;
+  return r;
 }
 
 @Component({
@@ -37,6 +44,13 @@ export class LayoutShellComponent implements OnInit {
   isVideoGrid = signal(false);
   showHF = signal(true);
 
+  @ViewChild('heroVid') heroVid!: ElementRef<HTMLVideoElement>;
+  muted = true;
+  private autoListenerSet = false;
+
+  private vs = inject(VideoService);
+  private rt = inject(Router);
+
   get trailerSrc() {
     return this.hero()?.video_file ?? null;
   }
@@ -44,54 +58,88 @@ export class LayoutShellComponent implements OnInit {
     return this.hero()?.thumb ?? 'assets/img/start.jpg';
   }
 
-  private vs = inject(VideoService);
-  private rt = inject(Router);
-
-  
-
-
-
   ngOnInit(): void {
-    this.rt.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(e => {
-        const url   = (e as NavigationEnd).urlAfterRedirects;
-        const grid  = url.includes('/videos');                 // Videogrid
-        const dash  = url === '/' || url.startsWith('/dashboard');
-        const auth  = url.startsWith('/auth');
-  
-        this.showHF.set(grid || dash || auth);
-        this.isVideoGrid.set(grid);
-  
-        /* ─────────── Trailer nur auf /videos laden ─────────── */
-        if (grid && !this.hero()) {
-          this.vs.getTrailers().subscribe(list =>
-            this.hero.set(list.length ? list[0] : null)
-          );
-        }
-  
-        /* ─────── Hintergrund für alle Nicht-Grid-Seiten ────── */
-        if (!grid) {
-          this.hero.set(null);              // Hero ausschalten
-          const active = deepest(this.rt.routerState.snapshot.root);
-          const bgFile = active.data['background'] as string | undefined;
-          this.bgSrc.set(bgFile ? `assets/img/${bgFile}`
-                                : 'assets/img/start.jpg');
-        }
-      });
+    this.muted = this.loadMute();
+    this.registerRouterEvents();
   }
-  
 
+  private registerRouterEvents(): void {
+    this.rt.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e) => this.onNavEnd(e as NavigationEnd));
+  }
 
+  private onNavEnd(e: NavigationEnd): void {
+    const url = e.urlAfterRedirects;
+    const grid = url.includes('/videos');
+    const dash = url === '/' || url.startsWith('/dashboard');
+    const auth = url.startsWith('/auth');
+
+    this.showHF.set(grid || dash || auth);
+    this.isVideoGrid.set(grid);
+
+    if (grid) {
+      this.muted = true;
+      this.ensureHeroLoaded();
+      this.registerAutoUnmuteOnGrid();
+    } else {
+      this.resetHeroAndBg();
+    }
+  }
+
+  private ensureHeroLoaded(): void {
+    if (this.hero()) return;
+    this.vs.getTrailers().subscribe((t) => this.hero.set(t[0] ?? null));
+  }
+
+  private resetHeroAndBg(): void {
+    this.hero.set(null);
+    const active = deepest(this.rt.routerState.snapshot.root);
+    const bgFile = active.data['background'] as string | undefined;
+    this.bgSrc.set(bgFile ? `assets/img/${bgFile}` : 'assets/img/start.jpg');
+  }
+
+  private loadMute() {
+    return localStorage.getItem('trailerMuted') === 'true';
+  }
+  private saveMute(v: boolean) {
+    localStorage.setItem('trailerMuted', String(v));
+  }
+
+  private registerAutoUnmuteOnGrid(): void {
+    if (this.autoListenerSet) return;
+    window.addEventListener('click', this.autoUnmuteOnce, { once: true });
+    this.autoListenerSet = true;
+  }
+
+  autoUnmuteOnce = () => {
+    if (this.muted) this.toggleMute(new Event('auto'));
+  };
+
+  toggleMute(ev: Event): void {
+    ev.stopPropagation();
+    this.muted = !this.muted;
+    this.saveMute(this.muted);
+
+    const vid = this.heroVid?.nativeElement;
+    if (vid) {
+      vid.muted = this.muted;
+      if (!this.muted) vid.play().catch(() => {});
+    }
+  }
 
   forcePlay(el: EventTarget | null): void {
     const v = el as HTMLVideoElement | null;
     if (!v) return;
-    v.muted = true;
-    if (v.paused) {
-      v.play().catch(() => {
-        console.info('Autoplay still blocked – fallback accepted');
-      });
-    }
+
+    v.muted = this.muted;
+    v.play().catch(() => {
+      if (!this.muted) {
+        this.muted = true;
+        v.muted = true;
+        this.saveMute(true);
+        v.play().catch(() => {});
+      }
+    });
   }
 }

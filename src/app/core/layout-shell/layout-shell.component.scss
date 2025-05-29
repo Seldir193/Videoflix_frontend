@@ -49,6 +49,29 @@
   z-index: -2;
 }
 
+.mute-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+
+  img {
+    display: block;
+  }
+}
+
+.mute-btn img {
+  filter: brightness(0) invert(1);
+  .mute-btn:hover & {
+    filter: brightness(0) invert(0.7);
+  }
+}
+
 @media (max-width: 1278px) {
   .content.content--left {
     display: block;

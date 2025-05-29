@@ -4,12 +4,25 @@
   *ngIf="isVideoGrid() && trailerSrc"
   class="bg-fullscreen-video"
   [src]="trailerSrc | safeUrl"
-  muted
+  [muted]="muted"
   autoplay
   loop
   playsinline
   (loadedmetadata)="forcePlay($any($event.target))"
 ></video>
+
+<button
+  *ngIf="isVideoGrid()"
+  class="mute-btn"
+  (click)="toggleMute($event)"
+  [attr.aria-label]="muted ? 'Unmute' : 'Mute'"
+>
+  <img
+    [src]="muted ? 'assets/img/volume_off.png' : 'assets/img/volume_on.png'"
+    width="28"
+    height="28"
+  />
+</button>
 
 <img
   *ngIf="!isVideoGrid()"

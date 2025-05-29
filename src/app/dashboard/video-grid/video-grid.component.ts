@@ -8,6 +8,7 @@ import {
   ChangeDetectorRef,
   inject,
   signal,
+  ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -29,7 +30,7 @@ type CatKey = (typeof CAT_KEYS)[number];
 })
 export class VideoGridComponent implements OnInit, AfterViewInit {
   @ViewChildren('rowEl') private rows!: QueryList<ElementRef<HTMLElement>>;
-
+ 
   groups = signal<Record<CatKey, Video[]>>({
     new: [],
     documentary: [],
@@ -95,12 +96,14 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
     return g;
   }
 
+  
   private pickNewest(list: Video[]): Video | null {
     return list.reduce<Video | null>(
       (best, v) => (!best || v.id > best.id ? v : best),
       null
     );
   }
+
 
   private initScrollStates(): void {
     this.scrollState = this.rows.toArray().map((row) => {
