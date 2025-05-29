@@ -128,7 +128,7 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
   }
 
   playVideo(v: Video) {
-    this.rt.navigate(['/watch', v.id]);
+    this.rt.navigate(['/watch', v.id], { replaceUrl: true });
   }
   playHero() {
     const h = this.hero();

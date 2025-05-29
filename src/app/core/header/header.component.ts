@@ -44,17 +44,23 @@ export class HeaderComponent implements OnInit {
   goBack(): void {
     if (this.isVideoPage) {
       this.router.navigate(['/dashboard/videos'], { replaceUrl: true });
-    } else if (this.isMovieInfo) {
+      return;
+    }
+  
+    if (this.isMovieInfo) {
       this.goBackToGrid();
-    } else if (this.onLoginPage) {
+      return;
+    }
+  
+    if (this.onLoginPage) {
       if (this.auth.isLoggedIn()) {
         this.router.navigate(['/dashboard'], { replaceUrl: true });
       } else {
-        window.history.back();
+        this.router.navigate(['/']);
       }
-    } else {
-      this.location.back();
+      return;
     }
+    this.location.back();
   }
 
   openLogin(): void {

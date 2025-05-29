@@ -39,18 +39,21 @@ function deepest(r: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
   styleUrls: ['./layout-shell.component.scss'],
 })
 export class LayoutShellComponent implements OnInit {
+  /* reactive state */
   bgSrc = signal<string | null>(null);
   hero = signal<Video | null>(null);
   isVideoGrid = signal(false);
   showHF = signal(true);
 
+  /* video / sound */
   @ViewChild('heroVid') heroVid!: ElementRef<HTMLVideoElement>;
   muted = true;
-  private autoListenerSet = false;
 
+  /* DI */
   private vs = inject(VideoService);
   private rt = inject(Router);
 
+  /* getters */
   get trailerSrc() {
     return this.hero()?.video_file ?? null;
   }
@@ -58,11 +61,12 @@ export class LayoutShellComponent implements OnInit {
     return this.hero()?.thumb ?? 'assets/img/start.jpg';
   }
 
+  /* ---------------- lifecycle ---------------- */
   ngOnInit(): void {
-    this.muted = this.loadMute();
     this.registerRouterEvents();
   }
 
+  /* ---------------- router handling ---------------- */
   private registerRouterEvents(): void {
     this.rt.events
       .pipe(filter((e) => e instanceof NavigationEnd))
@@ -78,15 +82,12 @@ export class LayoutShellComponent implements OnInit {
     this.showHF.set(grid || dash || auth);
     this.isVideoGrid.set(grid);
 
-    if (grid) {
-      this.muted = true;
-      this.ensureHeroLoaded();
-    } else {
-      this.resetHeroAndBg();
-    }
+    grid ? this.loadHeroTrailer() : this.resetHeroAndBg();
   }
 
-  private ensureHeroLoaded(): void {
+  /* ---------------- hero / bg ---------------- */
+  private loadHeroTrailer(): void {
+    this.muted = true;
     if (this.hero()) return;
     this.vs.getTrailers().subscribe((t) => this.hero.set(t[0] ?? null));
   }
@@ -98,17 +99,7 @@ export class LayoutShellComponent implements OnInit {
     this.bgSrc.set(bgFile ? `assets/img/${bgFile}` : 'assets/img/start.jpg');
   }
 
-  private loadMute() {
-    return localStorage.getItem('trailerMuted') === 'true';
-  }
-  private saveMute(v: boolean) {
-    localStorage.setItem('trailerMuted', String(v));
-  }
-
-  autoUnmuteOnce = () => {
-    if (this.muted) this.toggleMute(new Event('auto'));
-  };
-
+  /* ---------------- mute toggle ---------------- */
   toggleMute(ev: Event): void {
     ev.stopPropagation();
     this.muted = !this.muted;
@@ -120,18 +111,12 @@ export class LayoutShellComponent implements OnInit {
     }
   }
 
+  /* ---------------- autoplay helper ---------------- */
   forcePlay(el: EventTarget | null): void {
     const v = el as HTMLVideoElement | null;
     if (!v) return;
 
     v.muted = this.muted;
-    v.play().catch(() => {
-      if (!this.muted) {
-        this.muted = true;
-        v.muted = true;
-        this.saveMute(true);
-        v.play().catch(() => {});
-      }
-    });
+    v.play().catch(() => {});
   }
 }
