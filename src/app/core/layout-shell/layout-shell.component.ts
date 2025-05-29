@@ -47,32 +47,42 @@ export class LayoutShellComponent implements OnInit {
   private vs = inject(VideoService);
   private rt = inject(Router);
 
+  
+
+
+
   ngOnInit(): void {
     this.rt.events
-      .pipe(filter((e) => e instanceof NavigationEnd))
-      .subscribe((e) => {
-        const url = (e as NavigationEnd).urlAfterRedirects;
-        const grid = url.includes('/videos');
-        const dash = url === '/' || url.startsWith('/dashboard');
-        const auth = url.startsWith('/auth');
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(e => {
+        const url   = (e as NavigationEnd).urlAfterRedirects;
+        const grid  = url.includes('/videos');                 // Videogrid
+        const dash  = url === '/' || url.startsWith('/dashboard');
+        const auth  = url.startsWith('/auth');
+  
         this.showHF.set(grid || dash || auth);
         this.isVideoGrid.set(grid);
-        if (grid || dash) {
-          if (!this.hero()) {
-            this.vs
-              .getTrailers()
-              .subscribe((list) => this.hero.set(list.length ? list[0] : null));
-          }
-        } else {
+  
+        /* ─────────── Trailer nur auf /videos laden ─────────── */
+        if (grid && !this.hero()) {
+          this.vs.getTrailers().subscribe(list =>
+            this.hero.set(list.length ? list[0] : null)
+          );
+        }
+  
+        /* ─────── Hintergrund für alle Nicht-Grid-Seiten ────── */
+        if (!grid) {
+          this.hero.set(null);              // Hero ausschalten
           const active = deepest(this.rt.routerState.snapshot.root);
           const bgFile = active.data['background'] as string | undefined;
-
-          this.bgSrc.set(
-            bgFile ? `assets/img/${bgFile}` : 'assets/img/start.jpg'
-          );
+          this.bgSrc.set(bgFile ? `assets/img/${bgFile}`
+                                : 'assets/img/start.jpg');
         }
       });
   }
+  
+
+
 
   forcePlay(el: EventTarget | null): void {
     const v = el as HTMLVideoElement | null;
