@@ -81,7 +81,6 @@ export class LayoutShellComponent implements OnInit {
     if (grid) {
       this.muted = true;
       this.ensureHeroLoaded();
-      this.registerAutoUnmuteOnGrid();
     } else {
       this.resetHeroAndBg();
     }
@@ -106,12 +105,6 @@ export class LayoutShellComponent implements OnInit {
     localStorage.setItem('trailerMuted', String(v));
   }
 
-  private registerAutoUnmuteOnGrid(): void {
-    if (this.autoListenerSet) return;
-    window.addEventListener('click', this.autoUnmuteOnce, { once: true });
-    this.autoListenerSet = true;
-  }
-
   autoUnmuteOnce = () => {
     if (this.muted) this.toggleMute(new Event('auto'));
   };
@@ -119,7 +112,6 @@ export class LayoutShellComponent implements OnInit {
   toggleMute(ev: Event): void {
     ev.stopPropagation();
     this.muted = !this.muted;
-    this.saveMute(this.muted);
 
     const vid = this.heroVid?.nativeElement;
     if (vid) {
