@@ -103,8 +103,9 @@ Unit tests (Karma + Jasmine)
 
 ng test
 End-to-End tests (E2E) ng e2e
-
+```
 ## Deployment Notes
+```bash
 
 ng build --configuration production
 ```
