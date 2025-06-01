@@ -98,13 +98,16 @@ or spin up the Docker stack (web_prod with Nginx).
 ```
 
 ## Frontend-Testing
+```bash
+Unit tests (Karma + Jasmine) 
 
-Unit tests (Karma + Jasmine) ng test
+ng test
 End-to-End tests (E2E) ng e2e
 
 ## Deployment Notes
 
 ng build --configuration production
+```
 
 # ⇒ dist/videoflix-ui/
 
