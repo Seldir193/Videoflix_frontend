@@ -24,7 +24,7 @@ password-reset flows.
 
 ---
 
-## Project Structure (Frontend)
+## Project Structure 
 
 ```text
 videoflix-ui/
