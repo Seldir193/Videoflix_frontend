@@ -20,8 +20,14 @@ export class VideoService {
     return new HttpHeaders({ 'Accept-Language': lang });
   }
 
-  private abs = (rel?: string | null): string | null =>
-    rel ? `${this.staticRoot}media/${rel}` : null;
+private abs = (rel?: string | null): string | null => {
+  if (!rel) return null;                               
+  if (/^https?:\/\//i.test(rel) || rel.startsWith('//')) {
+    return rel;
+  }
+  const clean = rel.replace(/^\/+/, '');
+  return `${this.staticRoot.replace(/\/$/, '')}/media/${clean}`;
+};
 
   private mapVideo = (v: VideoBackend): Video => ({
     ...v,
@@ -120,4 +126,5 @@ export class VideoService {
       sources: [],
     },
   ];
+
 }

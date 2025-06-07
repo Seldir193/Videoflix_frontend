@@ -24,6 +24,7 @@ import { Video,PlyrSource } from '../shared/models/video.model';
   imports: [CommonModule],
 })
 export class WatchComponent implements AfterViewInit, OnDestroy {
+  videos: Video[] = [];
   @ViewChild('plyr', { static: true })
   private playerEl!: ElementRef<HTMLVideoElement>;
 
@@ -42,6 +43,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private ar = inject(ActivatedRoute);
   private san = inject(DomSanitizer);
   private zone = inject(NgZone);
+
 
   ngAfterViewInit(): void {
     this.playerEl.nativeElement.preload = 'auto';
@@ -88,8 +90,8 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       ],
       settings: ['quality', 'speed'],
       speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-
       autoplay: true, 
+
     });
 
     this.plyr.on('qualitychange', (e: any) => {
@@ -98,6 +100,8 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+
+  
   private load(id: number): void {
     this.currentId = id;
     this.fetchProgress(id);

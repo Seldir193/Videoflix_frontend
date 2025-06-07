@@ -34,9 +34,12 @@ export class AuthService {
     return this.http.post<void>(`${this.base}/users/activation/`, {
       uid,
       token,
-    });
+   });
   }
+
+
   login(dto: LoginDTO): Observable<AuthTokens> {
+   
     return this.http.post<AuthTokens>(`${this.base}/jwt/create/`, dto).pipe(
       map((tokens) => {
         this.saveTokens(tokens);
