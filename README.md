@@ -84,17 +84,6 @@ cd videoflix-ui
 npm ci
 npm start
 
-
-Note (EN)
-The quick-start runs in development mode (.env.dev) and expects the API
-on http://localhost:8000.
-To test the production setup locally, copy
-.env.example → .env (or .env.template → .env)
-and start:
-python backend/manage.py runserver 8001,
-or spin up the Docker stack (web_prod with Nginx).
-
-
 ```
 
 ## Frontend-Testing

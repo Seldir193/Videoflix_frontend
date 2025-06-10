@@ -99,8 +99,6 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       if (typeof q === 'number' && q > 0) this.toast(`Qualität: ${q}p`);
     });
   }
-
-
   
   private load(id: number): void {
     this.currentId = id;
