@@ -179,8 +179,8 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     this.plyr.on('pause', save);
     this.plyr.on('ended', () => this.vs.saveProgress(this.currentId, 0, 0));
   }
-  
-  private setResumeOrPlay(): void {
+
+   private setResumeOrPlay(): void {
     this.plyr.once('canplay', () => {
       const nearEnd =
         this.resumePos > 30 && this.resumePos < this.plyr.duration - 5;
