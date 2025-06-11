@@ -105,7 +105,7 @@ private abs = (rel?: string | null): string | null => {
         { video: videoId, position: pos, duration: dur },
         { headers: this.langHeaders() }
       )
-      .subscribe();
+     .subscribe();
   }
 
   getProgress(videoId: number) {
@@ -126,5 +126,4 @@ private abs = (rel?: string | null): string | null => {
       sources: [],
     },
   ];
-
 }

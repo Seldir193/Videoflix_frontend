@@ -14,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import Plyr from 'plyr';
 import { VideoService } from '../shared/video-service';
-import { Video,PlyrSource } from '../shared/models/video.model';
+import { Video, PlyrSource } from '../shared/models/video.model';
 
 @Component({
   standalone: true,
@@ -43,7 +43,6 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private ar = inject(ActivatedRoute);
   private san = inject(DomSanitizer);
   private zone = inject(NgZone);
-
 
   ngAfterViewInit(): void {
     this.playerEl.nativeElement.preload = 'auto';
@@ -90,8 +89,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       ],
       settings: ['quality', 'speed'],
       speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-      autoplay: true, 
-
+      autoplay: true,
     });
 
     this.plyr.on('qualitychange', (e: any) => {
@@ -99,18 +97,11 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       if (typeof q === 'number' && q > 0) this.toast(`Qualität: ${q}p`);
     });
   }
-  
+
   private load(id: number): void {
     this.currentId = id;
     this.fetchProgress(id);
     this.vs.detail(id).subscribe((clip) => this.prepareVideo(clip));
-  }
-
-  private fetchProgress(id: number): void {
-    this.vs.getProgress(id).subscribe((r) => {
-      const p = Array.isArray(r) ? r[0] : r;
-      this.resumePos = p?.position ?? 0;
-    });
   }
 
   private prepareVideo(clip: Video): void {
@@ -165,16 +156,10 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     )!;
   }
 
-  private setResumeOrPlay(): void {
-    this.plyr.once('canplay', () => {
-      const nearEnd =
-        this.resumePos > 30 && this.resumePos < this.plyr.duration - 5;
-      if (nearEnd) {
-        this.plyr.pause();
-        this.zone.run(() => (this.askResume = true));
-      } else {
-        this.plyr.play()?.catch(() => {});
-      }
+  private fetchProgress(id: number): void {
+    this.vs.getProgress(id).subscribe((r) => {
+      const p = Array.isArray(r) ? r[0] : r;
+      this.resumePos = p?.position ?? 0;
     });
   }
 
@@ -186,12 +171,26 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
 
       const pos = this.plyr.currentTime;
       const dur = this.plyr.duration;
+
       if (dur > 60 && pos > 0 && pos < dur - 5)
         this.vs.saveProgress(this.currentId, pos, dur);
     };
     this.plyr.on('timeupdate', save);
     this.plyr.on('pause', save);
     this.plyr.on('ended', () => this.vs.saveProgress(this.currentId, 0, 0));
+  }
+  
+  private setResumeOrPlay(): void {
+    this.plyr.once('canplay', () => {
+      const nearEnd =
+        this.resumePos > 30 && this.resumePos < this.plyr.duration - 5;
+      if (this.resumePos > 0 && nearEnd) {
+        this.plyr.pause();
+        this.zone.run(() => (this.askResume = true));
+      } else {
+        this.plyr.play()?.catch(() => {});
+      }
+    });
   }
 
   resume(fromLast: boolean): void {
