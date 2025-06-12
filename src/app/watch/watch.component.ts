@@ -44,7 +44,8 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private san = inject(DomSanitizer);
   private zone = inject(NgZone);
 
-  ngAfterViewInit(): void {
+
+    ngAfterViewInit(): void {
     this.playerEl.nativeElement.preload = 'auto';
     this.initPlyr();
     this.scheduleHide();
@@ -59,6 +60,7 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     clearTimeout(this.hideTimer);
     this.plyr?.destroy();
   }
+
 
   showBar(): void {
     if (!this.barVisible) this.zone.run(() => (this.barVisible = true));
@@ -175,12 +177,13 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       if (dur > 60 && pos > 0 && pos < dur - 5)
         this.vs.saveProgress(this.currentId, pos, dur);
     };
-    this.plyr.on('timeupdate', save);
-    this.plyr.on('pause', save);
-    this.plyr.on('ended', () => this.vs.saveProgress(this.currentId, 0, 0));
+
+     this.plyr.on('timeupdate', save);
+     this.plyr.on('pause', save);
+     this.plyr.on('ended', () => this.vs.saveProgress(this.currentId, 0, 0));
   }
 
-  private setResumeOrPlay(): void {
+   private setResumeOrPlay(): void {
     this.plyr.once('canplay', () => {
       const nearEnd =
         this.resumePos > 30 && this.resumePos < this.plyr.duration - 5;
