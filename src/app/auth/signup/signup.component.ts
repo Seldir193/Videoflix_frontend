@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../core/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastComponent } from '../../toast/toast.component';
+import { ActivatedRoute } from '@angular/router'; 
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -48,10 +49,17 @@ export class SignupComponent implements OnInit {
     private auth: AuthService,
     private snack: MatSnackBar,
     private router: Router,
+    private route: ActivatedRoute,
     private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
+    const email = this.route.snapshot.queryParamMap.get('email');
+  if (email) {
+    this.form.patchValue({ email });
+    // optional: sofort als touched markieren
+    // this.email.markAsTouched();
+  }
     this.form.valueChanges.subscribe(() => (this.submitted = false));
   }
 
