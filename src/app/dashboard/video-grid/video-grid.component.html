@@ -1,4 +1,4 @@
-<section class="hero" *ngIf="hero() as h; else loading">
+<section class="hero" *ngIf="hero() as h">
   <div class="hero-inner">
 
     <div class="hero-content">
@@ -14,9 +14,7 @@
   </div>
 </section>
 
-<ng-template #loading>
-  <p class="text-center text-gray-400">Loading …</p>
-</ng-template>
+
 
 <section class="categories" *ngIf="groups() as g">
   <div class="categories-inner">

@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
 import { Video, VideoBackend } from './models/video.model';
 
+
 @Injectable({ providedIn: 'root' })
 export class VideoService {
   private readonly api = environment.apiUrl.replace(/\/$/, '');
@@ -98,7 +99,7 @@ private abs = (rel?: string | null): string | null => {
     }) as unknown as Observable<HttpEvent<Video>>;
   }
 
-  saveProgress(videoId: number, pos: number, dur: number): void {
+    saveProgress(videoId: number, pos: number, dur: number): void {
     this.http
       .post(
         this.progressApi,
@@ -114,6 +115,7 @@ private abs = (rel?: string | null): string | null => {
       { headers: this.langHeaders() }
     );
   }
+
 
   private readonly mockVideos: Video[] = [
     {
