@@ -6,7 +6,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../environments/environment';
 import { Video, VideoBackend } from './models/video.model';
 
-
 @Injectable({ providedIn: 'root' })
 export class VideoService {
   private readonly api = environment.apiUrl.replace(/\/$/, '');
@@ -21,14 +20,14 @@ export class VideoService {
     return new HttpHeaders({ 'Accept-Language': lang });
   }
 
-private abs = (rel?: string | null): string | null => {
-  if (!rel) return null;                               
-  if (/^https?:\/\//i.test(rel) || rel.startsWith('//')) {
-    return rel;
-  }
-  const clean = rel.replace(/^\/+/, '');
-  return `${this.staticRoot.replace(/\/$/, '')}/media/${clean}`;
-};
+  private abs = (rel?: string | null): string | null => {
+    if (!rel) return null;
+    if (/^https?:\/\//i.test(rel) || rel.startsWith('//')) {
+      return rel;
+    }
+    const clean = rel.replace(/^\/+/, '');
+    return `${this.staticRoot.replace(/\/$/, '')}/media/${clean}`;
+  };
 
   private mapVideo = (v: VideoBackend): Video => ({
     ...v,
@@ -99,23 +98,22 @@ private abs = (rel?: string | null): string | null => {
     }) as unknown as Observable<HttpEvent<Video>>;
   }
 
-    saveProgress(videoId: number, pos: number, dur: number): void {
+  saveProgress(videoId: number, pos: number, dur: number): void {
     this.http
       .post(
         this.progressApi,
         { video: videoId, position: pos, duration: dur },
         { headers: this.langHeaders() }
       )
-     .subscribe();
+      .subscribe();
   }
 
   getProgress(videoId: number) {
     return this.http.get<{ id: number; position: number; duration: number }>(
-      `${this.progressApi}?video=${videoId}`,
+      `${this.progressApi}get_progress?video=${videoId}`,
       { headers: this.langHeaders() }
     );
   }
-
 
   private readonly mockVideos: Video[] = [
     {
