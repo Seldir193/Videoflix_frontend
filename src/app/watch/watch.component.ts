@@ -146,9 +146,11 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
       .sources!.sort((a, b) => a.size - b.size)
       .map((v) => ({ ...v, src: this.safeUrl(v.src) }));
   }
+  
   private defaultSize(v: PlyrSource[]) {
     return v.find((x) => x.size === 720)?.size ?? v[0].size;
   }
+
   private safeUrl(url: string) {
     return this.san.sanitize(
       SecurityContext.RESOURCE_URL,
@@ -185,12 +187,11 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     this.plyr.once('canplay', () => {
       const nearEnd =
         this.resumePos > 30 && this.resumePos < this.plyr.duration - 5;
-
-      // Sicherstellen, dass der Fortschritt korrekt gesetzt wurde
       if (this.resumePos > 0 && nearEnd) {
         this.plyr.pause();
         this.zone.run(() => {
-          this.askResume = true; // Anfrage anzeigen
+          this.askResume = true; 
+          console.log('[RESUME] askResume gesetzt auf true bei', this.resumePos);
         });
       } else {
         this.plyr.currentTime = this.resumePos > 0 ? this.resumePos : 0;
