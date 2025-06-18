@@ -130,12 +130,11 @@ video:-webkit-full-screen::-webkit-media-controls {
   justify-content: center;
   align-items: center;
   gap: 1.2rem;
-
   background: rgba(0, 0, 0, 0.72);
   color: #fff;
   text-align: center;
   z-index: 30;
-
+       
   p {
     margin: 0;
     font-size: 1.25rem;

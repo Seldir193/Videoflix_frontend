@@ -98,20 +98,20 @@ export class VideoService {
     }) as unknown as Observable<HttpEvent<Video>>;
   }
 
-  saveProgress(videoId: number, pos: number, dur: number): void {
-    this.http
-      .post(
-        this.progressApi,
-        { video: videoId, position: pos, duration: dur },
-        { headers: this.langHeaders() }
-      )
-      .subscribe();
+  saveProgress(videoId: number, pos: number, dur: number): Observable<void> {
+    const body = { video: videoId, position: pos, duration: dur };
+    return this.http.post<void>(this.progressApi, body, {
+      headers: this.langHeaders(),
+    });
   }
 
   getProgress(videoId: number) {
     return this.http.get<{ id: number; position: number; duration: number }>(
       `${this.progressApi}get_progress?video=${videoId}`,
       { headers: this.langHeaders() }
+    )
+    .pipe(
+      catchError(() => of({ position: 0, duration: 0 } as any))
     );
   }
 
