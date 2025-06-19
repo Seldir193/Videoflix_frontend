@@ -4,10 +4,9 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
-  inject,
   signal,
   SecurityContext,
-  NgZone,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,8 +17,6 @@ import { Video, PlyrSource } from '../shared/models/video.model';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-
-
 @Component({
   standalone: true,
   selector: 'app-watch',
@@ -28,31 +25,46 @@ import { catchError } from 'rxjs/operators';
   imports: [CommonModule],
 })
 export class WatchComponent implements AfterViewInit, OnDestroy {
+  /* ------------------------------------------------------------------
+   * Reactive State
+   * ----------------------------------------------------------------*/
   videos: Video[] = [];
-  @ViewChild('plyr', { static: true })
-  private playerEl!: ElementRef<HTMLVideoElement>;
-  private plyr!: Plyr;
-  private currentId = 0;
-  private saveThrottle = 0;
-  private resumePos = 0;
-
   video = signal<Video | null>(null);
   barVisible = true;
   askResume = false;
 
+  /* ------------------------------------------------------------------
+   * Internals
+   * ----------------------------------------------------------------*/
+  @ViewChild('plyr', { static: true })
+  private playerEl!: ElementRef<HTMLVideoElement>;
+  private plyr!: Plyr;
 
+  private currentId = 0;
+  private saveThrottle = 0;
+  private resumePos = 0;
   private hideTimer?: ReturnType<typeof setTimeout>;
-  private vs = inject(VideoService);
-  private rt = inject(Router);
-  private ar = inject(ActivatedRoute);
-  private san = inject(DomSanitizer);
-  private zone = inject(NgZone);
 
+  /* ------------------------------------------------------------------
+   * DI
+   * ----------------------------------------------------------------*/
+  constructor(
+    private vs: VideoService,
+    private rt: Router,
+    private ar: ActivatedRoute,
+    private san: DomSanitizer,
+    private cd: ChangeDetectorRef
+  ) {}
+
+  /* ------------------------------------------------------------------
+   * Lifecycle Hooks
+   * ----------------------------------------------------------------*/
   ngAfterViewInit(): void {
     this.playerEl.nativeElement.preload = 'auto';
     this.initPlyr();
     this.scheduleHide();
 
+    // React on route param changes
     this.ar.paramMap.subscribe((pm) => {
       const id = Number(pm.get('id'));
       if (!isNaN(id)) this.load(id);
@@ -64,19 +76,28 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     this.plyr?.destroy();
   }
 
+  /* ------------------------------------------------------------------
+   * UI Helpers
+   * ----------------------------------------------------------------*/
   showBar(): void {
-    if (!this.barVisible) this.zone.run(() => (this.barVisible = true));
+    if (!this.barVisible) {
+      this.barVisible = true;
+      this.cd.detectChanges();
+    }
     this.scheduleHide();
   }
 
   scheduleHide(): void {
     clearTimeout(this.hideTimer);
-    this.hideTimer = setTimeout(
-      () => this.zone.run(() => (this.barVisible = false)),
-      3000
-    );
+    this.hideTimer = setTimeout(() => {
+      this.barVisible = false;
+      this.cd.detectChanges();
+    }, 3000);
   }
 
+  /* ------------------------------------------------------------------
+   * Plyr Initialisation
+   * ----------------------------------------------------------------*/
   private initPlyr(): void {
     this.plyr = new Plyr(this.playerEl.nativeElement, {
       controls: [
@@ -102,6 +123,9 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  /* ------------------------------------------------------------------
+   * Data Loading & Preparation
+   * ----------------------------------------------------------------*/
   private load(id: number): void {
     this.currentId = id;
 
@@ -117,18 +141,102 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
   private prepareVideo(clip: Video): void {
     this.video.set(clip);
     this.detachOldHandlers();
+    // Register resume logic before setting the source to avoid missing events
     this.setResumeOrPlay();
     this.setPlyrSource(clip);
     this.attachSaveHandlers();
   }
 
+  /* ------------------------------------------------------------------
+   * Event Handler Management
+   * ----------------------------------------------------------------*/
   private detachOldHandlers(): void {
     (this.plyr as any).off('timeupdate');
     (this.plyr as any).off('pause');
     (this.plyr as any).off('ended');
-    (this.plyr as any).off('qualitychange');
   }
 
+  private attachSaveHandlers(): void {
+    const timeSave = () => {
+      const now = Date.now();
+      if (now - this.saveThrottle < 5000) return; // 5‑s‑Throttle
+      this.saveThrottle = now;
+      postProgress();
+    };
+
+    const postProgress = () => {
+      this.vs
+        .saveProgress(this.currentId, this.plyr.currentTime, this.plyr.duration)
+        .subscribe();
+    };
+
+    this.plyr.on('timeupdate', timeSave);
+    this.plyr.on('pause', postProgress);
+    this.plyr.on('ended', () =>
+      this.vs.saveProgress(this.currentId, 0, 0).subscribe()
+    );
+  }
+
+  /* ------------------------------------------------------------------
+   * Resume Prompt Logic
+   * ----------------------------------------------------------------*/
+  private setResumeOrPlay(): void {
+    let done = false;
+    const attempt = () => {
+      if (done) return;
+
+      const duration = this.plyr.duration;
+      if (!duration || isNaN(duration)) {
+        // Metadaten zwar geladen, aber Plyr hat Duration noch nicht gesetzt → gleich nochmal prüfen
+        setTimeout(attempt, 25);
+        return;
+      }
+
+      done = true;
+      const pos = this.resumePos;
+      const nearEnd = pos > 3 && pos < duration - 5;
+
+      if (pos > 0 && nearEnd) {
+        this.plyr.currentTime = pos;
+        // Flag ausserhalb des aktuellen CD-Zyklus setzen
+        Promise.resolve().then(() => {
+          this.askResume = true;
+          this.cd.detectChanges();
+        });
+      } else {
+        this.plyr.currentTime = pos;
+        this.plyr.play()?.catch(() => {});
+      }
+    };
+
+    // Normalfall: nach dem Source-Setzen
+    this.plyr.once('loadedmetadata', attempt);
+
+    // Cache-Fall: Event ist schon gefeuert → Video ready
+    if (this.playerEl.nativeElement.readyState >= 1) attempt();
+  }
+
+  resume(fromLast: boolean): void {
+    this.plyr.currentTime = fromLast ? this.resumePos : 0;
+    this.askResume = false;
+    this.plyr.play()?.catch(() => {});
+  }
+
+  /* ------------------------------------------------------------------
+   * Navigation Actions
+   * ----------------------------------------------------------------*/
+  goPrev(): void {
+    this.rt.navigate(['/dashboard/videos'], { replaceUrl: true });
+  }
+
+  goNext(): void {
+    const id = this.video()?.id;
+    if (id) this.rt.navigate(['/movie', id]);
+  }
+
+  /* ------------------------------------------------------------------
+   * Plyr Source Helpers
+   * ----------------------------------------------------------------*/
   private setPlyrSource(clip: Video): void {
     if (clip.sources?.length) {
       const variants = this.buildVariants(clip);
@@ -169,63 +277,9 @@ export class WatchComponent implements AfterViewInit, OnDestroy {
     )!;
   }
 
-  private attachSaveHandlers(): void {
-    const timeSave = () => {
-      const now = Date.now();
-      if (now - this.saveThrottle < 5000) return; // 5-s-Throttle
-      this.saveThrottle = now;
-      postProgress();
-    };
-
-    const postProgress = () => {
-      this.vs
-        .saveProgress(this.currentId, this.plyr.currentTime, this.plyr.duration)
-        .subscribe();
-    };
-
-    this.plyr.on('timeupdate', timeSave);
-    this.plyr.on('pause', postProgress);
-    this.plyr.on('ended', () =>
-      this.vs.saveProgress(this.currentId, 0, 0).subscribe()
-    );
-  }
-
-  private setResumeOrPlay(): void {
-    const exec = () => {
-      const pos = this.resumePos;
-      const duration = this.plyr.duration;
-  
-      const nearEnd = pos > 3 && pos < duration - 5;
-
-       if (pos > 0 && nearEnd) {
-        this.plyr.currentTime = pos;
-        this.zone.run(() => (this.askResume = true));
-    
-      } else {
-        this.plyr.currentTime = pos;
-        this.plyr.play()?.catch(() => {});
-      }
-    };
-
-    this.plyr.once('loadedmetadata', exec);
-    if (this.playerEl.nativeElement.readyState >= 1) exec();
-  }
-
-  resume(fromLast: boolean): void {
-    this.plyr.currentTime = fromLast ? this.resumePos : 0;
-    this.askResume = false;
-    this.plyr.play()?.catch(() => {});
-  }
-
-  goPrev() {
-    this.rt.navigate(['/dashboard/videos'], { replaceUrl: true });
-  }
-
-  goNext() {
-    const id = this.video()?.id;
-    if (id) this.rt.navigate(['/movie', id]);
-  }
-
+  /* ------------------------------------------------------------------
+   * Toast Helper
+   * ----------------------------------------------------------------*/
   private toast(msg: string): void {
     const el = document.createElement('div');
     el.textContent = msg;
