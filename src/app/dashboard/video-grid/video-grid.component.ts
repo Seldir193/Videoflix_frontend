@@ -82,7 +82,7 @@ export class VideoGridComponent implements OnInit, AfterViewInit {
     };
 
     const map: Record<string, CatKey> = {
-      'New on Videoflix': 'new',
+      'Action': 'new',
       Documentary: 'documentary',
       Drama: 'drama',
       Romance: 'romance',

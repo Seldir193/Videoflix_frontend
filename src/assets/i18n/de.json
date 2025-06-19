@@ -6,7 +6,7 @@
   },
 
   "cat": {
-    "new": "Neu auf Videoflix",
+    "new": "Action",
     "documentary": "Dokumentation",
     "drama": "Drama",
     "romance": "Romanze"
@@ -79,5 +79,4 @@
     "license": "Lizenz",
     "source": "Quelle"
   }
-
   }
