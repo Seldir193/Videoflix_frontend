@@ -3,7 +3,7 @@ name: 🚀 Deploy website on push
 
 on:
   push:
-    branches: [ "main" ]      # nur bei Commits auf main deployen (anpassen, falls nötig)
+    branches: [ "main" ]      
 
 jobs:
   web-deploy:
@@ -11,36 +11,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Code auschecken
       - name: 🚚 Checkout
         uses: actions/checkout@v4
 
-      # 2. Node-Umgebung (v16 – passt zu deinem Angular-Projekt)
       - name: 🛠️ Setup Node 20
         uses: actions/setup-node@v4
         with:
           node-version: '20.11.1'
-          cache: "npm"              # beschleunigt Folgeläufe
+          cache: "npm"              
 
-      # 3. Abhängigkeiten installieren & Production-Build
       - name: 📦 Install deps & build
+        working-directory: videoflix-ui
         run: |
           npm ci                   # reproducible install
           npm run build            # erzeugt dist/<app-name>/
 
-      # 4. Unit-/E2E-Tests (Headless Chrome)
       - name: ✅ Run tests
-       # run: npm run test -- --log-level debug --browsers ChromeHeadlessCI
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
-
-      # 5. Deployment per FTP
+        working-directory: videoflix-ui
+        run: npm run test 
+       
       - name: 📂 Sync files to server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.1
         with:
-          server: ${{ secrets.FTP_SERVER }}          # z. B. ftp.example.com
+          server: ${{ secrets.FTP_SERVER }}          
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp            # ← testweise FTP
+          protocol: ftp            
           passive: true
           port: 21
           local-dir: dist/videoflix-ui/
