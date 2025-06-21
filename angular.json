@@ -84,17 +84,7 @@
           "options": {
             "buildTarget": "videoflix-ui:build"
           }
-        },
-       
-
-       "test": {
-          "builder": "@angular-builders/jest:run",
-          "options": {
-           "jestConfig": "jest.config.js",
-           "passWithNoTests": true
-         }
-       }
-
+        }
       }
     }
   },
