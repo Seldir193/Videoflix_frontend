@@ -13,11 +13,9 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-coverage'),
-      // ⬇ HTML-Reporter nur lokal, nicht im CI
-      ...(isCI ? [] : [require('karma-jasmine-html-reporter')]),
+      require('karma-jasmine-html-reporter'),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
-
     // Headless-Launcher
     browsers: ['ChromeHeadlessCI'],
     customLaunchers: {
