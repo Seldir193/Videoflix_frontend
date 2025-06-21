@@ -12,8 +12,8 @@ module.exports = function (config) {
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-coverage'),
-      require('karma-jasmine-html-reporter'),
+      // require('karma-coverage'),                 // ← AUSkommentieren
+      ...(isCI ? [] : [require('karma-jasmine-html-reporter')]),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
     // Headless-Launcher
@@ -26,11 +26,11 @@ module.exports = function (config) {
     },
 
     reporters: isCI ? ['dots', 'coverage'] : ['progress', 'kjhtml'],
-    coverageReporter: {
-      dir: require('path').join(__dirname, './coverage'),
-      subdir: '.',
-      reporters: [{ type: 'text-summary' }, { type: 'html' }],
-    },
+  //  coverageReporter: {
+    //  dir: require('path').join(__dirname, './coverage'),
+     // subdir: '.',
+     // reporters: [{ type: 'text-summary' }, { type: 'html' }],
+   // },
 
     singleRun: isCI,          // Tests nur einmal im CI
     restartOnFileChange: !isCI,
