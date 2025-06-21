@@ -1,40 +1,40 @@
- // karma.conf.js
 
+// karma.conf.js
 const puppeteer = require('puppeteer');
 process.env.CHROME_BIN = puppeteer.executablePath();
 
+module.exports = function (config) {
+  const isCI = !!process.env.CI;      // true in GitHub-Actions
 
- module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
+      // ⬇ HTML-Reporter nur lokal, nicht im CI
+      ...(isCI ? [] : [require('karma-jasmine-html-reporter')]),
       require('@angular-devkit/build-angular/plugins/karma'),
     ],
 
-    // ▼ NEU: Headless-Launcher für GitHub Actions
+    // Headless-Launcher
     browsers: ['ChromeHeadlessCI'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
-        flags: [
-          '--no-sandbox',
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-        ],
+        flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
       },
     },
 
-    reporters: ['progress', 'kjhtml'],
+    reporters: isCI ? ['dots', 'coverage'] : ['progress', 'kjhtml'],
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/videoflix-ui'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
-      reporters: [{ type: 'html' }, { type: 'text-summary' }],
+      reporters: [{ type: 'text-summary' }, { type: 'html' }],
     },
-    restartOnFileChange: true,
+
+    singleRun: isCI,          // Tests nur einmal im CI
+    restartOnFileChange: !isCI,
   });
 };
