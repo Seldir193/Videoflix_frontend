@@ -39,9 +39,10 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}          # z. B. ftp.example.com
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/videoflix-ui/        
-          server-dir: /www/htdocs/w01f330f/videoflix.selcuk-kocyigit.de/
-          protocol: ftps                             # oder ftp, wenn FTPS nicht verfügbar
+          protocol: ftp            # ← testweise FTP
           passive: true
-          port: 21                                   # 21 = FTP, 990 = FTPS-implicit
-          log-level: standard
+          port: 21
+          local-dir: dist/videoflix-ui/
+          server-dir: /videoflix.selcuk-kocyigit.de/
+          timeout: 900000
+          log-level: verbose
