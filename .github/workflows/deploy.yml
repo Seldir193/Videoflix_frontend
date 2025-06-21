@@ -40,7 +40,8 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/videoflix-ui/        
-          server-dir: /www/htdocs/f016b129/app/  
+          server-dir: /www/htdocs/w01f330f/videoflix.selcuk-kocyigit.de/
           protocol: ftps                             # oder ftp, wenn FTPS nicht verfügbar
+          passive: true
           port: 21                                   # 21 = FTP, 990 = FTPS-implicit
           log-level: standard
