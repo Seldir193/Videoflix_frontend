@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "CI=true ng test --watch=false --browsers=ChromeHeadlessCI",
+    "test": "CI=true KARMA_LOG_LEVEL=debug ng test --watch=false --browsers=ChromeHeadlessCI",
     "test:ci":     "CI=true karma start karma.conf.js --single-run --log-level debug"
   },
   "private": true,
