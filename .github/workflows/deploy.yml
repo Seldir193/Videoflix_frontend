@@ -19,7 +19,7 @@ jobs:
       - name: 🛠️  Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "16.14.2"
+          node-version: '20'
           cache: "npm"              # beschleunigt Folgeläufe
 
       # 3. Abhängigkeiten installieren & Production-Build
