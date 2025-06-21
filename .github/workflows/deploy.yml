@@ -21,13 +21,11 @@ jobs:
           cache: "npm"              
 
       - name: 📦 Install deps & build
-        working-directory: videoflix-ui
         run: |
           npm ci                   # reproducible install
           npm run build            # erzeugt dist/<app-name>/
 
       - name: ✅ Run tests
-        working-directory: videoflix-ui
         run: npm run test 
        
       - name: 📂 Sync files to server
