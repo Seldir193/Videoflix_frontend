@@ -26,7 +26,7 @@ jobs:
           npm run build            # erzeugt dist/<app-name>/
 
       - name: ✅ Run unit tests (debug)
-        run: npm run test -- --log-level debug
+        run: npm run test 
 
        
       - name: 📂 Sync files to server
