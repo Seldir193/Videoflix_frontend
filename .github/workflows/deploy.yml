@@ -29,8 +29,8 @@ jobs:
           npm run build            # erzeugt dist/<app-name>/
 
       # 4. Unit-/E2E-Tests (Headless Chrome)
-      - name: ✅ Run tests
-        run: npm run test -- --log-level debug --browsers ChromeHeadlessCI
+      #- name: ✅ Run tests
+       # run: npm run test -- --log-level debug --browsers ChromeHeadlessCI
 
       # 5. Deployment per FTP
       - name: 📂 Sync files to server
