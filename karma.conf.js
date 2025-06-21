@@ -1,40 +1,39 @@
 
-// karma.conf.js
-const puppeteer = require('puppeteer');
-process.env.CHROME_BIN = puppeteer.executablePath();
+// Karma configuration file, see link for more information
+// https://karma-runner.github.io/1.0/config/configuration-file.html
 
 module.exports = function (config) {
-  const isCI = !!process.env.CI;      // true in GitHub-Actions
-
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
-      // require('karma-coverage'),                 // ← AUSkommentieren
-      ...(isCI ? [] : [require('karma-jasmine-html-reporter')]),
-      require('@angular-devkit/build-angular/plugins/karma'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-coverage'),
+      require('@angular-devkit/build-angular/plugins/karma')
     ],
-    // Headless-Launcher
-    browsers: ['ChromeHeadlessCI'],
-    customLaunchers: {
-      ChromeHeadlessCI: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
+    client: {
+      jasmine: {
+        // you can add configuration options for Jasmine here
+        // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
+        // for example, you can disable the random execution with `random: false`
+        // or set a specific seed with `seed: 4321`
       },
     },
-
-    reporters: isCI ? ['dots', 'coverage'] : ['progress', 'kjhtml'],
-  //  coverageReporter: {
-    //  dir: require('path').join(__dirname, './coverage'),
-     // subdir: '.',
-     // reporters: [{ type: 'text-summary' }, { type: 'html' }],
-   // },
-
-    singleRun: isCI,          // Tests nur einmal im CI
-    restartOnFileChange: !isCI,
-logLevel: config.LOG_DEBUG,
-
+    jasmineHtmlReporter: {
+      suppressAll: true // removes the duplicated traces
+    },
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/videoflix-ui'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
+    },
+    reporters: ['progress', 'kjhtml'],
+    browsers: ['Chrome'],
+    restartOnFileChange: true
   });
 };
