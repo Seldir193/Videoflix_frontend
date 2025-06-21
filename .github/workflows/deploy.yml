@@ -25,8 +25,8 @@ jobs:
           npm ci                   # reproducible install
           npm run build            # erzeugt dist/<app-name>/
 
-      - name: ✅ Run unit tests (debug once)
-        run: npm run test:ci
+      - name: ✅ Run unit tests verbose
+        run: npm run test
 
        
       - name: 📂 Sync files to server
