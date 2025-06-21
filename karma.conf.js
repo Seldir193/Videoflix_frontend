@@ -34,5 +34,7 @@ module.exports = function (config) {
 
     singleRun: isCI,          // Tests nur einmal im CI
     restartOnFileChange: !isCI,
+logLevel: config.LOG_DEBUG,
+
   });
 };
