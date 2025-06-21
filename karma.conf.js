@@ -1,36 +1,35 @@
+ // karma.conf.js
 module.exports = function (config) {
-   config.set({
-     basePath: '',
-     frameworks: ['jasmine', '@angular-devkit/build-angular'],
-    // ▸ Browser/Launcher-Block
+  config.set({
+    basePath: '',
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-chrome-launcher'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-coverage'),
+      require('@angular-devkit/build-angular/plugins/karma'),
+    ],
+
+    // ▼ NEU: Headless-Launcher für GitHub Actions
     browsers: ['ChromeHeadlessCI'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: [
-          '--no-sandbox',           // wichtig im GitHub-Runner
+          '--no-sandbox',
           '--disable-gpu',
-          '--disable-dev-shm-usage'
+          '--disable-dev-shm-usage',
         ],
-},
+      },
     },
-     plugins: [
-       require('karma-jasmine'),
-       require('karma-chrome-launcher'),
-       require('karma-jasmine-html-reporter'),
-       require('karma-coverage'),
-       require('@angular-devkit/build-angular/plugins/karma')
-     ],
-     client: { jasmine: {} },
-     jasmineHtmlReporter: { suppressAll: true },
-     coverageReporter: {
-       dir: require('path').join(__dirname, './coverage/videoflix-ui'),
-       subdir: '.',
-       reporters: [{ type: 'html' }, { type: 'text-summary' }],
-     },
-     reporters: ['progress', 'kjhtml'],
-    browsers: ['Chrome'],
+
     reporters: ['progress', 'kjhtml'],
-     restartOnFileChange: true,
-   });
- };
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/videoflix-ui'),
+      subdir: '.',
+      reporters: [{ type: 'html' }, { type: 'text-summary' }],
+    },
+    restartOnFileChange: true,
+  });
+};
