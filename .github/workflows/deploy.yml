@@ -34,7 +34,7 @@ jobs:
 
       # 5. Deployment per FTP
       - name: 📂 Sync files to server
-        uses: SamKirkland/FTP-Deploy-Action@v4       # aktuelle Major-Version
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.1
         with:
           server: ${{ secrets.FTP_SERVER }}          # z. B. ftp.example.com
           username: ${{ secrets.FTP_USER }}
