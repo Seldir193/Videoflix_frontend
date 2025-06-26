@@ -39,7 +39,7 @@ jobs:
           protocol: ftps            
           passive: true
           port: 21
-          local-dir: dist/videoflix-ui/browser/
+          local-dir: dist/videoflix-ui/
           #server-dir: "/"
           server-dir: videoflix.selcuk-kocyigit.de/ 
           timeout: 900000
