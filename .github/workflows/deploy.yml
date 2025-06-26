@@ -36,11 +36,11 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}          
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: sftp            
+          protocol: ftps            
           passive: true
           port: 21
-          local-dir: dist/videoflix-ui/
-          server-dir: "/"
-          #server-dir: videoflix.selcuk-kocyigit.de/ 
+          local-dir: dist/videoflix-ui/browser/
+          #server-dir: "/"
+          server-dir: videoflix.selcuk-kocyigit.de/ 
           timeout: 900000
           log-level: verbose
