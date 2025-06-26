@@ -36,7 +36,7 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}          
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps            
+          protocol: sftp            
           passive: true
           port: 21
           local-dir: dist/videoflix-ui/
