@@ -44,4 +44,4 @@ jobs:
           server-dir: /videoflix.selcuk-kocyigit.de/ 
           timeout: 900000
           log-level: verbose
-          state-name: videoflix-sync
+          #state-name: videoflix-sync
