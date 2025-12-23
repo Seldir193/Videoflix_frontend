@@ -31,7 +31,7 @@
     class="plyr-video"
     controls
     playsinline
-    [attr.poster]="video()?.hero_frame_url || null"
+    [attr.poster]="video()?.hero_frame || null"
   ></video>
 
   <div class="resume-box" *ngIf="askResume">

@@ -28,26 +28,18 @@
               class="thumb"
               *ngFor="let v of $any(g)[cat]"
               (click)="playVideo(v)"
-            >
-              <video
-                *ngIf="v.video_file"
-                class="thumb-media"
-                [src]="v.video_file | safeUrl"
-                muted
-                playsinline
-                preload="metadata"
-                width="213"
-                height="120"
-              ></video>
+            >  
 
               <img
-                *ngIf="!v.video_file"
-                class="thumb-img"
-                [src]="v.thumb || 'assets/thumbs/default.jpg'"
-                [alt]="v.title"
-                width="213"
-                height="120"
-              />
+  class="thumb-img"
+  [src]="(v.thumb || v.hero_frame || 'assets/thumbs/default.jpg') | safeUrl"
+  [alt]="v.title"
+  width="213"
+  height="120"
+/>
+
+
+             
 
               <figcaption>{{ v.title }}</figcaption>
             </figure>

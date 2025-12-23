@@ -34,7 +34,7 @@ export class VideoService {
     video_file_url: v.source_url
       ? this.abs(v.source_url)
       : this.abs(v.video_file),
-    hero_frame_url: this.abs(v.hero_frame),
+    hero_frame: this.abs(v.hero_frame),
     sources: (v.source_variants ?? [])
       .sort((a, b) => b.height - a.height)
       .map((variant) => ({
@@ -122,7 +122,7 @@ export class VideoService {
       url: null,
       created_at: '2025-05-07T10:00:00Z',
       video_file_url: null,
-      hero_frame_url: null,
+      hero_frame: null,
       sources: [],
     },
   ];

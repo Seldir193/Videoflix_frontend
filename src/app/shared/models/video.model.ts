@@ -25,7 +25,8 @@ export interface PlyrSource {
   
   export interface Video extends Omit<VideoBackend, 'source_variants'> {
     video_file_url: string | null;
-    hero_frame_url: string | null;
+    hero_frame: string | null;
+    //hero_frame_url: string | null;
     sources: PlyrSource[];
   }
   
